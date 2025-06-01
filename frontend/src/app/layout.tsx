@@ -29,10 +29,10 @@ export default function RootLayout({
               {/* Navigation Links */}
               <div className="flex items-center gap-6">
                 <Link 
-                  href="/developers" 
+                  href="/dashboard" 
                   className="text-green-400 hover:text-green-300 transition-colors"
                 >
-                  Developers
+                  Dashboard
                 </Link>
                 <Link 
                   href="/ecosystem" 
