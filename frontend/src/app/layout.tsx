@@ -10,7 +10,7 @@ import  NearWalletProvider  from "./provider/wallet";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NEAR Protocol - Chain Abstraction & Intents",
+  title: "NeXchange- Chain Abstraction & Intents",
   description: "Experience the future of Web3 with NEAR Protocol's chain abstraction, signatures, and intents framework",
 };
 
@@ -28,7 +28,7 @@ export default function RootLayout({
             <div className="flex items-center justify-between h-16">
               {/* Logo/Name */}
               <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-                NEAR  Protocol
+              NeXchange
               </Link>
 
               {/* Navigation Links */}
@@ -40,10 +40,10 @@ export default function RootLayout({
                   Dashboard
                 </Link>
                 <Link 
-                  href="/ecosystem" 
+                  href="/try" 
                   className="text-green-400 hover:text-green-300 transition-colors"
                 >
-                  Ecosystem
+                  Try
                 </Link>
               </div>
             </div>
@@ -63,7 +63,7 @@ export default function RootLayout({
               {/* Company Info */}
               <div className="space-y-4">
                 <h3 className="text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-                  NEAR Protocol
+                NeXchange
                 </h3>
                 <p className="text-green-100/80 text-sm">
                   Building the future of Web3 through chain abstraction and intents.
@@ -140,7 +140,7 @@ export default function RootLayout({
             {/* Bottom Bar */}
             <div className="border-t border-green-800/50 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
               <p className="text-green-100/60 text-sm">
-                © {new Date().getFullYear()} NEAR Protocol. All rights reserved.
+                © {new Date().getFullYear()} NeXchange. All rights reserved.
               </p>
               <div className="flex gap-6 mt-4 md:mt-0">
                 <Link href="https://twitter.com/NEARProtocol" className="text-green-100/60 hover:text-green-300 transition-colors">

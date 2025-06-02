@@ -112,6 +112,10 @@ export default function Dashboard() {
                 <span className="text-green-400 text-lg">Active</span>
               </div>
 
+              <p className="text-white/90 text-sm leading-relaxed">
+                Your Solana agent is active and ready to sign transactions. The agent uses NEAR chain signature to manage Solana transactions without managing private keys.
+              </p>
+
               <div className="space-y-3">
                 <p className="text-sm text-emerald-100/80">Available Features:</p>
                 <div className="flex flex-wrap gap-3">

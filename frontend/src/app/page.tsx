@@ -10,7 +10,7 @@ export default function Home() {
         {/* Hero Section */}
         <div className="text-center mb-24">
           <h1 className="text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-            NEAR Protocol
+          NeXchange
           </h1>
           <p className="text-xl text-emerald-100/90 mb-10 max-w-2xl mx-auto">
             Experience the Future of Web3 with Chain Abstraction and Intents
