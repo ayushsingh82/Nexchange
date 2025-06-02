@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { SIGNET_CONTRACT } from "../utils/config";
+import { SIGNET_CONTRACT } from "../../utils/config";
 import { chainAdapters } from "chainsig.js";
 import { Connection as SolanaConnection } from '@solana/web3.js'
-import { bigIntToDecimal } from "../utils/bigIntToDecimal";
-import { decimalToBigInt } from "../utils/DecimalToBigInt";
-import { useDebounce } from "../utils/debounce";
-import { useNearWallet } from "../provider/wallet";
+import { bigIntToDecimal } from "../../utils/bigIntToDecimal";
+import { decimalToBigInt } from "../../utils/DecimalToBigInt";
+import { useDebounce } from "../../utils/debounce";
+import { useNearWallet } from "../../provider/wallet";
 import PropTypes from 'prop-types';
 
 const connection = new SolanaConnection("https://api.devnet.solana.com");

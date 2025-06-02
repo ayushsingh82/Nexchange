@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useNearWallet } from "../provider/wallet";
+import { useNearWallet } from "../../provider/wallet";
 
 
 export default function Dashboard() {

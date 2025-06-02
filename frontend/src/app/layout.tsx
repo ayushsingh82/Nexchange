@@ -1,11 +1,9 @@
-
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 
-import  NearWalletProvider  from "./provider/wallet";
+import NearWalletProvider from "../provider/wallet";
 
 const inter = Inter({ subsets: ["latin"] });
 
