@@ -2,12 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useNearWallet } from "../provider/wallet";
+
 
 export default function Dashboard() {
   const [solanaAddress, setSolanaAddress] = useState("...");
   const [solanaBalance, setSolanaBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+
+  const { accountId, signIn, callMethods, viewMethod, status } =
+    useNearWallet();
+
+
 
   // Mock data - replace with actual Solana wallet integration
   useEffect(() => {
@@ -37,6 +44,15 @@ export default function Dashboard() {
             Dashboard
           </h1>
           <p className="text-xl text-white/90">Make solana wallet and connect</p>
+
+          <button
+            type="button"
+            onClick={signIn}
+            className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+          >
+            Connect Wallet 
+          </button>
+      
         </div>
 
         {/* Main Grid */}

@@ -1,7 +1,11 @@
+
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+
+import  NearWalletProvider  from "./provider/wallet";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} flex flex-col min-h-screen`}>
+      <NearWalletProvider>
         <nav className="bg-black border-b border-green-800/50">
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between h-16">
@@ -45,9 +50,12 @@ export default function RootLayout({
           </div>
         </nav>
 
+
         <main className="flex-grow">
           {children}
         </main>
+
+        </NearWalletProvider>
 
         <footer className="bg-black border-t border-green-800/50 mt-auto">
           <div className="container mx-auto px-6 py-12">
