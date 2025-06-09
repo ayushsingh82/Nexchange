@@ -82,7 +82,7 @@ export default function Home() {
         {/* CTA Section */}
         <div className="text-center bg-green-950/40 backdrop-blur-lg p-12 rounded-2xl border border-green-800/50 shadow-lg">
           <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-            Ready to Build on NEAR?
+            Ready to Build cross-chain?
           </h2>
           <p className="text-emerald-100/90 mb-8 max-w-xl mx-auto text-lg">
             Join our ecosystem and leverage the power of chain abstraction and intents.
