@@ -4,17 +4,12 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useNearWallet } from "../../provider/wallet";
 
-
 export default function Dashboard() {
+  const { accountId, signIn, signOut } = useNearWallet();
   const [solanaAddress, setSolanaAddress] = useState("...");
   const [solanaBalance, setSolanaBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-
-  const { accountId, signIn, callMethods, viewMethod, status } =
-    useNearWallet();
-
-
 
   // Mock data - replace with actual Solana wallet integration
   useEffect(() => {
@@ -26,9 +21,9 @@ export default function Dashboard() {
     }, 1000);
   }, []);
 
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(solanaAddress);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -45,14 +40,55 @@ export default function Dashboard() {
           </h1>
           <p className="text-xl text-white/90">Make solana wallet and connect</p>
 
-          <button
-            type="button"
-            onClick={signIn}
-            className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200 mt-2 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-          >
-            Connect Wallet 
-          </button>
-      
+          {/* Wallet Connection Status */}
+          <div className="mt-4 p-4 bg-black/40 rounded-lg border border-green-800/50">
+            {accountId ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                  <span className="text-green-400">Connected</span>
+                </div>
+                <div>
+                  <p className="text-sm text-emerald-100/80 mb-2">NEAR Account</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-mono text-sm break-all text-emerald-100/90 p-3 bg-black/40 rounded-lg border border-green-800/50">
+                      {accountId}
+                    </p>
+                    <button 
+                      onClick={() => copyToClipboard(accountId)}
+                      className="p-2 hover:bg-green-900/60 rounded-lg transition-colors"
+                      title="Copy address"
+                    >
+                      {copied ? (
+                        <span className="text-green-400">✓</span>
+                      ) : (
+                        <svg className="w-4 h-4 text-emerald-100/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </div>
+                <button
+                  onClick={signOut}
+                  className="text-sm text-red-400 hover:text-red-300 transition-colors"
+                >
+                  Disconnect
+                </button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-white/90 mb-4">Connect your wallet to continue</p>
+                <button
+                  type="button"
+                  onClick={signIn}
+                  className="w-full rounded-md bg-gradient-to-r from-green-400 to-lime-300 hover:from-green-300 hover:to-lime-200 px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                >
+                  Connect Wallet
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Main Grid */}
@@ -60,7 +96,6 @@ export default function Dashboard() {
           {/* Solana Wallet Box */}
           <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50 hover:border-green-500 transition duration-300 shadow-lg hover:shadow-green-500/10">
             <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3 text-green-400">
-            
               Solana Wallet
             </h2>
             
@@ -76,7 +111,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <p className="font-mono text-sm break-all text-emerald-100/90 p-3 bg-black/40 rounded-lg border border-green-800/50">{solanaAddress}</p>
                     <button 
-                      onClick={copyToClipboard}
+                      onClick={() => copyToClipboard(solanaAddress)}
                       className="p-2 hover:bg-green-900/60 rounded-lg transition-colors"
                       title="Copy address"
                     >
