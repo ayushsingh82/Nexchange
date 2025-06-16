@@ -32,6 +32,12 @@ export default function RootLayout({
               {/* Navigation Links */}
               <div className="flex items-center gap-6">
                 <Link 
+                  href="/protocol" 
+                  className="text-green-400 hover:text-green-300 transition-colors"
+                >
+                  Protocol
+                </Link>
+                <Link 
                   href="/dashboard" 
                   className="text-green-400 hover:text-green-300 transition-colors"
                 >
@@ -49,6 +55,7 @@ export default function RootLayout({
                 >
                   EVM
                 </Link>
+
               </div>
             </div>
           </div>
