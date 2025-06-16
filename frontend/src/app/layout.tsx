@@ -43,6 +43,12 @@ export default function RootLayout({
                 >
                   Try
                 </Link>
+                <Link 
+                  href="/evm" 
+                  className="text-green-400 hover:text-green-300 transition-colors"
+                >
+                  EVM
+                </Link>
               </div>
             </div>
           </div>
