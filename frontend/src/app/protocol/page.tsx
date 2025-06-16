@@ -120,7 +120,7 @@ const ProtocolPage = () => {
             <>
               {/* EVM Protocols */}
               <div className="bg-green-950/40 backdrop-blur-lg p-6 rounded-xl border border-green-800/50">
-                <h2 className="text-2xl font-semibold mb-6 text-green-400">🟢 EVM-Compatible Protocols</h2>
+                <h2 className="text-2xl font-semibold mb-6 text-green-400"> EVM-Compatible Protocols</h2>
                 <div className="space-y-8">
                   {Object.entries(evmProtocols).map(([category, protocols]) => (
                     <div key={category}>
@@ -150,7 +150,7 @@ const ProtocolPage = () => {
             <>
               {/* Solana Protocols */}
               <div className="bg-green-950/40 backdrop-blur-lg p-6 rounded-xl border border-green-800/50">
-                <h2 className="text-2xl font-semibold mb-6 text-green-400">🟣 Solana Protocols</h2>
+                <h2 className="text-2xl font-semibold mb-6 text-green-400"> Solana Protocols</h2>
                 <div className="space-y-8">
                   {Object.entries(solanaProtocols).map(([category, protocols]) => (
                     <div key={category}>

@@ -59,43 +59,57 @@ export default function Home() {
           ))}
         </div>
 
-        {/* How It Works Section */}
+        {/* Intents Section */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-            How It Works
+            Upcoming Intents
           </h2>
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              {
-                step: '01',
-                title: 'Create Intent',
-                desc: 'Sign an intent message on NEAR specifying your desired cross-chain action'
-              },
-              {
-                step: '02',
-                title: 'Agent Network',
-                desc: 'Our network of agents receives and processes your intent'
-              },
-              {
-                step: '03',
-                title: 'Cross-Chain Execution',
-                desc: 'Agents execute your intent on Solana or EVM chains'
-              },
-              {
-                step: '04',
-                title: 'Verification',
-                desc: 'Cross-chain proof verification ensures secure execution'
-              }
-            ].map((step, idx) => (
-              <div
-                key={idx}
-                className="bg-green-950/40 p-6 rounded-lg border border-green-800/50 backdrop-blur-sm"
-              >
-                <div className="text-2xl font-bold text-green-400 mb-2">{step.step}</div>
-                <h3 className="text-lg font-semibold mb-2 text-white">{step.title}</h3>
-                <p className="text-emerald-100/80 text-sm">{step.desc}</p>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Solana Intents */}
+            <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50">
+              <h3 className="text-2xl font-semibold mb-6 text-green-400"> Solana Intents</h3>
+              <div className="space-y-6">
+                <div className="bg-green-900/30 p-4 rounded-lg">
+                  <h4 className="text-lg font-medium text-white mb-2">Staking Intents</h4>
+                  <ul className="space-y-2 text-emerald-100/80">
+                    <li>• Stake SOL on Jito for jitoSOL</li>
+                    <li>• Stake SOL on BlazeStake for bSOL</li>
+                    <li>• Unstake and swap back to NEAR</li>
+                  </ul>
+                </div>
+                <div className="bg-green-900/30 p-4 rounded-lg">
+                  <h4 className="text-lg font-medium text-white mb-2">Swapping Intents</h4>
+                  <ul className="space-y-2 text-emerald-100/80">
+                    <li>• Swap via Jupiter Aggregator</li>
+                    <li>• Trade on Orca DEX</li>
+                    <li>• Cross-chain swaps to/from NEAR</li>
+                  </ul>
+                </div>
               </div>
-            ))}
+            </div>
+
+            {/* EVM Intents */}
+            <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50">
+              <h3 className="text-2xl font-semibold mb-6 text-green-400"> EVM Intents</h3>
+              <div className="space-y-6">
+                <div className="bg-green-900/30 p-4 rounded-lg">
+                  <h4 className="text-lg font-medium text-white mb-2">Staking Intents</h4>
+                  <ul className="space-y-2 text-emerald-100/80">
+                    <li>• Stake ETH on Lido for stETH</li>
+                    <li>• Restake on EigenLayer</li>
+                    <li>• Unstake and bridge back to NEAR</li>
+                  </ul>
+                </div>
+                <div className="bg-green-900/30 p-4 rounded-lg">
+                  <h4 className="text-lg font-medium text-white mb-2">Swapping Intents</h4>
+                  <ul className="space-y-2 text-emerald-100/80">
+                    <li>• Swap on Uniswap v3</li>
+                    <li>• Trade on SushiSwap</li>
+                    <li>• Cross-chain swaps to/from NEAR</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
