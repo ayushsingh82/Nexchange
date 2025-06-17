@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 
 import NearWalletProvider from "../provider/wallet";
+import WalletSelector from "../components/WalletSelector";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,11 @@ export default function RootLayout({
               <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
               NeXchange
               </Link>
+
+              {/* Wallet Selector */}
+              <div className="flex-1 flex justify-center">
+                <WalletSelector />
+              </div>
 
               {/* Navigation Links */}
               <div className="flex items-center gap-6">
@@ -54,6 +60,12 @@ export default function RootLayout({
                   className="text-green-400 hover:text-green-300 transition-colors"
                 >
                   EVM
+                </Link>
+                <Link 
+                  href="/chat" 
+                  className="text-green-400 hover:text-green-300 transition-colors"
+                >
+                  Chat
                 </Link>
 
               </div>

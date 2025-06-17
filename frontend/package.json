@@ -9,18 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@bitte-ai/chat": "^0.10.0",
     "@near-wallet-selector/bitte-wallet": "^9.0.2",
     "@near-wallet-selector/meteor-wallet": "^9.0.2",
     "@near-wallet-selector/modal-ui": "^9.0.2",
     "@near-wallet-selector/near-wallet": "^8.9.3",
     "@near-wallet-selector/nightly": "^9.0.2",
+    "@rainbow-me/rainbowkit": "^2.2.7",
     "@solana/web3.js": "^1.98.2",
+    "@tanstack/react-query": "^5.80.7",
     "@types/prop-types": "^15.7.14",
     "chainsig.js": "^1.1.6",
     "near-api-js": "^6.0.2",
     "next": "15.3.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "viem": "^2.31.3",
+    "wagmi": "^2.15.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -32,5 +37,6 @@
     "eslint-config-next": "15.3.3",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
 }
