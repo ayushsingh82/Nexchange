@@ -45,16 +45,23 @@ export default function Home() {
             {
               title: 'NEAR ↔️ EVM',
               desc: 'Connect with the entire EVM ecosystem, from Ethereum mainnet to L2s, all through your NEAR wallet.',
+              okto: true,
             },
           ].map((feature, idx) => (
             <div
               key={idx}
-              className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50 hover:border-green-500 transition duration-300 shadow-lg hover:shadow-green-500/10"
+              className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50 hover:border-green-500 transition duration-300 shadow-lg hover:shadow-green-500/10 text-center"
             >
               <h3 className="text-xl font-semibold mb-3 text-green-400">
                 {feature.title}
               </h3>
-              <p className="text-emerald-100/90 leading-relaxed">{feature.desc}</p>
+              <p className="text-emerald-100/90 leading-relaxed mb-4">{feature.desc}</p>
+              {feature.okto && (
+                <div className="flex flex-col items-center mt-4">
+                  <span className="text-green-300 text-sm font-semibold mb-2">powered by okto</span>
+                  <img src="https://docs.okto.tech/logo/okto-icon.png" alt="Okto Logo" className="w-16 h-16 rounded-lg shadow-md" />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -103,12 +110,36 @@ export default function Home() {
                 <div className="bg-green-900/30 p-4 rounded-lg">
                   <h4 className="text-lg font-medium text-white mb-2">Swapping Intents</h4>
                   <ul className="space-y-2 text-emerald-100/80">
-                    <li>• Swap on Uniswap v3</li>
-                    <li>• Trade on SushiSwap</li>
+                    <li>• token transfer</li>
+                    <li>• nft transfer</li>
                     <li>• Cross-chain swaps to/from NEAR</li>
                   </ul>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Okto SDK Section */}
+        <div className="mb-20">
+          <div className="flex flex-col items-center mb-4">
+            <img src="https://docs.okto.tech/logo/okto-icon.png" alt="Okto Logo" className="w-20 h-20 rounded-lg shadow-md mb-2" />
+          </div>
+          <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+            Okto SDK Features
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50 text-center">
+              <h3 className="text-xl font-semibold mb-3 text-green-400">Get Portfolio History</h3>
+              <p className="text-emerald-100/90 leading-relaxed">Easily fetch and visualize your cross-chain portfolio history using Okto SDK.</p>
+            </div>
+            <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50 text-center">
+              <h3 className="text-xl font-semibold mb-3 text-green-400">Get Order History</h3>
+              <p className="text-emerald-100/90 leading-relaxed">Access your complete order history across supported chains and protocols.</p>
+            </div>
+            <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50 text-center">
+              <h3 className="text-xl font-semibold mb-3 text-green-400">Read Onchain Data</h3>
+              <p className="text-emerald-100/90 leading-relaxed">Read and analyze onchain data seamlessly with Okto SDK's powerful APIs.</p>
             </div>
           </div>
         </div>
