@@ -44,7 +44,7 @@ export default function Home() {
             },
             {
               title: 'NEAR ↔️ EVM',
-              desc: 'Connect with the entire EVM ecosystem, from Ethereum mainnet to L2s, all through your NEAR wallet.',
+              desc: 'Connect with the entire EVM ecosystem, from Ethereum mainnet to L2s',
               okto: true,
             },
           ].map((feature, idx) => (

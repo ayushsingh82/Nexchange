@@ -21,7 +21,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               {/* Wallet Selectors */}
               <div className="flex items-center gap-4">
                 <WalletSelector />
-                <WalletButton />
+           
               </div>
 
               {/* Navigation Links */}
