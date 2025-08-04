@@ -1,4 +1,4 @@
-import { ACCOUNT_ID } from "@/app/config";
+import { ACCOUNT_ID } from "../../config";
 import { NextResponse } from "next/server";
 import {
   chainIdParam,
