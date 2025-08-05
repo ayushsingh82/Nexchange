@@ -47,12 +47,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                   >
                     EVM
                   </Link>
-                  <Link 
-                    href="/chat" 
-                    className="text-green-400 hover:text-green-300 transition-colors"
-                  >
-                    Chat
-                  </Link>
                 </div>
               </div>
 
