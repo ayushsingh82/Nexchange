@@ -59,55 +59,17 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Intents Section */}
+        {/* Architecture Section */}
         <div className="mb-20">
           <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-            Upcoming Intents
+            Architecture
           </h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Solana Intents */}
-            <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50">
-              <h3 className="text-2xl font-semibold mb-6 text-green-400"> Solana Intents</h3>
-              <div className="space-y-6">
-                <div className="bg-green-900/30 p-4 rounded-lg">
-                  <h4 className="text-lg font-medium text-white mb-2">Staking Intents</h4>
-                  <ul className="space-y-2 text-emerald-100/80">
-                    <li>• Stake SOL on Jito for jitoSOL</li>
-                    <li>• Stake SOL on BlazeStake for bSOL</li>
-                    <li>• Unstake and swap back to NEAR</li>
-                  </ul>
-                </div>
-                <div className="bg-green-900/30 p-4 rounded-lg">
-                  <h4 className="text-lg font-medium text-white mb-2">Swapping Intents</h4>
-                  <ul className="space-y-2 text-emerald-100/80">
-                    <li>• Swap via Jupiter Aggregator</li>
-                    <li>• Trade on Orca DEX</li>
-                    <li>• Cross-chain swaps to/from NEAR</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* EVM Intents */}
-            <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50">
-              <h3 className="text-2xl font-semibold mb-6 text-green-400"> EVM Intents</h3>
-              <div className="space-y-6">
-                <div className="bg-green-900/30 p-4 rounded-lg">
-                  <h4 className="text-lg font-medium text-white mb-2">Staking Intents</h4>
-                  <ul className="space-y-2 text-emerald-100/80">
-                    <li>• Stake ETH on Lido for stETH</li>
-                    <li>• Restake on EigenLayer</li>
-                    <li>• Unstake and bridge back to NEAR</li>
-                  </ul>
-                </div>
-                <div className="bg-green-900/30 p-4 rounded-lg">
-                  <h4 className="text-lg font-medium text-white mb-2">Swapping Intents</h4>
-                  <ul className="space-y-2 text-emerald-100/80">
-                    <li>• token transfer</li>
-                    <li>• nft transfer</li>
-                    <li>• Cross-chain swaps to/from NEAR</li>
-                  </ul>
-                </div>
+          <div className="flex justify-center">
+            <div className="bg-green-950/40 backdrop-blur-lg p-8 rounded-xl border border-green-800/50 w-full max-w-4xl h-96 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-green-400 text-lg mb-2">📊</div>
+                <p className="text-green-200 text-lg">Architecture Diagram</p>
+                <p className="text-green-300/70 text-sm mt-2">Image placeholder - Add your architecture diagram here</p>
               </div>
             </div>
           </div>
