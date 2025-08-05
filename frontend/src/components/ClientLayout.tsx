@@ -59,7 +59,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               {/* Wallet Selectors - Right */}
               <div className="flex-shrink-0 flex items-center gap-4">
                 <WalletSelector />
-                <WalletButton />
+              
               </div>
             </div>
           </div>
