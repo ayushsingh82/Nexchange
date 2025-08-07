@@ -18,7 +18,7 @@ NeXchange enables NEAR users to:
 
 All actions are powered by signed **intents**, which are interpreted and executed by a decentralized network of **solver nodes**.
 
-Twitter link - https://x.com/nexchange_near
+Twitter link of project - https://x.com/nexchange_near
 
 ---
 
