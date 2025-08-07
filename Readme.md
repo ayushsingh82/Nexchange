@@ -53,7 +53,7 @@ NeXchange is designed as a **modular, open-source public good** that prioritizes
   All cross-chain interactions begin from NEAR. No more wallet chaos.
 
 - **Intent-Based Execution**  
-  Simple signed messages unlock powerful cross-chain actions.
+  Simple signed messages using chain signature to sign transaction cross chain unlock powerful cross-chain actions.
 
 - **AI-Powered Routing**  
   Get the best price, speed, and reliability without needing to choose.
