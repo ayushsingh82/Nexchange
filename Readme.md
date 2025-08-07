@@ -11,7 +11,7 @@ Built as a **public good** for the NEAR ecosystem, NeXchange empowers real users
 NeXchange enables NEAR users to:
 
 - ✅ Swap NEAR → SOL / ETH / USDC and more via AI-optimized execution
-- ✅ Stake directly on Solana or EVM dApps from your NEAR wallet
+- ✅ Stake directly on Solana staking pool or EVM staking pools and near staking pools from your NEAR wallet
 - ✅ Execute DeFi actions (lend, borrow, yield farm) across chains
 - ✅ Use one wallet (NEAR) to interact across multiple ecosystems
 - ✅ Automate treasury and DAO operations with verifiable results
