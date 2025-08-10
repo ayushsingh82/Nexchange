@@ -38,12 +38,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                   >
                     Dashboard
                   </Link>
-                  <Link 
-                    href="/try" 
-                    className="text-green-400 hover:text-green-300 transition-colors"
-                  >
-                    Try
-                  </Link>
+                 
                   <Link 
                     href="/evm" 
                     className="text-green-400 hover:text-green-300 transition-colors"
