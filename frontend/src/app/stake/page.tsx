@@ -4,11 +4,13 @@ import React, { useState } from 'react';
 const StakePage = () => {
   const [selectedToken, setSelectedToken] = useState('NEAR');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [stakeAmount, setStakeAmount] = useState('');
+  const [unstakeAmount, setUnstakeAmount] = useState('');
 
   const stakingOptions = [
-    { token: 'NEAR', apy: '12.5%', color: 'from-green-400 to-emerald-500' },
-    { token: 'SOL', apy: '8.8%', color: 'from-purple-400 to-pink-500' },
-    { token: 'ETH', apy: '6.2%', color: 'from-blue-400 to-cyan-500' }
+    { token: 'NEAR', apy: '12.5%' },
+    { token: 'SOL', apy: '8.8%' },
+    { token: 'ETH', apy: '6.2%' }
   ];
 
   const selectedOption = stakingOptions.find(option => option.token === selectedToken);
@@ -40,10 +42,10 @@ const StakePage = () => {
                 className="w-full bg-green-900/50 border border-green-500/50 text-white px-6 py-4 rounded-xl text-left flex items-center justify-between hover:border-green-400 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${selectedOption?.color} flex items-center justify-center text-white font-bold text-lg`}>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-lg">
                     {selectedToken.charAt(0)}
                   </div>
-                  <div>
+                  <div className="flex-1 flex justify-between items-center">
                     <div className="text-lg font-semibold">{selectedToken}</div>
                     <div className="text-green-300 text-sm">APY: {selectedOption?.apy}</div>
                   </div>
@@ -68,24 +70,17 @@ const StakePage = () => {
                         setSelectedToken(option.token);
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full px-6 py-4 flex items-center gap-4 hover:bg-green-800/30 transition-colors ${
+                      className={`w-full px-6 py-4 flex items-center justify-between hover:bg-green-800/30 transition-colors ${
                         selectedToken === option.token ? 'bg-green-800/20' : ''
                       }`}
                     >
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${option.color} flex items-center justify-center text-white font-bold text-lg`}>
-                        {option.token.charAt(0)}
-                      </div>
-                      <div className="flex-1 text-left">
-                        <div className="text-lg font-semibold text-white">{option.token}</div>
-                        <div className="text-green-300 text-sm">APY: {option.apy}</div>
-                      </div>
-                      {selectedToken === option.token && (
-                        <div className="text-green-400">
-                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-lg">
+                          {option.token.charAt(0)}
                         </div>
-                      )}
+                        <div className="text-lg font-semibold text-white">{option.token}</div>
+                      </div>
+                      <div className="text-green-300 text-sm font-semibold">{option.apy}</div>
                     </button>
                   ))}
                 </div>
@@ -94,36 +89,83 @@ const StakePage = () => {
 
             {/* Staking Form */}
             <div className="space-y-6">
-              <div>
-                <label className="block text-green-300 font-semibold mb-2">
-                  Amount to Stake
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    placeholder="0.00"
-                    className="w-full bg-green-900/50 border border-green-500/50 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-green-400 transition-colors"
-                  />
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-300 font-semibold">
-                    {selectedToken}
+              {/* Stake Section */}
+              <div className="bg-green-900/20 p-6 rounded-xl border border-green-800/50">
+                <h3 className="text-xl font-semibold mb-4 text-green-400">Stake {selectedToken}</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-green-300 font-semibold mb-2">
+                      Amount to Stake
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        placeholder="0.00"
+                        value={stakeAmount}
+                        onChange={(e) => setStakeAmount(e.target.value)}
+                        className="w-full bg-green-900/50 border border-green-500/50 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-green-400 transition-colors"
+                      />
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-300 font-semibold">
+                        {selectedToken}
+                      </div>
+                    </div>
                   </div>
+
+                  <div className="bg-green-900/30 p-4 rounded-lg">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-green-300">Estimated APY:</span>
+                      <span className="text-green-100 font-semibold">{selectedOption?.apy}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm mt-2">
+                      <span className="text-green-300">Lock Period:</span>
+                      <span className="text-green-100">30 days</span>
+                    </div>
+                  </div>
+
+                  <button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold text-lg hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg hover:shadow-green-500/30">
+                    Stake {selectedToken}
+                  </button>
                 </div>
               </div>
 
-              <div className="bg-green-900/20 p-4 rounded-lg">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-green-300">Estimated APY:</span>
-                  <span className="text-green-100 font-semibold">{selectedOption?.apy}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm mt-2">
-                  <span className="text-green-300">Lock Period:</span>
-                  <span className="text-green-100">30 days</span>
+              {/* Unstake Section */}
+              <div className="bg-green-900/20 p-6 rounded-xl border border-green-800/50">
+                <h3 className="text-xl font-semibold mb-4 text-green-400">Unstake {selectedToken}</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-green-300 font-semibold mb-2">
+                      Amount to Unstake
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        placeholder="0.00"
+                        value={unstakeAmount}
+                        onChange={(e) => setUnstakeAmount(e.target.value)}
+                        className="w-full bg-green-900/50 border border-green-500/50 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-green-400 transition-colors"
+                      />
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-300 font-semibold">
+                        {selectedToken}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-900/30 p-4 rounded-lg">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-green-300">Current Staked:</span>
+                      <span className="text-green-100 font-semibold">0.00 {selectedToken}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm mt-2">
+                      <span className="text-green-300">Unlock Time:</span>
+                      <span className="text-green-100">Available Now</span>
+                    </div>
+                  </div>
+
+                  <button className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-lg font-semibold text-lg hover:from-red-600 hover:to-red-700 transition-all shadow-lg hover:shadow-red-500/30">
+                    Unstake {selectedToken}
+                  </button>
                 </div>
               </div>
-
-              <button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg hover:shadow-green-500/30">
-                Stake {selectedToken}
-              </button>
             </div>
           </div>
         </div>
