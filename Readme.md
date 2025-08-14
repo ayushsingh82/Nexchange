@@ -8,6 +8,8 @@ Built as a **public good** for the NEAR ecosystem, NeXchange empowers real users
 
 ## 🌍 What is NeXchange?
 
+google docs - https://docs.google.com/document/d/121vsqosl1aIL6oMcbpeE4_PYsnymh6b9_IKkPDDiQl0/edit?addon_store&tab=t.0
+
 NeXchange enables NEAR users to:
 
 - ✅ Swap NEAR → SOL / ETH / USDC and more via AI-optimized execution
