@@ -21,45 +21,39 @@ export default function RootLayout({
       <body className={`${inter.className} flex flex-col min-h-screen`}>
         <ClientLayout>{children}</ClientLayout>
 
-        <footer className="bg-black border-t  border-[#97FBE4]/30  mt-auto">
-          <div className="container mx-auto px-6 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {/* Company Info */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-[#97FBE4]">NeXchange</h3>
-
-                <p className="text-[#97FBE4] text-sm">
-                  Building the future of staking with NeXchange.
-                </p>
-                <p className="text-[#97FBE4] text-sm">
-                © {new Date().getFullYear()} NeXchange. All rights reserved.
+        <footer className="bg-black border-t border-[#97FBE4]/30 mt-auto py-6 h-[160px]">
+          <div className="container mx-auto px-6 flex items-center justify-between h-full">
+            <div className="flex flex-col items-start">
+              <div className="text-[#97FBE4] text-xl font-bold">NeXchange</div>
+              <p className="text-[#97FBE4] text-md mt-1">
+                building the future of staking with NEAR
               </p>
-              </div>
-            </div> {/* ✅ closing grid div properly */}
-
-            {/* Bottom Bar */}
-            <div className="border-t  border-[#97FBE4]/30  mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-             
-              <div className="flex gap-6 mt-4 md:mt-0">
-                <a
-                  href="https://twitter.com/NEARProtocol"
-                  className="text-green-100/60 hover:text-green-300 transition-colors"
-                >
-                  Twitter
-                </a>
-                <a
-                  href="https://github.com/near"
-                  className="text-green-100/60 hover:text-green-300 transition-colors"
-                >
-                  GitHub
-                </a>
-                <a
-                  href="https://discord.gg/near"
-                  className="text-green-100/60 hover:text-green-300 transition-colors"
-                >
-                  Discord
-                </a>
-              </div>
+            </div>
+            <div className="flex gap-6">
+              <a
+                href="https://twitter.com/NEARProtocol"
+                className="text-green-100/60 hover:text-green-300 transition-colors flex items-center gap-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/9/95/Twitter_new_X_logo.png"
+                  alt="X Logo"
+                  className="w-5 h-5"
+                />
+              </a>
+              <a
+                href="https://github.com/near"
+                className="text-green-100/60 hover:text-green-300 transition-colors flex items-center gap-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                  alt="GitHub Logo"
+                  className="w-5 h-5"
+                />
+              </a>
             </div>
           </div>
         </footer>

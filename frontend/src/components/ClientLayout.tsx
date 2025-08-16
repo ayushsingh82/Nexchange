@@ -15,7 +15,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center h-16">
               {/* Logo/Name - Left */}
               <div className="flex-shrink-0">
-                <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+                <Link href="/" className="text-2xl font-bold text-[#97FBE4]">
                   NeXchange
                 </Link>
               </div>
@@ -25,13 +25,13 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center gap-6">
                   <Link 
                     href="/protocol" 
-                    className="text-green-400 hover:text-green-300 transition-colors"
+                    className="text-[#97FBE4] transition-colors"
                   >
                     Protocol
                   </Link>
                   <Link 
                     href="/dashboard" 
-                    className="text-green-400 hover:text-green-300 transition-colors"
+                    className="text-[#97FBE4] transition-colors"
                   >
                     Dashboard
                   </Link>
@@ -39,7 +39,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                   {/* Stake Link */}
                   <Link 
                     href="/stake" 
-                    className="text-green-400 hover:text-green-300 transition-colors"
+                    className="text-[#97FBE4] transition-colors"
                   >
                     Stake
                   </Link>
