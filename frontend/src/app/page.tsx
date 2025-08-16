@@ -95,8 +95,24 @@ export default function Home() {
                 <p className="text-xs text-black font-light pixel-font">Bridge and swap across chains in one seamless flow.</p>
               </div>
               <div className="col-span-12 md:col-span-6 bg-[#00150E] bg-opacity-80 rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
-                <h4 className="text-lg font-semibold mb-1 text-[#22d3ee]">Integrated Yield</h4>
+                <h4 className="text-lg font-semibold mb-1 text-[#97FBE4]">Integrated Yield</h4>
                 <p className="text-xs text-[#97FBE4]/80">Stake, lend, and farm directly from your wallet.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Architecture Section */}
+        <section className="relative z-10 px-4 py-20">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[#97FBE4] to-[#5eead4] text-transparent bg-clip-text">
+              Architecture
+            </h2>
+            <div className="bg-[#00150E] bg-opacity-80 p-8 rounded-2xl border border-[#97FBE4]/30 w-full h-96 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-[#97FBE4] text-lg mb-2">📊</div>
+                <p className="text-[#97FBE4] text-lg">Architecture Diagram</p>
+                <p className="text-[#5eead4]/70 text-sm mt-2">Image placeholder - Add your architecture diagram here</p>
               </div>
             </div>
           </div>
@@ -125,6 +141,7 @@ export default function Home() {
           </div>
         </section>
       </div>
+      
     </main>
   )
 }
