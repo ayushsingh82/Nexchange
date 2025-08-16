@@ -22,20 +22,16 @@ const features = [
 
 const faqs = [
   {
-    q: 'Do I need a new wallet?',
-    a: 'No, you can use your existing wallet. Just connect and start trading.',
+    q: 'What is NeXchange?',
+    a: 'NeXchange is a decentralized exchange protocol that allows you stake on different chains in one seamless flow.',
   },
   {
-    q: 'How do I earn yield?',
-    a: 'Stake, lend, or farm directly from the app. Yield opportunities are integrated and easy to access.',
+    q: 'Which wallet is needed?',
+    a: 'You can use any wallet from NEAR ecosystem.',
   },
   {
-    q: 'Is it cross-chain?',
-    a: 'Yes! Swap and bridge assets across supported chains in one transaction.',
-  },
-  {
-    q: 'How do fees work?',
-    a: 'You can set your own fee recipient and share in protocol revenue.',
+    q: 'What\'s the tech behind NeXchange?',
+    a: 'NeXchange is built on top of NEAR intents and cross chain signatures.',
   },
 ];
 
@@ -50,11 +46,11 @@ export default function Home() {
           <div className="max-w-5xl mx-auto">
             <div className="mb-16 pt-12">
               <h1 className="text-4xl md:text-6xl font-light mb-4 tracking-tight">
-                <span className="block text-[#97FBE4]">Universal Hype.</span>
-                <span className="block text-[#5eead4]">For Everyone.</span>
+                <span className="block text-[#97FBE4]">Seamless. Secure.</span>
+                <span className="block text-[#5eead4]">Multi-chain.</span>
               </h1>
               <p className="text-base md:text-lg text-[#97FBE4]/80 max-w-2xl pixel-font">
-                The fastest, smartest way to swap, stake, and farm—powered by LiquidSwap route-finding and GlueX DeFi intelligence.
+        Cross-chain  staking protocol that allows users to stake on multiple chains  directly from  NEAR wallet. No bridging, no wallet switching, no friction.
               </p>
             </div>
             {/* Bento Grid */}
@@ -63,9 +59,9 @@ export default function Home() {
               <div className="col-span-12 md:col-span-8 row-span-2 group relative bg-[#00150E] bg-opacity-80 rounded-2xl p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden">
                 <div className="relative z-10">
                   <p className="text-sm text-[#97FBE4]/60 mb-4">FEATURED</p>
-                  <h3 className="text-3xl font-light mb-3">Optimal Swaps & Yield</h3>
+                  <h3 className="text-3xl font-light mb-3"> No wallet switching. No friction.</h3>
                   <p className="text-[#97FBE4]/80 max-w-lg pixel-font">
-                    Swap, bridge, and earn yield in one seamless flow. No more juggling dApps.
+                  Just intent-based interoperability built for the next wave of Web3 users.
                   </p>
                 </div>
                 <div className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-[#97FBE4] to-transparent w-full" />
@@ -76,7 +72,7 @@ export default function Home() {
                   <div>
                     <p className="text-sm mb-2">LIVE</p>
                     <p className="text-5xl font-light text-black">$1.2M+</p>
-                    <p className="text-sm mt-1 text-black">TVL Secured</p>
+                    <p className="text-sm mt-1 text-black">TVL Staked</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-black animate-pulse" />
@@ -87,16 +83,16 @@ export default function Home() {
               </div>
               {/* Feature Cards */}
               <div className="col-span-6 md:col-span-3 bg-[#00150E] bg-opacity-80 rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
-                <h4 className="text-lg font-semibold mb-1 text-[#97FBE4]">Optimal Swaps</h4>
-                <p className="text-xs text-[#97FBE4]/80">Get the best rates and lowest slippage with LiquidSwap route-finding.</p>
+                <h4 className="text-lg font-semibold mb-1 text-[#97FBE4]">Public good</h4>
+                <p className="text-xs text-[#97FBE4]/80">builders, traders, and communities goes cross-chain.</p>
               </div>
               <div className="col-span-6 md:col-span-3 bg-[#97FBE4] rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center live-stats-box">
-                <h4 className="text-lg font-semibold mb-1 text-black">Cross-Chain</h4>
-                <p className="text-xs text-black font-light pixel-font">Bridge and swap across chains in one seamless flow.</p>
+                <h4 className="text-lg font-semibold mb-1 text-black">Cross-Chain Signatures</h4>
+                <p className="text-xs text-black font-light pixel-font">stake on any chain directly from NEAR wallet.</p>
               </div>
               <div className="col-span-12 md:col-span-6 bg-[#00150E] bg-opacity-80 rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
-                <h4 className="text-lg font-semibold mb-1 text-[#97FBE4]">Integrated Yield</h4>
-                <p className="text-xs text-[#97FBE4]/80">Stake, lend, and farm directly from your wallet.</p>
+                <h4 className="text-lg font-semibold mb-1 text-[#97FBE4]">Intents</h4>
+                <p className="text-xs text-[#97FBE4]/80">one click to move funds cross chain.</p>
               </div>
             </div>
           </div>
