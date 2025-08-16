@@ -1,92 +1,129 @@
+"use client"
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
+import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
 
+const features = [
+  {
+    title: 'Optimal Swaps',
+    description: 'Get the best rates and lowest slippage with LiquidSwap route-finding.',
+  },
+  {
+    title: 'Cross-Chain',
+    description: 'Bridge and swap across chains in one seamless flow.',
+  },
+  {
+    title: 'Integrated Yield',
+    description: 'Stake, lend, and farm directly from your wallet.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Do I need a new wallet?',
+    a: 'No, you can use your existing wallet. Just connect and start trading.',
+  },
+  {
+    q: 'How do I earn yield?',
+    a: 'Stake, lend, or farm directly from the app. Yield opportunities are integrated and easy to access.',
+  },
+  {
+    q: 'Is it cross-chain?',
+    a: 'Yes! Swap and bridge assets across supported chains in one transaction.',
+  },
+  {
+    q: 'How do fees work?',
+    a: 'You can set your own fee recipient and share in protocol revenue.',
+  },
+];
+
 export default function Home() {
+  const [expandedFaq, setExpandedFaq] = React.useState<number | null>(null);
+
   return (
-    <main className="min-h-screen bg-black text-[#97FBE4] font-sans">
+    <main className="min-h-screen bg-black text-[#97FBE4] font-sans overflow-hidden flex flex-col">
       <div className="container mx-auto px-4 py-20">
-        {/* Hero Section */}
-        <div className="text-center mb-24">
-          <h1 className="text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-[#97FBE4] to-[#5eead4] text-transparent bg-clip-text">
-            NeXchange
-          </h1>
-          <p className="text-xl text-[#97FBE4]/80 mb-10 max-w-2xl mx-auto">
-            Seamlessly connect NEAR with Solana and EVM chains through intent-based cross-chain execution
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-center gap-6 mb-16">
-          <Link href="/" className="group">
-            <button className="border border-[#97FBE4] text-[#97FBE4] px-8 py-3 rounded-2xl font-medium hover:bg-[#00150E] hover:text-[#5eead4] backdrop-blur-md transition">
-              <span>Create Intent</span>
-            </button>
-          </Link>
-          <Link href="/" className="group">
-            <button className="border border-[#97FBE4] text-[#97FBE4] px-8 py-3 rounded-2xl font-medium hover:bg-[#00150E] hover:text-[#5eead4] backdrop-blur-md transition">
-              <span>View Docs</span>
-            </button>
-          </Link>
-        </div>
-
-        {/* Features Section */}
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
-          {[
-            {
-              title: 'Intent-Based Execution',
-              desc: 'Express your desired outcomes through simple intent messages, letting our network of agents handle the complex cross-chain execution.',
-            },
-            {
-              title: 'NEAR ↔️ Solana',
-              desc: 'Direct interaction between NEAR and Solana ecosystems, enabling seamless asset transfers, swaps, and DeFi operations.',
-            },
-            {
-              title: 'NEAR ↔️ EVM',
-              desc: 'Connect with the entire EVM ecosystem, from Ethereum mainnet to L2s, all through your NEAR wallet.',
-            },
-          ].map((feature, idx) => (
-            <div
-              key={idx}
-              className="bg-[#00150E] bg-opacity-80 p-8 rounded-2xl border border-[#97FBE4]/30 hover:border-[#5eead4] transition duration-300 shadow-xl hover:shadow-[#97FBE4]/10 text-center"
-            >
-              <h3 className="text-xl font-semibold mb-3 text-[#97FBE4]">
-                {feature.title}
-              </h3>
-              <p className="text-[#97FBE4]/80 leading-relaxed">{feature.desc}</p>
+        {/* FEATURED Top Section */}
+        <section className="relative z-10 px-4 pb-20">
+          <div className="max-w-5xl mx-auto">
+            <div className="mb-16 pt-12">
+              <h1 className="text-4xl md:text-6xl font-light mb-4 tracking-tight">
+                <span className="block text-[#97FBE4]">Universal Hype.</span>
+                <span className="block text-[#5eead4]">For Everyone.</span>
+              </h1>
+              <p className="text-base md:text-lg text-[#97FBE4]/80 max-w-2xl pixel-font">
+                The fastest, smartest way to swap, stake, and farm—powered by LiquidSwap route-finding and GlueX DeFi intelligence.
+              </p>
             </div>
-          ))}
-        </div>
-
-        {/* Architecture Section */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#97FBE4] to-[#5eead4] text-transparent bg-clip-text">
-            Architecture
-          </h2>
-          <div className="flex justify-center">
-            <div className="bg-[#00150E] bg-opacity-80 p-8 rounded-2xl border border-[#97FBE4]/30 w-full max-w-4xl h-96 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-[#97FBE4] text-lg mb-2">📊</div>
-                <p className="text-[#97FBE4] text-lg">Architecture Diagram</p>
-                <p className="text-[#5eead4]/70 text-sm mt-2">Image placeholder - Add your architecture diagram here</p>
+            {/* Bento Grid */}
+            <div className="grid grid-cols-12 gap-4 auto-rows-[160px]">
+              {/* Main Feature */}
+              <div className="col-span-12 md:col-span-8 row-span-2 group relative bg-[#00150E] bg-opacity-80 rounded-2xl p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden">
+                <div className="relative z-10">
+                  <p className="text-sm text-[#97FBE4]/60 mb-4">FEATURED</p>
+                  <h3 className="text-3xl font-light mb-3">Optimal Swaps & Yield</h3>
+                  <p className="text-[#97FBE4]/80 max-w-lg pixel-font">
+                    Swap, bridge, and earn yield in one seamless flow. No more juggling dApps.
+                  </p>
+                </div>
+                <div className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-[#97FBE4] to-transparent w-full" />
+              </div>
+              {/* Live Stats */}
+              <div className="col-span-12 md:col-span-4 row-span-2 bg-[#97FBE4] rounded-2xl p-8 relative overflow-hidden shadow-xl live-stats-box">
+                <div className="flex flex-col justify-between h-full">
+                  <div>
+                    <p className="text-sm mb-2">LIVE</p>
+                    <p className="text-5xl font-light text-black">$1.2M+</p>
+                    <p className="text-sm mt-1 text-black">TVL Secured</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-black animate-pulse" />
+                    <span className="text-xs text-black">Real-time</span>
+                  </div>
+                </div>
+                <div className="absolute top-0 right-0 w-32 h-32 border border-black/10 -translate-y-1/2 translate-x-1/2" />
+              </div>
+              {/* Feature Cards */}
+              <div className="col-span-6 md:col-span-3 bg-[#00150E] bg-opacity-80 rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
+                <h4 className="text-lg font-semibold mb-1 text-[#97FBE4]">Optimal Swaps</h4>
+                <p className="text-xs text-[#97FBE4]/80">Get the best rates and lowest slippage with LiquidSwap route-finding.</p>
+              </div>
+              <div className="col-span-6 md:col-span-3 bg-[#97FBE4] rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center live-stats-box">
+                <h4 className="text-lg font-semibold mb-1 text-black">Cross-Chain</h4>
+                <p className="text-xs text-black font-light pixel-font">Bridge and swap across chains in one seamless flow.</p>
+              </div>
+              <div className="col-span-12 md:col-span-6 bg-[#00150E] bg-opacity-80 rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
+                <h4 className="text-lg font-semibold mb-1 text-[#22d3ee]">Integrated Yield</h4>
+                <p className="text-xs text-[#97FBE4]/80">Stake, lend, and farm directly from your wallet.</p>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* CTA Section */}
-        <div className="text-center bg-[#00150E] bg-opacity-80 p-12 rounded-2xl border border-[#97FBE4]/30 shadow-xl">
-          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-[#97FBE4] to-[#5eead4] text-transparent bg-clip-text">
-            Start Building Cross-Chain
-          </h2>
-          <p className="text-[#97FBE4]/80 mb-8 max-w-xl mx-auto text-lg">
-            Join our ecosystem and leverage the power of intent-based cross-chain execution between NEAR, Solana, and EVM chains.
-          </p>
-          <button className="bg-[#97FBE4] text-black px-10 py-3 rounded-2xl text-lg font-semibold hover:bg-[#5eead4] transition shadow-md hover:shadow-[#97FBE4]/30">
-            Create Your First Intent
-          </button>
-        </div>
+        {/* FAQ Section */}
+        <section className="relative z-10 px-4 py-20 border-t border-[#97FBE4]/20">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-light mb-12 text-center">Frequently Asked Questions</h2>
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <div key={index} className="border border-[#97FBE4]/30 rounded-2xl overflow-hidden">
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                    className="w-full p-6 text-left flex items-center justify-between hover:bg-[#00150E]/30 transition-all duration-300"
+                  >
+                    <span className="font-medium">{faq.q}</span>
+                    <span className="text-2xl">{expandedFaq === index ? "−" : "+"}</span>
+                  </button>
+                  {expandedFaq === index && (
+                    <div className="px-6 pb-6 text-[#97FBE4]/80">{faq.a}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   )
