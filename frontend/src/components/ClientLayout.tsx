@@ -23,7 +23,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               {/* Navigation Links - Center */}
               <div className="flex-1 flex justify-center">
                 <div className="flex items-center gap-6">
-                  <Link 
+                  {/* <Link 
                     href="/protocol" 
                     className="text-[#97FBE4] transition-colors"
                   >
@@ -34,7 +34,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                     className="text-[#97FBE4] transition-colors"
                   >
                     Dashboard
-                  </Link>
+                  </Link> */}
                   
                   {/* Stake Link */}
                   <Link 
