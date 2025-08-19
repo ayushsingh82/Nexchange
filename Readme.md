@@ -4,12 +4,13 @@
 
 Built as a **public good** for the NEAR ecosystem, NeXchange empowers real users and developers with seamless, AI-optimized, and verifiable cross-chain functionality.
 
-Test PR forr revie
+
 
 ---
 
 ## 🌍 What is NeXchange?
 
+Mintlify Docs - https://nexchange.mintlify.app/
 google docs - https://docs.google.com/document/d/121vsqosl1aIL6oMcbpeE4_PYsnymh6b9_IKkPDDiQl0/edit?addon_store&tab=t.0
 
 NeXchange enables NEAR users to:
