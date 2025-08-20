@@ -1,6 +1,4 @@
 "use client"
-import { Inter } from 'next/font/google'
-import Link from 'next/link'
 import React from 'react';
 import { Press_Start_2P } from 'next/font/google';
 import { Compare } from '@/components/ui/compare';
@@ -19,25 +17,6 @@ function CompareDemo() {
     </div>
   );
 }
-
-
-
-const inter = Inter({ subsets: ['latin'] })
-
-const features = [
-  {
-    title: 'Optimal Swaps',
-    description: 'Get the best rates and lowest slippage with LiquidSwap route-finding.',
-  },
-  {
-    title: 'Cross-Chain',
-    description: 'Bridge and swap across chains in one seamless flow.',
-  },
-  {
-    title: 'Integrated Yield',
-    description: 'Stake, lend, and farm directly from your wallet.',
-  },
-];
 
 const faqs = [
   {
