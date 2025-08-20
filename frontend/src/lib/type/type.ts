@@ -12,7 +12,7 @@ export type Order = {
   export type MethodParameters = {
     contractId: string;
     method: string;
-    args: Record<string, any>;
+    args: Record<string, unknown>;
     gas: string;
     deposit: string;
   };

@@ -3,7 +3,7 @@
 import { WalletConfig } from './WalletConfig';
 import NearWalletProvider from '../provider/wallet';
 import WalletSelector from './WalletSelector';
-import { WalletButton } from './WalletButton';
+
 import Link from 'next/link';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
