@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Image from "next/image";
 import "./globals.css";
 import { ClientLayout } from "@/components/ClientLayout";
 
@@ -36,9 +37,11 @@ export default function RootLayout({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img
+                <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/9/95/Twitter_new_X_logo.png"
                   alt="X Logo"
+                  width={20}
+                  height={20}
                   className="w-5 h-5"
                 />
               </a>
@@ -48,9 +51,11 @@ export default function RootLayout({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img
+                <Image
                   src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
                   alt="GitHub Logo"
+                  width={20}
+                  height={20}
                   className="w-5 h-5"
                 />
               </a>

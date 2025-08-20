@@ -34,8 +34,6 @@ export const Compare = ({
 
   const sliderRef = useRef<HTMLDivElement>(null);
 
-
-
   const autoplayRef = useRef<NodeJS.Timeout | null>(null);
 
   const startAutoplay = useCallback(() => {
@@ -82,7 +80,7 @@ export const Compare = ({
   }
 
   const handleStart = useCallback(
-    (_clientX: number) => {
+    () => {
       if (slideMode === "drag") {
         setIsDragging(true);
       }
@@ -112,7 +110,7 @@ export const Compare = ({
   );
 
   const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => handleStart(e.clientX),
+    () => handleStart(),
     [handleStart]
   );
   const handleMouseUp = useCallback(() => handleEnd(), [handleEnd]);
@@ -124,7 +122,7 @@ export const Compare = ({
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (!autoplay) {
-        handleStart(e.touches[0].clientX);
+        handleStart();
       }
     },
     [handleStart, autoplay]
@@ -204,6 +202,7 @@ export const Compare = ({
               }}
               transition={{ duration: 0 }}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 alt="first image"
                 src={firstImage}
@@ -212,7 +211,6 @@ export const Compare = ({
                   firstImageClassName
                 )}
                 draggable={false}
-                // eslint-disable-next-line @next/next/no-img-element
               />
             </motion.div>
           ) : null}
