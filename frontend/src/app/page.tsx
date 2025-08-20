@@ -3,6 +3,24 @@ import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import React from 'react';
 import { Press_Start_2P } from 'next/font/google';
+import { Compare } from '@/components/ui/compare';
+
+function CompareDemo() {
+  return (
+    <div className="p-4 border rounded-3xl dark:bg-neutral-900 bg-neutral-100  border-neutral-200 dark:border-neutral-800 px-4">
+      <Compare
+        firstImage="https://assets.aceternity.com/code-problem.png"
+        secondImage="https://assets.aceternity.com/code-solution.png"
+        firstImageClassName="object-cover object-left-top"
+        secondImageClassname="object-cover object-left-top"
+        className="h-[250px] w-[200px] md:h-[500px] md:w-[500px]"
+        slideMode="hover"
+      />
+    </div>
+  );
+}
+
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -117,6 +135,47 @@ export default function Home() {
                 <div className="text-[#97FBE4] text-lg mb-2">📊</div>
                 <p className="text-[#97FBE4] text-lg">Architecture Diagram</p>
                 <p className="text-[#5eead4]/70 text-sm mt-2">Image placeholder - Add your architecture diagram here</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Built for Agents + CompareDemo Section */}
+        <section className="relative z-10 px-4 py-20">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* Left: Built for Agents */}
+            <div>
+              <h2 className="text-3xl font-light mb-4">
+                Built for Cross-Chain Staking
+              </h2>
+              <p className="text-[#97FBE4]/80 mb-8">
+                Integrate cross-chain staking in minutes, not months. Simple, powerful intents that just work with NEAR wallet.
+              </p>
+              <div className="space-y-4">
+                {[
+                  { title: "Cross-Chain Intents", desc: "Stake on any chain directly from NEAR wallet" },
+                  { title: "No Wallet Switching", desc: "Seamless cross-chain operations without friction" },
+                  { title: "Instant Staking", desc: "Deploy capital across multiple chains in one click" }
+                ].map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start space-x-3 hover:translate-x-2 transition-transform duration-300"
+                  >
+                    <div className="w-6 h-6 border border-[#97FBE4]/30 flex items-center justify-center mt-1 hover:border-[#97FBE4] hover:scale-110 transition-all duration-300">
+                      <div className="w-2 h-2 bg-[#97FBE4]/50 animate-pulse" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{item.title}</p>
+                      <p className="text-sm text-[#97FBE4]/80">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Right: CompareDemo */}
+            <div className="flex justify-center items-center">
+              <div className="hover:scale-105 transition-transform duration-300">
+                <CompareDemo />
               </div>
             </div>
           </div>
