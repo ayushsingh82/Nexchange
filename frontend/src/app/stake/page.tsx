@@ -32,20 +32,13 @@ const StakePage = () => {
                 Select Asset to {mode === "stake" ? "Stake" : "Unstake"}
               </h2>
               
-              <div className="flex items-center justify-center mb-6">
+              <div className="flex items-center justify-center">
                 <TokenSelector
                   selectedToken={selectedToken}
                   onTokenSelect={setSelectedToken}
                   className="min-w-[300px]"
                 />
               </div>
-
-              {/* Selected Token Display with Live Price */}
-              {selectedToken && (
-                <div className="max-w-md mx-auto">
-                  <TokenDisplayCard token={selectedToken} />
-                </div>
-              )}
             </div>
 
             {/* Toggle Stake/Unstake */}
