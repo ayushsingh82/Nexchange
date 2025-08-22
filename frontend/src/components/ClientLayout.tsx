@@ -1,6 +1,6 @@
 'use client';
 
-import { WalletConfig } from './WalletConfig';
+// import { WalletConfig } from './WalletConfig';
 import NearWalletProvider from '../provider/wallet';
 import WalletSelector from './WalletSelector';
 
@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
-    <WalletConfig>
+    // <WalletConfig>
       <NearWalletProvider>
         <nav className="bg-black border-b border-green-800/50">
           <div className="container mx-auto px-6">
@@ -58,6 +58,6 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </NearWalletProvider>
-    </WalletConfig>
+    // </WalletConfig>
   );
 } 
