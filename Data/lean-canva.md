@@ -93,7 +93,7 @@ User Intent → NEAR Wallet → Cross-Chain Signature → Target Chain → Staki
 - **DeFi Users** - Seeking yield across multiple chains
 - **NEAR Ecosystem Users** - Wanting to expand beyond NEAR
 - **Multi-Chain Investors** - Looking for unified DeFi experience
-- **DAO Treasuries** - Managing assets across multiple chains
+- **DAO Treasuries** - Managing ass  ets across multiple chains
 
 **Market Size:**
 - **Cross-Chain DeFi Market** - Growing rapidly
@@ -189,30 +189,6 @@ User Intent → NEAR Wallet → Cross-Chain Signature → Target Chain → Staki
 - Partnership acquisitions
 - Ecosystem adoption
 - Community growth
-
----
-
-## 🚀 **Next Steps**
-
-**Phase 1: Foundation**
-- [ ] Core intent processing system
-- [ ] NEAR wallet integration
-- [ ] Basic cross-chain signatures
-
-**Phase 2: Staking Integration**
-- [ ] Solana staking pool integration
-- [ ] NEAR staking pool integration
-- [ ] EVM staking pool integration
-
-**Phase 3: Advanced Features**
-- [ ] Automated yield optimization
-- [ ] Cross-chain governance
-- [ ] Advanced intent automation
-
-**Phase 4: Ecosystem Expansion**
-- [ ] Additional chain support
-- [ ] DeFi protocol integrations
-- [ ] Community governance
 
 ---
 
