@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchTokenPrice, fetchAllTokenPrices, TokenInfo } from '../constant';
+import { fetchTokenPrice, fetchAllTokenPrices } from '../constant';
 
 interface TokenPriceData {
   price: number;
