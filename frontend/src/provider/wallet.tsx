@@ -13,6 +13,7 @@ import { setupModal } from "@near-wallet-selector/modal-ui";
 import {
   WalletSelector,
   setupWalletSelector,
+  WalletModuleFactory,
 } from "@near-wallet-selector/core";
 
 import { VertoContract, NetworkId } from "../lib/config/near";
@@ -68,12 +69,12 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
   const [accountId, setAccountId] = useState<string | null>(null);
 
   useEffect(() => {
-    const meteorWallet = setupMeteorWallet({});
-    const bitteWallet = setupBitteWallet({});
-
     setupWalletSelector({
       network: NetworkId,
-      modules: [meteorWallet, bitteWallet],
+      modules: [
+        setupMeteorWallet({}) as WalletModuleFactory,
+        setupBitteWallet({}) as WalletModuleFactory,
+      ],
     }).then((selector) => {
       setWalletSelector(selector);
       setStatus(selector.isSignedIn() ? "authenticated" : "unauthenticated");
@@ -94,12 +95,19 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = async () => {
     if (!walletSelector) {
+      console.error("Wallet selector not initialized");
       return;
     }
-    const modal = setupModal(walletSelector, {
-      contractId: VertoContract,
-    });
-    modal.show();
+    
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const modal = setupModal(walletSelector as any, {
+        contractId: VertoContract,
+      });
+      modal.show();
+    } catch (error) {
+      console.error("Error setting up modal:", error);
+    }
   };
 
   const signOut = async () => {
