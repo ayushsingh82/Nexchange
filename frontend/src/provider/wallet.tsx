@@ -15,7 +15,6 @@ import {
   setupWalletSelector,
 } from "@near-wallet-selector/core";
 
-import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { VertoContract, NetworkId } from "../lib/config/near";
 import { providers } from "near-api-js";
 import { MethodParameters } from "../lib/type/type";
@@ -25,44 +24,31 @@ import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 const THIRTY_TGAS = "30000000000000";
 const NO_DEPOSIT = "0";
 
-const AuthStatus = [
-  "loading",
-  "authenticated",
-  "unauthenticated",
-  "error",
-] as const;
+type AuthStatusType = "loading" | "authenticated" | "unauthenticated" | "error";
 
-type AuthStatusType = (typeof AuthStatus)[number];
+interface ViewMethodParams {
+  contractId: string;
+  method: string;
+  args?: Record<string, unknown>;
+}
+
+interface CallMethodParams {
+  contractId: string;
+  method: string;
+  args: Record<string, unknown>;
+  gas: string;
+  deposit: string;
+}
 
 const NearWalletContext = createContext<{
   signIn: () => Promise<void | string>;
   signOut: () => void;
-  viewMethod: ({
-    contractId,
-    method,
-    args,
-  }: {
-    contractId: string;
-    method: string;
-    args?: Record<string, any>;
-  }) => Promise<any>;
-  callMethod: ({
-    contractId,
-    method,
-    args,
-    gas,
-    deposit,
-  }: {
-    contractId: string;
-    method: string;
-    args: Record<string, any>;
-    gas: string;
-    deposit: string;
-  }) => Promise<any>;
-  callMethods: (walletParameters: MethodParameters[]) => Promise<any>;
+  viewMethod: (params: ViewMethodParams) => Promise<unknown>;
+  callMethod: (params: CallMethodParams) => Promise<unknown>;
+  callMethods: (walletParameters: MethodParameters[]) => Promise<unknown>;
   accountId: string | null;
   status: AuthStatusType;
-  getTransactionResult: (transactionHash: string) => Promise<any>;
+  getTransactionResult: (transactionHash: string) => Promise<unknown>;
 }>({
   viewMethod: async () => {},
   callMethod: async () => {},
@@ -85,9 +71,9 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     const meteorWallet = setupMeteorWallet({});
     const bitteWallet = setupBitteWallet({});
 
-    const selector = setupWalletSelector({
+    setupWalletSelector({
       network: NetworkId,
-      modules: [meteorWallet , bitteWallet],
+      modules: [meteorWallet, bitteWallet],
     }).then((selector) => {
       setWalletSelector(selector);
       setStatus(selector.isSignedIn() ? "authenticated" : "unauthenticated");
@@ -104,24 +90,6 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
           setStatus(signedAccount ? "authenticated" : "unauthenticated");
         });
     });
-    // setupWalletSelector({
-    //   network: NetworkId,
-    //   modules: [setupMyNearWallet(), setupHereWallet()],
-    // }).then((selector) => {
-    //   setWalletSelector(selector);
-    //   setStatus(selector.isSignedIn() ? "authenticated" : "unauthenticated");
-    //   selector.store.observable
-    //     .pipe(
-    //       map((state) => state.accounts),
-    //       distinctUntilChanged(),
-    //     )
-    //     .subscribe((accounts) => {
-    //       const signedAccount = accounts.find(
-    //         (account) => account.active,
-    //       )?.accountId;
-    //       setAccountId(signedAccount || null);
-    //     });
-    // });
   }, []);
 
   const signIn = async () => {
@@ -144,16 +112,12 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     contractId,
     method,
     args = {},
-  }: {
-    contractId: string;
-    method: string;
-    args?: Record<string, any>;
-  }) => {
+  }: ViewMethodParams): Promise<unknown> => {
     // const url = "https://rpc.shitzuapes.xyz";
     const url = `https://rpc.${NetworkId}.near.org`;
     const provider = new providers.JsonRpcProvider({ url });
 
-    let res = await provider.query({
+    const res = await provider.query({
       request_type: "call_function",
       account_id: contractId,
       method_name: method,
@@ -161,7 +125,8 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
       finality: "optimistic",
     });
 
-    //@ts-expect-error
+    // Parse the result from the NEAR RPC response
+    // @ts-expect-error - NEAR RPC response structure is not fully typed
     return JSON.parse(Buffer.from(res.result).toString());
   };
 
@@ -171,13 +136,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     args = {},
     gas = THIRTY_TGAS,
     deposit = NO_DEPOSIT,
-  }: {
-    contractId: string;
-    method: string;
-    args: Record<string, any>;
-    gas: string;
-    deposit: string;
-  }) => {
+  }: CallMethodParams): Promise<unknown> => {
     if (!walletSelector) {
       return;
     }
@@ -204,7 +163,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     return providers.getTransactionLastResult(outcome);
   };
 
-  const callMethods = async (methodParameters: MethodParameters[]) => {
+  const callMethods = async (methodParameters: MethodParameters[]): Promise<unknown> => {
     if (!walletSelector) {
       return;
     }
@@ -236,7 +195,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     return outcome;
   };
 
-  const getTransactionResult = async (transactionHash: string) => {
+  const getTransactionResult = async (transactionHash: string): Promise<unknown> => {
     if (!walletSelector) {
       return;
     }

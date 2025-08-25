@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { TokenSelector, TokenDisplayCard } from "./components/TokenSelector";
-import { TokenPriceDisplay } from "./components/TokenPriceDisplay";
+import { TokenSelector } from "./components/TokenSelector";
 import { SUPPORTED_TOKENS, TokenInfo } from "./constant";
 
 const StakePage = () => {
