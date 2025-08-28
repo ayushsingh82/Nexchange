@@ -105,15 +105,29 @@ export default function Home() {
 
         {/* Architecture Section */}
         <section className="relative z-10 px-4 py-20">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[#97FBE4] to-[#5eead4] text-transparent bg-clip-text">
               Architecture
             </h2>
-            <div className="bg-[#00150E] bg-opacity-80 p-8 rounded-2xl border border-[#97FBE4]/30 w-full h-96 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-[#97FBE4] text-lg mb-2">📊</div>
-                <p className="text-[#97FBE4] text-lg">Architecture Diagram</p>
-                <p className="text-[#5eead4]/70 text-sm mt-2">Image placeholder - Add your architecture diagram here</p>
+            <div className="bg-[#00150E] bg-opacity-80 p-6 rounded-2xl border border-[#97FBE4]/30 w-full overflow-hidden">
+              <div className="relative w-full h-[400px] md:h-[450px] overflow-auto scrollbar-thin scrollbar-thumb-[#97FBE4]/30 scrollbar-track-transparent">
+                <img 
+                  src="/NeXchangearchitecture.png" 
+                  alt="NeXchange Architecture Diagram"
+                  className="w-full h-auto object-contain"
+                  style={{ 
+                    maxWidth: '40%', 
+                    margin: '0 auto',
+                    backgroundColor: '#000000',
+                    padding: '20px',
+                    borderRadius: '12px'
+                  }}
+                />
+              </div>
+              <div className="mt-4 text-center">
+                <p className="text-[#97FBE4]/60 text-sm">
+                  Scroll to explore the complete NeXchange cross-chain architecture
+                </p>
               </div>
             </div>
           </div>
