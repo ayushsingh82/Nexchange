@@ -37,3 +37,31 @@ body {
   image-rendering: pixelated;
   text-shadow: 1px 1px 0px #000; /* gives blocky pixel edge */
 }
+
+/* Custom scrollbar styles for architecture image */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(151, 251, 228, 0.3);
+  border-radius: 4px;
+  border: 1px solid rgba(151, 251, 228, 0.1);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(151, 251, 228, 0.5);
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
