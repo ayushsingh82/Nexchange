@@ -1,6 +1,6 @@
 # 🔀 NeXchange
 
-**NeXchange** is a decentralized, intent-based cross-chain execution protocol that allows users to interact with **Solana**, **EVM chains**, and beyond — directly from their **NEAR wallet**. No bridging, no wallet switching, no friction.
+**NeXchange** is a decentralized, intent-based cross-chain execution protocol that allows users to stake NEAR , SOL , ETH ..etc  to their respective staking pools like Jito for Solana , Ethfi for ETH  and beyond — directly from their **NEAR wallet**. No bridging, no wallet switching, no friction.
 
 Built as a **public good** for the NEAR ecosystem, NeXchange empowers real users and developers with seamless, AI-optimized, and verifiable cross-chain functionality.
 
@@ -19,9 +19,9 @@ NeXchange enables NEAR users to:
 
 - ✅ Swap NEAR → SOL / ETH / USDC and more via AI-optimized execution
 - ✅ Stake directly on Solana staking pool or EVM staking pools and near staking pools from your NEAR wallet
-- ✅ Execute DeFi actions (lend, borrow, yield farm) across chains
 - ✅ Use one wallet (NEAR) to interact across multiple ecosystems
-- ✅ Automate treasury and DAO operations with verifiable results
+- ✅ Automate treasury and DAO operations with verifiable results (coming soon)
+- ✅ Execute DeFi actions (lend, borrow, yield farm) across chains  ( coming soon )
 
 All actions are powered by signed **intents**, which are interpreted and executed by a decentralized network of **solver nodes**.
 
@@ -43,7 +43,7 @@ NeXchange is designed as a **modular, open-source public good** that prioritizes
 ## 🤖 How It Works
 
 1. **Intent Creation**  
-   A user signs an intent from their NEAR wallet (e.g., "stake 50 USDC on Solana").
+   A user signs an intent from their NEAR wallet (e.g., "swapping SOL on NEAR to SOL on SOL ").
 
 2. **AI Optimization**  
    The NeXchange AI interprets the intent, finds the best path, and ensures execution safety.
@@ -86,7 +86,7 @@ NeXchange is designed as a **modular, open-source public good** that prioritizes
 
 - 🧠 AI-powered Intent Parser
 - 🔗 NEAR Smart Contracts (Intent Signing & Management)
-- 🌐 Cross-chain Solvers (Solana & EVM Execution)
+- 🌐 Cross-chain Signatures
 - 📜 Onchain Proof System for Verifiable Results
 
 ---
@@ -103,10 +103,10 @@ NeXchange is designed as a **modular, open-source public good** that prioritizes
 ## 🚀 Coming Soon
 
 - ✅ MVP with token swaps and staking flows
-- 📚 Full developer docs and SDKs
-- 🌉 Support for additional chains (Cosmos, Aptos, etc.)
-- 🧱 DAO registry & governance flows
-- 💬 Community-powered solver onboarding
+- 📚 Full developer docs and SDKs - https://nexchange.mintlify.app/
+- 🌉 Support for additional chains (Cosmos, Aptos, etc.)  (coming soon)
+- 🧱 DAO registry & governance flows (coming soon)
+
 
 ---
 
@@ -125,6 +125,6 @@ This project is released under the MIT License.
 ## 🌐 Links
 
 - Website: [Coming Soon]
-- Docs: [Coming Soon]
-- Twitter: [Coming Soon]
-- GitHub: https://github.com/your-repo
+- Docs: https://nexchange.mintlify.app/
+- Twitter: https://x.com/nexchange_near
+- GitHub: https://github.com/ayushsingh82/Nexchange
