@@ -75,7 +75,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
       modules: [
         setupMeteorWallet({}) as WalletModuleFactory,
         setupBitteWallet({}) as WalletModuleFactory,
-        setupHotWallet({}) as WalletModuleFactory,
+        setupHotWallet() as WalletModuleFactory,
       ],
     }).then((selector) => {
       setWalletSelector(selector);
