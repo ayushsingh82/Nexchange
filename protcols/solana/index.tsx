@@ -1,4 +1,4 @@
-import { getStakePoolStats } from './components/apy_calculation';
+import { getStakePoolStats } from './components/apy-calculator';
 
 async function main() {
   try {
@@ -12,12 +12,12 @@ async function main() {
       const stats = data.getStakePoolStats;
       console.log('\n📊 Stake Pool Statistics:');
       console.log('==========================');
-      console.log(`💰 APY: ${stats.apy}%`);
-      console.log(`🏦 TVL: ${stats.tvl}`);
-      console.log(`🪙 Supply: ${stats.supply}`);
-      console.log(`⚡ Validators: ${stats.numValidators}`);
-      console.log(`🎯 MEV Rewards: ${stats.mevRewards}`);
-      console.log(`📈 Aggregated MEV Rewards: ${stats.aggregatedMevRewards}`);
+      console.log(`💰 APY: ${stats.apy.toFixed(2)}%`);
+      console.log(`🏦 TVL: ${stats.tvl.toLocaleString()} SOL`);
+      console.log(`🪙 Supply: ${stats.supply.toLocaleString()} SOL`);
+      console.log(`⚡ Validators: ${stats.numValidators.toLocaleString()}`);
+      console.log(`🎯 MEV Rewards: ${stats.mevRewards.toLocaleString()} SOL`);
+      console.log(`📈 Aggregated MEV Rewards: ${stats.aggregatedMevRewards.toLocaleString()} SOL`);
       
       console.log('\n✨ APY calculation complete!');
     } else {
