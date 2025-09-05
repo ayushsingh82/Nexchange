@@ -1,26 +1,5 @@
-// Types for the API response
-interface StakePoolStats {
-  aggregated_mev_rewards: number;
-  apy: number;
-  mev_rewards: number;
-  num_validators: number;
-  supply: number;
-  tvl: number;
-}
-
-interface ApiResponse {
-  getStakePoolStats: {
-    aggregatedMevRewards: number;
-    apy: number;
-    mevRewards: number;
-    numValidators: number;
-    supply: number;
-    tvl: number;
-  };
-}
-
-// Function to fetch stake pool stats from Jito API
-export async function getStakePoolStats(): Promise<ApiResponse> {
+// Simple JavaScript version for CLI
+async function getStakePoolStats() {
   const apiUrl = 'https://kobe.mainnet.jito.network/api/v1/stake_pool_stats'
 
   // Set up start and end dates
@@ -52,7 +31,7 @@ export async function getStakePoolStats(): Promise<ApiResponse> {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data: StakePoolStats = await response.json()
+    const data = await response.json()
 
     if (data) {
       const {
@@ -64,7 +43,7 @@ export async function getStakePoolStats(): Promise<ApiResponse> {
         tvl,
       } = data
 
-      const camelCaseData: ApiResponse = {
+      const camelCaseData = {
         getStakePoolStats: {
           aggregatedMevRewards,
           apy,
@@ -81,17 +60,33 @@ export async function getStakePoolStats(): Promise<ApiResponse> {
     }
   } catch (error) {
     console.error('Error fetching data:', error)
-    throw new Error(`Error fetching data: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(`Error fetching data: ${error.message}`)
   }
 }
 
-// Handler function for API routes (if needed)
-export default async function handler(req: any, res: any) {
+async function main() {
   try {
-    const data = await getStakePoolStats()
-    res.status(200).json(data)
+    console.log('🚀 Fetching Solana stake pool APY from Jito...');
+    console.log('==============================================');
+    
+    const data = await getStakePoolStats();
+    
+    // Display only APY
+    if (data.getStakePoolStats) {
+      const stats = data.getStakePoolStats;
+      console.log(`\n💰 Current APY: ${stats.apy}%`);
+      console.log(`🏦 TVL: ${stats.tvl}`);
+      console.log(`🪙 Supply: ${stats.supply}`);
+      console.log(`⚡ Validators: ${stats.numValidators}`);
+      
+      console.log('\n✨ APY calculation complete!');
+    }
+    
   } catch (error) {
-    res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error' })
+    console.error('❌ Error:', error.message);
+    process.exit(1);
   }
 }
-  
+
+// Run the main function
+main();
