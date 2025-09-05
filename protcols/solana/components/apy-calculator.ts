@@ -70,7 +70,8 @@ export async function getStakePoolStats(): Promise<ApiResponse> {
       const aggregatedMevRewardsData = data.aggregated_mev_rewards || [];
 
       // Get the latest values (most recent data points)
-      const latestApy = apyData.length > 0 ? apyData[apyData.length - 1].data : 0;
+      // APY comes as decimal (e.g., 0.07184861225308525 = ~7.18%), so convert to percentage
+      const latestApy = apyData.length > 0 ? apyData[apyData.length - 1].data * 100 : 0;
       const latestTvl = tvlData.length > 0 ? tvlData[tvlData.length - 1].data : 0;
       const latestSupply = supplyData.length > 0 ? supplyData[supplyData.length - 1].data : 0;
       const latestValidators = numValidatorsData.length > 0 ? numValidatorsData[numValidatorsData.length - 1].data : 0;
