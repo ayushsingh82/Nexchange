@@ -1,12 +1,16 @@
 {
   "name": "protcols",
   "version": "1.0.0",
-  "description": "",
+  "description": "Solana stake pool ",
   "main": "index.js",
   "scripts": {
+    "start": "tsx index.tsx",
+    "dev": "tsx watch index.tsx",
+    "build": "tsc",
+    "apy": "node apy-calculator.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["solana", "staking", "apy", "jito"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
@@ -14,5 +18,10 @@
     "@solana/spl-stake-pool": "^1.1.8",
     "@solana/spl-token": "^0.4.13",
     "@solana/web3.js": "^1.98.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
   }
 }
