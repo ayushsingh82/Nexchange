@@ -2,20 +2,20 @@
 
 interface SwapQuoteRequest {
   dry: boolean;
-  depositMode: string;
-  swapType: string;
+  depositMode: "SIMPLE" | "MEMO";
+  swapType: "EXACT_INPUT" | "EXACT_OUTPUT" | "FLEX_INPUT";
   slippageTolerance: number;
   originAsset: string;
-  depositType: string;
+  depositType: "ORIGIN_CHAIN" | "INTENTS";
   destinationAsset: string;
   amount: string;
   refundTo: string;
-  refundType: string;
+  refundType: "ORIGIN_CHAIN" | "INTENTS";
   recipient: string;
-  virtualChainRecipient: string;
-  virtualChainRefundRecipient: string;
-  customRecipientMsg: string;
-  recipientType: string;
+  virtualChainRecipient?: string;
+  virtualChainRefundRecipient?: string;
+  customRecipientMsg?: string;
+  recipientType: "DESTINATION_CHAIN" | "INTENTS";
   deadline: string;
   referral: string;
   quoteWaitingTimeMs: number;
@@ -23,6 +23,13 @@ interface SwapQuoteRequest {
     recipient: string;
     fee: number;
   }>;
+}
+
+// Test scenarios for different swap types
+interface SwapScenario {
+  name: string;
+  description: string;
+  request: Omit<SwapQuoteRequest, 'dry' | 'deadline' | 'quoteWaitingTimeMs'>;
 }
 
 interface SwapQuoteResponse {
@@ -43,39 +50,88 @@ interface SwapQuoteResponse {
     deadline: string;
     timeWhenInactive?: string;
     timeEstimate: number;
-    virtualChainRecipient: string;
-    virtualChainRefundRecipient: string;
-    customRecipientMsg: string;
+    virtualChainRecipient?: string;
+    virtualChainRefundRecipient?: string;
+    customRecipientMsg?: string;
   };
 }
 
+// Test scenarios for different swap configurations
+const testScenarios: SwapScenario[] = [
+  {
+    name: "NEAR to SOL (Basic)",
+    description: "Simple NEAR to SOL swap using exact input",
+    request: {
+      depositMode: "SIMPLE",
+      swapType: "EXACT_INPUT",
+      slippageTolerance: 100, // 1%
+      originAsset: "nep141:wrap.near",
+      depositType: "ORIGIN_CHAIN",
+      destinationAsset: "nep141:sol-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near",
+      amount: "1000000000000000000000000", // 1 NEAR
+      refundTo: "test.near",
+      refundType: "ORIGIN_CHAIN",
+      recipient: "13QkxhNMrTPxoCkRdYdJ65tFuwXPhL5gLS2Z5Nr6gjRK",
+      recipientType: "DESTINATION_CHAIN",
+      referral: "test-referral",
+      appFees: []
+    }
+  },
+  {
+    name: "USDC to NEAR (Exact Output)",
+    description: "USDC to NEAR swap requesting exact output amount",
+    request: {
+      depositMode: "SIMPLE",
+      swapType: "EXACT_OUTPUT",
+      slippageTolerance: 200, // 2%
+      originAsset: "nep141:usdc-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near",
+      depositType: "ORIGIN_CHAIN",
+      destinationAsset: "nep141:wrap.near",
+      amount: "1000000000000000000000000", // 1 NEAR
+      refundTo: "test.near",
+      refundType: "ORIGIN_CHAIN",
+      recipient: "test.near",
+      recipientType: "DESTINATION_CHAIN",
+      referral: "test-referral",
+      appFees: []
+    }
+  },
+  {
+    name: "NEAR to USDT (Flexible Input)",
+    description: "NEAR to USDT swap with flexible input amount",
+    request: {
+      depositMode: "SIMPLE",
+      swapType: "FLEX_INPUT",
+      slippageTolerance: 150, // 1.5%
+      originAsset: "nep141:wrap.near",
+      depositType: "ORIGIN_CHAIN",
+      destinationAsset: "nep141:usdt-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near",
+      amount: "500000000000000000000000", // 0.5 NEAR
+      refundTo: "test.near",
+      refundType: "ORIGIN_CHAIN",
+      recipient: "test.near",
+      recipientType: "DESTINATION_CHAIN",
+      referral: "test-referral",
+      appFees: [
+        {
+          recipient: "fee-recipient.near",
+          fee: 50 // 0.5% fee
+        }
+      ]
+    }
+  }
+];
+
 // Function to request a swap quote
-export async function requestSwapQuote(jwtToken?: string): Promise<SwapQuoteResponse> {
+export async function requestSwapQuote(
+  scenario: SwapScenario, 
+  jwtToken?: string
+): Promise<SwapQuoteResponse> {
   const requestBody: SwapQuoteRequest = {
+    ...scenario.request,
     dry: true,
-    depositMode: "SIMPLE",
-    swapType: "EXACT_INPUT",
-    slippageTolerance: 100,
-    originAsset: "nep141:arb-0xaf88d065e77c8cc2239327c5edb3a432268e5831.omft.near",
-    depositType: "ORIGIN_CHAIN",
-    destinationAsset: "nep141:sol-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near",
-    amount: "1000",
-    refundTo: "0x2527D02599Ba641c19FEa793cD0F167589a0f10D",
-    refundType: "ORIGIN_CHAIN",
-    recipient: "13QkxhNMrTPxoCkRdYdJ65tFuwXPhL5gLS2Z5Nr6gjRK",
-    virtualChainRecipient: "0xb4c2fbec9d610F9A3a9b843c47b1A8095ceC887C",
-    virtualChainRefundRecipient: "0xb4c2fbec9d610F9A3a9b843c47b1A8095ceC887C",
-    customRecipientMsg: "smart-contract-recipient.near",
-    recipientType: "DESTINATION_CHAIN",
     deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
-    referral: "referral",
-    quoteWaitingTimeMs: 3000,
-    appFees: [
-      {
-        recipient: "recipient.near",
-        fee: 100
-      }
-    ]
+    quoteWaitingTimeMs: 3000
   };
 
   try {
@@ -108,40 +164,75 @@ export async function requestSwapQuote(jwtToken?: string): Promise<SwapQuoteResp
   }
 }
 
-// Main function to run the swap quote
-async function main() {
+// Function to test a single scenario
+async function testScenario(scenario: SwapScenario, jwtToken?: string) {
   try {
-    console.log('🔄 Requesting swap quote from 1Click API...');
-    console.log('==========================================');
-    console.log('⚠️  Note: This is a dry run request (dry: true)');
-    console.log('⚠️  Note: Using placeholder JWT token - replace with real token for production');
+    console.log(`\n🔄 Testing: ${scenario.name}`);
+    console.log(`📝 Description: ${scenario.description}`);
+    console.log('─'.repeat(50));
     
-    const quote = await requestSwapQuote();
+    const quote = await requestSwapQuote(scenario, jwtToken);
     
-    console.log('\n📊 Swap Quote Details:');
-    console.log('======================');
-    console.log(`💰 Amount In: ${quote.quote.amountInFormatted} ($${quote.quote.amountInUsd})`);
-    console.log(`💸 Amount Out: ${quote.quote.amountOutFormatted} ($${quote.quote.amountOutUsd})`);
-    console.log(`⏱️  Time Estimate: ${quote.quote.timeEstimate} seconds`);
-    console.log(`📅 Deadline: ${quote.quote.deadline}`);
+    console.log('✅ Success! Quote Details:');
+    console.log(`   💰 Amount In: ${quote.quote.amountInFormatted} ($${quote.quote.amountInUsd})`);
+    console.log(`   💸 Amount Out: ${quote.quote.amountOutFormatted} ($${quote.quote.amountOutUsd})`);
+    console.log(`   ⏱️  Time Estimate: ${quote.quote.timeEstimate} seconds`);
+    console.log(`   📅 Deadline: ${quote.quote.deadline}`);
     
     if (quote.quote.depositAddress) {
-      console.log(`🏦 Deposit Address: ${quote.quote.depositAddress}`);
+      console.log(`   🏦 Deposit Address: ${quote.quote.depositAddress}`);
     }
     
-    console.log('\n✨ Swap quote retrieved successfully!');
+    return { success: true, scenario: scenario.name };
     
   } catch (error) {
-    console.error('❌ Error:', error instanceof Error ? error.message : 'Unknown error');
+    console.log('❌ Failed!');
+    console.log(`   Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return { success: false, scenario: scenario.name, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
+// Main function to run all swap quote tests
+async function main() {
+  console.log('🚀 1Click API Swap Quote Dry Run Tests');
+  console.log('=======================================');
+  console.log('⚠️  Note: All requests are dry runs (dry: true)');
+  console.log('⚠️  Note: No JWT token required for dry runs');
+  console.log(`📊 Testing ${testScenarios.length} different scenarios...\n`);
+  
+  const results = [];
+  
+  for (const scenario of testScenarios) {
+    const result = await testScenario(scenario);
+    results.push(result);
     
-    if (error instanceof Error && error.message.includes('401')) {
-      console.log('\n💡 Solution: You need a valid JWT token from 1Click API');
-      console.log('   1. Get your JWT token from the 1Click API dashboard');
-      console.log('   2. Replace "Bearer JWT" in the code with your actual token');
-      console.log('   3. Or pass the token as a parameter: requestSwapQuote("your-jwt-token")');
-    }
-    
-    process.exit(1);
+    // Add a small delay between requests to be respectful to the API
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  
+  // Summary
+  console.log('\n📊 Test Results Summary:');
+  console.log('========================');
+  
+  const successful = results.filter(r => r.success).length;
+  const failed = results.filter(r => !r.success).length;
+  
+  console.log(`✅ Successful: ${successful}`);
+  console.log(`❌ Failed: ${failed}`);
+  
+  if (failed > 0) {
+    console.log('\n❌ Failed Scenarios:');
+    results.filter(r => !r.success).forEach(r => {
+      console.log(`   • ${r.scenario}: ${r.error}`);
+    });
+  }
+  
+  if (successful > 0) {
+    console.log('\n✨ Dry run tests completed! Some scenarios may fail due to:');
+    console.log('   • Invalid asset IDs (test data)');
+    console.log('   • Network connectivity issues');
+    console.log('   • API rate limiting');
+    console.log('   • Authentication requirements for certain assets');
   }
 }
 
