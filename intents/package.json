@@ -1,9 +1,20 @@
 {
+  "name": "intents-swap",
+  "version": "1.0.0",
+  "description": "1Click API swap quote integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node components/swap.ts",
+    "dev": "ts-node --watch components/swap.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "@defuse-protocol/one-click-sdk-typescript": "^0.1.9"
   },
   "devDependencies": {
-		"ts-node": "^10.9.2",
-		"typescript": "^5.4.2"
-	}
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2",
+    "@types/node": "^20.0.0"
+  }
 }
