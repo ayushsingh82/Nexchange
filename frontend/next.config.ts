@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from 'path'
 
 const nextConfig: NextConfig = {
   images: {
@@ -47,6 +48,21 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    externalDir: true,
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      ['@signature-derived']: path.resolve(process.cwd(), '../signature/derived-address'),
+      ['react']: path.resolve(process.cwd(), 'node_modules/react'),
+      ['react-dom']: path.resolve(process.cwd(), 'node_modules/react-dom'),
+    }
+    return config
+  },
+  transpilePackages: [
+    'signature/derived-address'
+  ]
 };
 
 export default nextConfig;

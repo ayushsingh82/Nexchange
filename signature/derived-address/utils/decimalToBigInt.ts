@@ -1,4 +1,4 @@
-export const decimalToBigInt = (decimalValue, decimals) => {
+export const decimalToBigInt = (decimalValue: any, decimals: any) => {
     const strValue = decimalValue.toString();
     const decimalPointIndex = strValue.indexOf(".") || strValue.indexOf(",");
   

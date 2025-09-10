@@ -7,9 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "chainsig.js": "^1.1.8",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@near-wallet-selector/react-hook": "^9.5.1",
+    "@near-wallet-selector/hot-wallet": "^9.4.0",
+    "chainsig.js": "^1.1.8"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "keywords": [],
   "author": "",

@@ -1,7 +1,15 @@
 "use client";
 import React, { useState } from "react";
-import { TokenSelector } from "./components/TokenSelector";
+import dynamicImport from "next/dynamic";
 import { SUPPORTED_TOKENS, TokenInfo } from "./constant";
+
+// Disable static generation
+export const dynamic = 'force-dynamic';
+
+const TokenSelector = dynamicImport(() => import("./components/TokenSelector").then(m => ({ default: m.TokenSelector })), {
+  ssr: false,
+  loading: () => <div>Loading...</div>
+});
 
 const StakePage = () => {
   const [selectedToken, setSelectedToken] = useState<TokenInfo | null>(SUPPORTED_TOKENS[0]);
