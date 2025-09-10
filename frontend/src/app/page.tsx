@@ -1,7 +1,12 @@
 "use client"
 import React from 'react';
 import { Press_Start_2P } from 'next/font/google';
-import { Compare } from '@/components/ui/compare';
+import dynamic from 'next/dynamic';
+
+const Compare = dynamic(() => import('@/components/ui/compare').then(m => ({ default: m.Compare })), {
+  ssr: false,
+  loading: () => <div>Loading...</div>
+});
 
 function CompareDemo() {
   return (
