@@ -32,7 +32,7 @@ export default function RootLayout({
             </div>
             <div className="flex gap-6">
               <a
-                href="https://twitter.com/NEARProtocol"
+                href="https://twitter.com/nexchange_near"
                 className="text-green-100/60 hover:text-green-300 transition-colors flex items-center gap-2"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -62,6 +62,20 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+
+        {/* NeXchange Text at Bottom */}
+        <div className="relative w-full h-[120px] sm:h-[140px] md:h-[160px] lg:h-[180px] flex items-center justify-center bg-black">
+          <h1 
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[10rem] font-bold text-[#97FBE4] w-full text-center transform -skew-y-0.5"
+            style={{
+              fontFamily: "'Courier New', 'Monaco', monospace",
+              letterSpacing: '0.08em',
+              fontWeight: '700'
+            }}
+          >
+            NeXchange
+          </h1>
+        </div>
       </body>
     </html>
   );
