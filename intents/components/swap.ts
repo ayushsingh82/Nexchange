@@ -67,7 +67,7 @@ const testScenarios: SwapScenario[] = [
       slippageTolerance: 100, // 1%
       originAsset: "nep141:wrap.near",
       depositType: "ORIGIN_CHAIN",
-      destinationAsset: "nep141:sol-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near",
+      destinationAsset: "nep141:sol.omft.near",
       amount: "1000000000000000000000000", // 1 NEAR
       refundTo: "test.near",
       refundType: "ORIGIN_CHAIN",
@@ -75,49 +75,6 @@ const testScenarios: SwapScenario[] = [
       recipientType: "DESTINATION_CHAIN",
       referral: "test-referral",
       appFees: []
-    }
-  },
-  {
-    name: "USDC to NEAR (Exact Output)",
-    description: "USDC to NEAR swap requesting exact output amount",
-    request: {
-      depositMode: "SIMPLE",
-      swapType: "EXACT_OUTPUT",
-      slippageTolerance: 200, // 2%
-      originAsset: "nep141:usdc-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near",
-      depositType: "ORIGIN_CHAIN",
-      destinationAsset: "nep141:wrap.near",
-      amount: "1000000000000000000000000", // 1 NEAR
-      refundTo: "test.near",
-      refundType: "ORIGIN_CHAIN",
-      recipient: "test.near",
-      recipientType: "DESTINATION_CHAIN",
-      referral: "test-referral",
-      appFees: []
-    }
-  },
-  {
-    name: "NEAR to USDT (Flexible Input)",
-    description: "NEAR to USDT swap with flexible input amount",
-    request: {
-      depositMode: "SIMPLE",
-      swapType: "FLEX_INPUT",
-      slippageTolerance: 150, // 1.5%
-      originAsset: "nep141:wrap.near",
-      depositType: "ORIGIN_CHAIN",
-      destinationAsset: "nep141:usdt-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near",
-      amount: "500000000000000000000000", // 0.5 NEAR
-      refundTo: "test.near",
-      refundType: "ORIGIN_CHAIN",
-      recipient: "test.near",
-      recipientType: "DESTINATION_CHAIN",
-      referral: "test-referral",
-      appFees: [
-        {
-          recipient: "fee-recipient.near",
-          fee: 50 // 0.5% fee
-        }
-      ]
     }
   }
 ];
