@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import dynamicImport from 'next/dynamic'
+import { useNearWallet } from '@/provider/wallet'
 
 // Disable static generation
 export const dynamic = 'force-dynamic';
@@ -14,6 +15,13 @@ const SolanaView = dynamicImport(
 
 export default function Page() {
   const [status, setStatus] = useState<string>('Ready')
+  const { accountId, callMethods } = useNearWallet()
+
+  // Create signer object from the connected wallet
+  const signer = accountId && callMethods ? {
+    accountId,
+    signAndSendTransactions: callMethods
+  } : undefined
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: 16 }}>
@@ -24,7 +32,13 @@ export default function Page() {
         <strong>Status:</strong> <span>{status}</span>
       </div>
 
-      <SolanaView props={{ setStatus }} />
+      {!accountId ? (
+        <div style={{ padding: 20, textAlign: 'center', color: '#ef4444' }}>
+          Please connect your NEAR wallet first using the navbar.
+        </div>
+      ) : (
+        <SolanaView props={{ setStatus }} signer={signer} />
+      )}
     </div>
   )
 }

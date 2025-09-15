@@ -87,24 +87,37 @@ export function SolanaView({ props: { setStatus }, signer }: SolanaViewProps) {
     setSolanaAddress();
 
     async function setSolanaAddress() {
-      setStatus("Querying your address and balance");
-      setSenderAddress(`Deriving address from path ${debouncedDerivationPath}...`);
+      try {
+        setStatus("Querying your address and balance");
+        setSenderAddress(`Deriving address from path ${debouncedDerivationPath}...`);
 
-      const { publicKey } = await Solana.deriveAddressAndPublicKey(
-        (signer?.accountId ?? nearAccountId) || "",
-        debouncedDerivationPath,
-      );
+        const accountId = signer?.accountId ?? nearAccountId;
+        if (!accountId) {
+          throw new Error("No account ID available. Please connect your wallet.");
+        }
 
-      setSenderAddress(publicKey);
+        console.log("Deriving address for account:", accountId);
+        console.log("Using derivation path:", debouncedDerivationPath);
 
-      const balance = await Solana.getBalance(publicKey);
+        const { publicKey } = await Solana.deriveAddressAndPublicKey(
+          accountId,
+          debouncedDerivationPath,
+        );
 
-      setStatus(
-        `Your Solana address is: ${publicKey}, balance: ${bigIntToDecimal(
-          balance.balance,
-          balance.decimals,
-        )} SOL`,
-      );
+        setSenderAddress(publicKey);
+
+        const balance = await Solana.getBalance(publicKey);
+
+        setStatus(
+          `Your Solana address is: ${publicKey}, balance: ${bigIntToDecimal(
+            balance.balance,
+            balance.decimals,
+          )} SOL`,
+        );
+      } catch (error) {
+        console.error("Error deriving address:", error);
+        setStatus(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
   }, [signer?.accountId, nearAccountId, debouncedDerivationPath, setStatus]);
 
