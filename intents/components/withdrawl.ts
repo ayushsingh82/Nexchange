@@ -2,7 +2,7 @@
 
 
 const proposal = {
-    description: "Transfer wNEAR to recipient",
+    description: "Transfer SOL to recipient",
     kind: {
       FunctionCall: {
         receiver_id: intentsContract.accountId,
