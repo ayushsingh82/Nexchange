@@ -10,7 +10,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@defuse-protocol/one-click-sdk-typescript": "^0.1.9"
+    "@defuse-protocol/one-click-sdk-typescript": "^0.1.9" ,
+    "@near-js/accounts": "^2.0.2",
+    "@near-js/crypto": "^2.0.2",
+    "@near-js/providers": "^2.0.2",
+    "@near-js/signers": "^2.0.2",
+    "@near-js/tokens": "^2.0.2"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
