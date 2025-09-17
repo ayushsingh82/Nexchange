@@ -3,6 +3,7 @@ import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 import {
   getAccount,
   getAccountBalanceOfSolana,
+  getAccountBalanceOfNear ,
   transferMultiTokenForQuote,
 } from "./near";
 import { getQuote, waitUntilQuoteExecutionCompletes } from "./intents";
@@ -34,7 +35,7 @@ async function withdraw({
   console.log(
     `Checking the balance of ${inputToken} for the account ${account.accountId}`
   );
-  const balance = await getAccountBalanceOfMultiToken(account, inputToken);
+  const balance = await getAccountBalanceOfSolana(account, inputToken);
 
   if (balance < inputAmount) {
     throw new Error(
