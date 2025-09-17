@@ -2,7 +2,7 @@ import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
 import {
   getAccount,
-  getAccountBalanceOfMultiToken,
+  getAccountBalanceOfSolana,
   transferMultiTokenForQuote,
 } from "./near";
 import { getQuote, waitUntilQuoteExecutionCompletes } from "./intents";
