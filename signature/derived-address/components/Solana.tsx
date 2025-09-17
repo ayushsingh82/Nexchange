@@ -209,7 +209,7 @@ export function SolanaView({ props: { setStatus }, signer }: SolanaViewProps) {
 
   return (
     <>
-      <div className="alert alert-info text-center" role="alert" style={{ border: '1px solid #93c5fd', borderRadius: 8 }}>
+      {/* <div className="alert alert-info text-center" role="alert" style={{ border: '1px solid #93c5fd', borderRadius: 8 }}>
         You are working with <strong>DevNet</strong>.
         <br />
         You can get funds from the faucet:
@@ -221,7 +221,7 @@ export function SolanaView({ props: { setStatus }, signer }: SolanaViewProps) {
         >
           faucet.solana.com/
         </a>
-      </div>
+      </div> */}
       <div className="row my-3" style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}>
         <label className="col-sm-2 col-form-label col-form-label-sm">
           Path:
