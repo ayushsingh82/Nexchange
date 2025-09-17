@@ -1,197 +1,87 @@
-/**
- * SOL withdrawal function using intents contract
- * Withdraws SOL from intents contract to Solana chain
- */
+import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
-import { Account, parseNEAR } from "near-workspaces";
+import {
+  getAccount,
+  getAccountBalanceOfMultiToken,
+  transferMultiTokenForQuote,
+} from "./near";
+import { getQuote, waitUntilQuoteExecutionCompletes } from "./intents";
 
-interface SolWithdrawalParams {
-  intentsContract: Account;
-  daoAccount: Account;
-  creatorAccount: Account;
-  recipientSolanaAddress: string;
-  amount: string; // Amount in SOL (will be converted to proper format)
-  proposalBond: string;
+// Loading environment variables
+require("dotenv").config({ path: ".env" });
+
+interface WithdrawOptions {
+  inputToken: string;
+  outputToken: string;
+  inputAmount: bigint;
+  receiverAddress: string;
+  slippageTolerance: number;
 }
 
-/**
- * Creates a proposal to withdraw SOL from intents contract to Solana chain
- */
-export async function createSolWithdrawalProposal({
-  intentsContract,
-  daoAccount,
-  creatorAccount,
-  recipientSolanaAddress,
-  amount,
-  proposalBond,
-}: SolWithdrawalParams) {
-  console.log(`Creating SOL withdrawal proposal for ${amount} SOL to ${recipientSolanaAddress}`);
-
-  // Create proposal to withdraw SOL to Solana address
-  const proposal = {
-    description: "Transfer SOL to Solana recipient",
-    kind: {
-      FunctionCall: {
-        receiver_id: intentsContract.accountId,
-        actions: [
-          {
-            method_name: "ft_withdraw",
-            args: Buffer.from(
-              JSON.stringify({
-                token: "nep141:sol.omft.near", // SOL token on NEAR
-                receiver_id: recipientSolanaAddress, // Solana address
-                amount: amount, // Amount in smallest unit
-              })
-            ).toString("base64"),
-            deposit: 1n.toString(),
-            gas: 30_000_000_000_000n.toString(),
-          },
-        ],
-      },
-    },
-  };
-
-  // Add the proposal to the DAO
-  const proposalId = await creatorAccount.call(
-    daoAccount.accountId,
-    "add_proposal",
-    {
-      proposal: proposal,
-    },
-    {
-      attachedDeposit: proposalBond,
-    }
+async function withdraw({
+  inputToken,
+  outputToken,
+  inputAmount,
+  slippageTolerance,
+  receiverAddress,
+}: WithdrawOptions): Promise<void> {
+  console.log(
+    `You are about to exchange ${inputToken} tokens for ${outputToken}`
   );
 
-  console.log("Created SOL withdrawal proposal ID:", proposalId);
-
-  return { proposalId, proposal };
-}
-
-/**
- * Executes the SOL withdrawal proposal by voting and executing it
- */
-export async function executeSolWithdrawalProposal({
-  daoAccount,
-  creatorAccount,
-  proposalId,
-  proposal,
-}: {
-  daoAccount: Account;
-  creatorAccount: Account;
-  proposalId: string;
-  proposal: any;
-}) {
-  console.log(`Executing SOL withdrawal proposal ${proposalId}`);
-
-  // Vote and execute the proposal
-  const result = await creatorAccount.callRaw(
-    daoAccount.accountId,
-    "act_proposal",
-    {
-      id: proposalId,
-      action: "VoteApprove",
-      proposal: proposal.kind,
-    },
-    {
-      gas: 300_000_000_000_000n.toString(),
-    }
-  );
+  const account = getAccount();
 
   console.log(
-    "SOL withdrawal proposal execution result:",
-    result.failed ? "FAILED" : "SUCCESS"
+    `Checking the balance of ${inputToken} for the account ${account.accountId}`
   );
-  
-  if (result.failed) {
-    console.log("Failure reason:", result.receiptFailures);
+  const balance = await getAccountBalanceOfMultiToken(account, inputToken);
+
+  if (balance < inputAmount) {
+    throw new Error(
+      `Insufficient balance of ${inputToken} for withdrawing (required: ${inputAmount}, your: ${balance})`
+    );
   }
 
-  return result;
+  const deadline = new Date();
+  deadline.setMinutes(deadline.getMinutes() + 5);
+
+  const quote = await getQuote({
+    dry: false,
+    swapType: QuoteRequest.swapType.EXACT_INPUT,
+    slippageTolerance: slippageTolerance,
+    depositType: QuoteRequest.depositType.INTENTS,
+    originAsset: inputToken,
+    destinationAsset: outputToken,
+    amount: inputAmount.toString(),
+    refundTo: account.accountId,
+    refundType: QuoteRequest.refundType.INTENTS,
+    recipient: receiverAddress,
+    recipientType: QuoteRequest.recipientType.DESTINATION_CHAIN,
+    deadline: deadline.toISOString(),
+  });
+
+  await transferMultiTokenForQuote(account, quote, inputToken);
+
+  await waitUntilQuoteExecutionCompletes(quote);
+
+  console.log(`Withdraw was settled successfully!`);
+  console.log(
+    `Check the updated balance at https://www.arbiscan.io/address/${receiverAddress}`
+  );
 }
 
-/**
- * Complete SOL withdrawal flow: create and execute proposal
- */
-export async function withdrawSolToChain({
-  intentsContract,
-  daoAccount,
-  creatorAccount,
-  recipientSolanaAddress,
-  amount,
-  proposalBond,
-}: SolWithdrawalParams) {
-  try {
-    // Check initial SOL balance in intents contract
-    const initialBalance = await intentsContract.view("mt_balance_of", {
-      account_id: daoAccount.accountId,
-      token_id: "nep141:sol.omft.near",
-    });
-    console.log("Initial SOL balance in intents:", initialBalance);
+withdraw({
+  inputToken: "nep141:eth.omft.near",
+  outputToken: "nep141:arb.omft.near",
+  inputAmount: BigInt(3_000_000_000_000), // 3 * 10^12 wETH
+  slippageTolerance: 10, // 0.1%
+  receiverAddress: "0x427F9620Be0fe8Db2d840E2b6145D1CF2975bcaD",  // derived solana address 
+}).catch((error: unknown) => {
+  const { styleText } = require("node:util");
 
-    // Create the withdrawal proposal
-    const { proposalId, proposal } = await createSolWithdrawalProposal({
-      intentsContract,
-      daoAccount,
-      creatorAccount,
-      recipientSolanaAddress,
-      amount,
-      proposalBond,
-    });
-
-    // Execute the proposal
-    const result = await executeSolWithdrawalProposal({
-      daoAccount,
-      creatorAccount,
-      proposalId,
-      proposal,
-    });
-
-    if (result.failed) {
-      throw new Error(`SOL withdrawal failed: ${JSON.stringify(result.receiptFailures)}`);
-    }
-
-    // Check final balance
-    const finalBalance = await intentsContract.view("mt_balance_of", {
-      account_id: daoAccount.accountId,
-      token_id: "nep141:sol.omft.near",
-    });
-    console.log("Final SOL balance in intents:", finalBalance);
-
-    return {
-      success: true,
-      proposalId,
-      initialBalance,
-      finalBalance,
-      withdrawnAmount: amount,
-    };
-
-  } catch (error) {
-    console.error("SOL withdrawal error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
+  if (error instanceof Error) {
+    console.error(styleText("red", error.message));
+  } else {
+    console.error(styleText("red", JSON.stringify(error)));
   }
-}
-
-/**
- * Helper function to convert SOL amount to proper format
- * SOL has 9 decimal places
- */
-export function formatSolAmount(amount: number): string {
-  return (amount * 1_000_000_000).toString(); // Convert to lamports
-}
-
-/**
- * Example usage:
- * 
- * const result = await withdrawSolToChain({
- *   intentsContract,
- *   daoAccount,
- *   creatorAccount,
- *   recipientSolanaAddress: "5qKow5dTuF22WbTJwxHTJD3iGuqEfc65TyV7ctBF9Cwg",
- *   amount: formatSolAmount(1.5), // 1.5 SOL
- *   proposalBond: "1000000000000000000000000", // 1 NEAR
- * });
- */
+});
