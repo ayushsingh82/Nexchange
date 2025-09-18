@@ -36,10 +36,18 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                     Dashboard
                   </Link> */}
                   
+                  {/* Explore Link */}
+                  <Link 
+                    href="/explore" 
+                    className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
+                  >
+                    Explore
+                  </Link>
+                  
                   {/* Stake Link */}
                   <Link 
                     href="/stake" 
-                    className="text-[#97FBE4] transition-colors"
+                    className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
                   >
                     Stake
                   </Link>
