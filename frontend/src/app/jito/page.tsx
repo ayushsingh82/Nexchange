@@ -9,30 +9,29 @@ export default function JitoPage() {
     {
       id: 1,
       title: "Deposit",
-      description: "Deposit NEAR tokens to your account",
+      description: "Deposit NEAR tokens to intent contract",
       icon: "💳",
-      details: "Transfer your NEAR tokens to the staking pool to begin the process"
+      
     },
     {
       id: 2,
       title: "Swap",
-      description: "Swap NEAR to SOL via cross-chain bridge",
+      description: "Swap NEAR to SOL via intents",
       icon: "🔄",
-      details: "Convert your NEAR tokens to SOL using our cross-chain swap functionality"
+   
     },
     {
       id: 3,
       title: "Withdraw",
-      description: "Withdraw SOL to Solana network",
+      description: "Withdraw SOL to derived solana address from chain signature",
       icon: "📤",
-      details: "Move your SOL tokens to the Solana blockchain for staking"
+    
     },
     {
       id: 4,
       title: "Deposit on Pool",
       description: "Stake SOL on Jito liquid staking pool",
       icon: "🎯",
-      details: "Deposit your SOL into Jito's liquid staking pool to earn rewards"
     }
   ]
 
@@ -67,9 +66,6 @@ export default function JitoPage() {
                   </h3>
                   <p className="text-gray-300 mb-3">
                     {step.description}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    {step.details}
                   </p>
                 </div>
               </div>
@@ -113,7 +109,7 @@ export default function JitoPage() {
               }}
               className="px-6 py-3 bg-green-600 text-white hover:bg-green-700 transition-colors"
             >
-              Start Process
+              Stake and Earn
             </button>
           )}
         </div>
