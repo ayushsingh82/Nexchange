@@ -103,7 +103,7 @@ export default function ExplorePage() {
               {chainData.status === "Available" ? (
                 <div className="mt-8">
                   <Link 
-                    href="/stake"
+                    href="/jito"
                     className="inline-block px-6 py-3 bg-[#97FBE4] text-black font-semibold hover:bg-[#5eead4] transition-colors"
                   >
                     Start Staking
