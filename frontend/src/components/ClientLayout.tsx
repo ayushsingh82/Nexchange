@@ -44,6 +44,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                     Explore
                   </Link>
                   
+                  {/* Jito Link */}
+                  <Link 
+                    href="/jito" 
+                    className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
+                  >
+                    Jito
+                  </Link>
+                  
                   {/* Stake Link */}
                   <Link 
                     href="/stake" 

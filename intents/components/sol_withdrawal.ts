@@ -66,9 +66,7 @@ async function withdraw({
   await waitUntilQuoteExecutionCompletes(quote);
 
   console.log(`Withdraw was settled successfully!`);
-  console.log(
-    `Check the updated balance at https://www.arbiscan.io/address/${receiverAddress}`
-  );
+
 }
 
 withdraw({
