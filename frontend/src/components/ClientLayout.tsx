@@ -53,12 +53,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                   
                   {/* Stake Link */}
-                  <Link 
+                  {/* <Link 
                     href="/stake" 
                     className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
                   >
                     Stake
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
 
