@@ -15,7 +15,8 @@
     "@near-js/crypto": "^2.0.2",
     "@near-js/providers": "^2.0.2",
     "@near-js/signers": "^2.0.2",
-    "@near-js/tokens": "^2.0.2"
+    "@near-js/tokens": "^2.0.2" ,
+     "dotenv": "^17.2.2"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
