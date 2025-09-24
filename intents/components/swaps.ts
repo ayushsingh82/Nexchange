@@ -68,7 +68,7 @@ async function swap({
 
 swap({
   inputToken: "nep141:wrap.near",
-  outputToken: "nep141:base-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913.omft.near",
+  outputToken: "nep141:sol.omft.near",
   inputAmount: NEAR.toUnits("0.1"),
   slippageTolerance: 10, // 0.1%
 }).catch((error: unknown) => {
