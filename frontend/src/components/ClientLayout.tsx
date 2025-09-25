@@ -45,12 +45,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                   
                   {/* Jito Link */}
-                  <Link 
+                  {/* <Link 
                     href="/jito" 
                     className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
                   >
                     Jito
-                  </Link>
+                  </Link> */}
                   
                   {/* Stake Link */}
                   {/* <Link 
