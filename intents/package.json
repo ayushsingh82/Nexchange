@@ -7,7 +7,20 @@
     "start": "ts-node components/swap.ts",
     "dev": "ts-node --watch components/swap.ts",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "examples:demo": "ts-node function-examples.ts demo",
+    "examples:account": "ts-node function-examples.ts account",
+    "examples:balance": "ts-node function-examples.ts balance",
+    "examples:multitoken": "ts-node function-examples.ts multitoken",
+    "examples:deposit": "ts-node function-examples.ts deposit",
+    "examples:quote": "ts-node function-examples.ts quote",
+    "examples:deposit-fn": "ts-node function-examples.ts deposit-fn",
+    "withdraw": "ts-node components/withdrawl.ts",
+    "sol-withdraw": "ts-node components/sol_withdrawal.ts",
+    "swap": "ts-node components/swap.ts",
+    "deposit": "ts-node components/deposit.ts",
+    "intents": "ts-node components/intents.ts",
+    "flow:complete": "ts-node function-examples.ts complete-flow"
   },
   "dependencies": {
     "@defuse-protocol/one-click-sdk-typescript": "^0.1.9" ,
