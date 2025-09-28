@@ -15,6 +15,12 @@
 - SOL withdrawal to derived Solana addresses
 - Secure transaction signing from derived addresses
 
+**Jito Staking Integration**
+- ✅ Connect to Jito staking pool contracts
+- ✅ Implement staking transaction signing from derived address
+- ✅ Add reward tracking and unstaking functionality
+- ✅ Complete end-to-end staking flow testing
+
 **User Interface**
 - Complete Next.js 15 application with responsive design
 - Homepage with hero, architecture, FAQ sections
@@ -24,9 +30,10 @@
 
 ## 🎯 Next Week Goals
 
-**Jito Staking Integration**
-- Connect to Jito staking pool contracts
-- Implement staking transaction signing from derived address
-- Add reward tracking and unstaking functionality
-- Complete end-to-end staking flow testing
+**EtherFi ETH Staking Integration**
+- Connect to EtherFi liquid staking protocol contracts
+- Implement ETH staking transaction signing from derived address
+- Add reward tracking and unstaking functionality for ETH
+- Complete end-to-end ETH staking flow testing
+- Add EtherFi integration to explore page
 
