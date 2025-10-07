@@ -2,7 +2,7 @@ import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
 import {
   getAccount,
-  getAccountBalanceOfSolana,
+  getAccountBalanceOfToken,
   transferMultiTokenForQuote,
 } from "./near";
 import { getQuote, waitUntilQuoteExecutionCompletes } from "./intents";
@@ -33,7 +33,7 @@ async function swap({
   console.log(
     `Checking the balance of ${inputToken} for the account ${account.accountId}`
   );
-  const balance = await getAccountBalanceOfSolana(account, inputToken);
+  const balance = await getAccountBalanceOfToken(account, inputToken);
 
   if (balance < inputAmount) {
     throw new Error(
@@ -69,7 +69,7 @@ async function swap({
 swap({
   inputToken: "nep141:wrap.near",
   outputToken: "nep141:sol.omft.near",
-  inputAmount: NEAR.toUnits("0.1"),
+  inputAmount: NEAR.toUnits("0.01"),
   slippageTolerance: 10, // 0.1%
 }).catch((error: unknown) => {
   const { styleText } = require("node:util");

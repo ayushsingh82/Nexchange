@@ -49,6 +49,22 @@ export function getAccount() {
     return BigInt(amount as string);
   }
 
+  export async function getAccountBalanceOfToken(
+    account: Account,
+    tokenId: string
+  ): Promise<bigint> {
+    const amount = await account.provider.callFunction(
+      INTENTS_CONTRACT_ID,
+      "mt_balance_of",
+      {
+        token_id: tokenId,
+        account_id: account.accountId,
+      }
+    );
+  
+    return BigInt(amount as string);
+  }
+
 
   export async function depositNearAsMultiToken(
     account: Account,

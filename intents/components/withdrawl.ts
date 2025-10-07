@@ -73,7 +73,7 @@ withdraw({
   outputToken: "nep141:sol.omft.near", 
   inputAmount: BigInt(100_000), 
   slippageTolerance: 10, // 0.1%
-  receiverAddress: "0xB822B51A88E8a03fCe0220B15Cb2C662E42Adec1", // solana derived address
+  receiverAddress: "GsAdKryuJs7BQDugbuxKn5EzR7PY7Gfd1FsmrKMMQTEc", // solana derived address
 }).catch((error: unknown) => {
   const { styleText } = require("node:util");
 
