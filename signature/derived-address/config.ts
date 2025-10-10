@@ -3,6 +3,16 @@ import { contracts } from "chainsig.js";
 // export const NetworkId = "testnet";
 // export const MPC_CONTRACT = "v1.signer-prod.testnet";
 
+export const NetworksEVM = [
+  {
+    network: "Ethereum",
+    token: "ETH",
+    rpcUrl: "https://sepolia.drpc.org",
+    explorerUrl: "https://sepolia.etherscan.io/tx/",
+    contractAddress: "0xFf3171733b73Cfd5A72ec28b9f2011Dc689378c6",
+  },
+]
+
 export const NetworkId = "mainnet";
 export const MPC_CONTRACT = "v1.signer";
 
