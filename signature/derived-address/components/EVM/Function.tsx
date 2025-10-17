@@ -1,12 +1,18 @@
-import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-
-import { forwardRef } from "react";
-import { useImperativeHandle } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Contract, JsonRpcProvider } from "ethers";
 import { ABI } from "../../config";
 
-export const FunctionCallForm = forwardRef(
+interface FunctionCallFormProps {
+  props: {
+    contractAddress: string;
+    senderAddress: string;
+    isLoading: boolean;
+    rpcUrl: string;
+    Evm: any;
+  };
+}
+
+export const FunctionCallForm = forwardRef<any, FunctionCallFormProps>(
     (
       { props: { contractAddress, senderAddress, isLoading, rpcUrl, Evm } },
       ref,
@@ -66,7 +72,7 @@ export const FunctionCallForm = forwardRef(
                 type="number"
                 className="form-control form-control-sm"
                 value={number}
-                onChange={(e) => setNumber(e.target.value)}
+                onChange={(e) => setNumber(Number(e.target.value))}
                 step="1"
                 disabled={isLoading}
               />
@@ -81,16 +87,5 @@ export const FunctionCallForm = forwardRef(
     },
   );
   
-  FunctionCallForm.propTypes = {
-    props: PropTypes.shape({
-      senderAddress: PropTypes.string.isRequired,
-      contractAddress: PropTypes.string.isRequired,
-      isLoading: PropTypes.bool.isRequired,
-      rpcUrl: PropTypes.string.isRequired,
-      Evm: PropTypes.shape({
-        prepareTransactionForSigning: PropTypes.func.isRequired,
-      }).isRequired,
-    }).isRequired,
-  };
   
   FunctionCallForm.displayName = "FunctionCallForm";

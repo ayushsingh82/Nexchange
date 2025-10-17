@@ -3,7 +3,15 @@ import { contracts } from "chainsig.js";
 // export const NetworkId = "testnet";
 // export const MPC_CONTRACT = "v1.signer-prod.testnet";
 
-export const NetworksEVM = [
+export interface NetworkConfig {
+  network: string;
+  token: string;
+  rpcUrl: string;
+  explorerUrl: string;
+  contractAddress: string;
+}
+
+export const NetworksEVM: NetworkConfig[] = [
   {
     network: "Ethereum",
     token: "ETH",
@@ -64,10 +72,9 @@ export const ABI = [
       stateMutability: "view",
       type: "function",
     },
-  ];
+  ] as const;
 
-  export const CHAIN_ICONS = {
-    ETH: "ethereum",
-    SOL: "solana",
-   
-  };
+export const CHAIN_ICONS = {
+  ETH: "ethereum",
+  SOL: "solana",
+} as const;
