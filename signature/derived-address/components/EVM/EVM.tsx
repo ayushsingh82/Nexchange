@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-
+import Web3 from "web3";
 
 import { useDebounce } from "../../hooks/debounce";
 import { SIGNET_CONTRACT, MPC_CONTRACT } from "../../config";
@@ -10,32 +9,47 @@ import { useWalletSelector } from "@near-wallet-selector/react-hook";
 import { chainAdapters } from "chainsig.js";
 import { createPublicClient, http } from "viem";
 import { bigIntToDecimal } from "../../utils/bigIntToDecimal";
+import { TransferForm } from "./Transfer";
+import { FunctionCallForm } from "./Function";
 
+
+interface EVMViewProps {
+  props: {
+    setStatus: (status: string | React.ReactNode) => void;
+    network: {
+      network: string;
+      token: string;
+      rpcUrl: string;
+      explorerUrl: string;
+      contractAddress: string;
+    };
+  };
+}
 
 export function EVMView({
     props: {
       setStatus,
       network: { network, token, rpcUrl, explorerUrl, contractAddress },
     },
-  }) {
+  }: EVMViewProps) {
     const { signedAccountId, signAndSendTransactions } = useWalletSelector();
   
     const [isLoading, setIsLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState("request");
     const [senderLabel, setSenderLabel] = useState("");
-    const [senderAddress, setSenderAddress] = useState("");
-    const [balance, setBalance] = useState("");
+    const [senderAddress, setSenderAddress] = useState<string>("");
+    const [balance, setBalance] = useState<string>("");
     const [action, setAction] = useState("transfer");
     const [derivationPath, setDerivationPath] = useState(
       `${network.replace(/\s/g, "").toLowerCase()}-1`,
     );
-    const [signedTransaction, setSignedTransaction] = useState(null);
+    const [signedTransaction, setSignedTransaction] = useState<any>(null);
     const [gasPriceInGwei, setGasPriceInGwei] = useState("");
     const [txCost, setTxCost] = useState("");
   
     const debouncedDerivationPath = useDebounce(derivationPath, 1200);
-    const childRef = useRef();
-    const web3 = new Web3(rpcUrl);
+    const childRef = useRef<any>(null);
+    const web3 = new Web3(new Web3.providers.HttpProvider(rpcUrl));
   
     const publicClient = createPublicClient({
       transport: http(rpcUrl),
@@ -59,11 +73,11 @@ export function EVMView({
           const gasLimit = 21000;
   
           // Calculate transaction cost in ETH (gwei * gasLimit) / 1e9
-          const txCost = (gasPriceInGwei * gasLimit) / 1000000000;
+          const txCost = (parseFloat(gasPriceInGwei) * gasLimit) / 1000000000;
   
           // Format both gas price and transaction cost to 7 decimal places
           const formattedGasPriceInGwei = parseFloat(gasPriceInGwei).toFixed(7);
-          const formattedTxCost = parseFloat(txCost).toFixed(7);
+          const formattedTxCost = txCost.toFixed(7);
   
           console.log(
             `Current Sepolia Gas Price: ${formattedGasPriceInGwei} Gwei`,
@@ -88,13 +102,15 @@ export function EVMView({
   
     const resetAddressState = () => {
       setSenderLabel("Waiting for you to stop typing...");
-      setSenderAddress(null);
+      setSenderAddress("");
       setStatus("");
       setBalance(""); // Reset balance when derivation path changes
       setCurrentStep("request");
     };
   
     const fetchEthereumAddress = async () => {
+      if (!signedAccountId) return;
+      
       const { address } = await Evm.deriveAddressAndPublicKey(
         signedAccountId,
         debouncedDerivationPath,
@@ -121,7 +137,7 @@ export function EVMView({
           path: debouncedDerivationPath,
           keyType: "Ecdsa",
           signerAccount: {
-            accountId: signedAccountId,
+            accountId: signedAccountId!,
             signAndSendTransactions,
           },
         });
@@ -137,7 +153,7 @@ export function EVMView({
           `✅ Signed payload ready to be relayed to the Ethereum network`,
         );
         setCurrentStep("relay");
-      } catch (e) {
+      } catch (e: any) {
         console.log(e);
         setStatus(`❌ Error: ${e.message}`);
         setIsLoading(false);
@@ -161,7 +177,7 @@ export function EVMView({
           </>,
         );
         childRef.current.afterRelay();
-      } catch (e) {
+      } catch (e: any) {
         setStatus(`❌ Error: ${e.message}`);
       }
   
@@ -243,7 +259,6 @@ export function EVMView({
               contractAddress,
               senderAddress,
               rpcUrl,
-              web3,
               isLoading,
               Evm,
             }}
@@ -301,15 +316,3 @@ export function EVMView({
     );
   }
   
-  EVMView.propTypes = {
-    props: PropTypes.shape({
-      setStatus: PropTypes.func.isRequired,
-      network: PropTypes.shape({
-        network: PropTypes.string.isRequired,
-        token: PropTypes.string.isRequired,
-        rpcUrl: PropTypes.string.isRequired,
-        explorerUrl: PropTypes.string.isRequired,
-        contractAddress: PropTypes.string.isRequired,
-      }).isRequired,
-    }).isRequired,
-  };

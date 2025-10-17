@@ -1,11 +1,16 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
-
-import { forwardRef } from "react";
-import { useImperativeHandle } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 import Web3 from "web3";
 
-export const TransferForm = forwardRef(
+interface TransferFormProps {
+  props: {
+    Evm: any;
+    senderAddress: string;
+    isLoading: boolean;
+    token: string;
+  };
+}
+
+export const TransferForm = forwardRef<any, TransferFormProps>(
     ({ props: { Evm, senderAddress, isLoading, token } }, ref) => {
       const [receiverAddress, setReceiverAddress] = useState(
         "0x72284EceE80A34BbC4c65d8A468B7771552a421b",
@@ -67,16 +72,6 @@ export const TransferForm = forwardRef(
     },
   );
   
-  TransferForm.propTypes = {
-    props: PropTypes.shape({
-      senderAddress: PropTypes.string,
-      isLoading: PropTypes.bool.isRequired,
-      token: PropTypes.string.isRequired,
-      Evm: PropTypes.shape({
-        prepareTransactionForSigning: PropTypes.func.isRequired,
-      }).isRequired,
-    }).isRequired,
-  };
   
   TransferForm.displayName = "TransferForm";
 
