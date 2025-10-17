@@ -11,11 +11,25 @@ import { createPublicClient, http } from "viem";
 import { bigIntToDecimal } from "../../utils/bigIntToDecimal";
 import { TransferForm } from "./Transfer";
 import { FunctionCallForm } from "./Function";
+import { setupHotWallet } from "@near-wallet-selector/hot-wallet";
+import {
+  setupWalletSelector,
+  WalletSelector,
+  WalletModuleFactory,
+} from "@near-wallet-selector/core";
 
+
+type StatusSetter = (value: string | React.ReactNode) => void;
+
+export interface ExternalSigner {
+  accountId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  signAndSendTransactions: (params: { transactions: any[] }) => Promise<unknown>;
+}
 
 interface EVMViewProps {
   props: {
-    setStatus: (status: string | React.ReactNode) => void;
+    setStatus: StatusSetter;
     network: {
       network: string;
       token: string;
@@ -24,6 +38,7 @@ interface EVMViewProps {
       contractAddress: string;
     };
   };
+  signer?: ExternalSigner;
 }
 
 export function EVMView({
@@ -31,8 +46,16 @@ export function EVMView({
       setStatus,
       network: { network, token, rpcUrl, explorerUrl, contractAddress },
     },
+    signer,
   }: EVMViewProps) {
+    // If external signer provided, prefer it; else create local Hot Wallet selector
+    const [nearSelector, setNearSelector] = useState<WalletSelector | null>(null);
+    const [nearAccountId, setNearAccountId] = useState<string | null>(signer?.accountId ?? null);
+    
+    // Use external signer or fallback to wallet selector
     const { signedAccountId, signAndSendTransactions } = useWalletSelector();
+    const finalAccountId = signer?.accountId ?? signedAccountId;
+    const finalSignAndSendTransactions = signer?.signAndSendTransactions ?? signAndSendTransactions;
   
     const [isLoading, setIsLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState("request");
@@ -98,7 +121,7 @@ export function EVMView({
     useEffect(() => {
       resetAddressState();
       fetchEthereumAddress();
-    }, [debouncedDerivationPath, signedAccountId]);
+    }, [debouncedDerivationPath, finalAccountId]);
   
     const resetAddressState = () => {
       setSenderLabel("Waiting for you to stop typing...");
@@ -109,10 +132,10 @@ export function EVMView({
     };
   
     const fetchEthereumAddress = async () => {
-      if (!signedAccountId) return;
+      if (!finalAccountId) return;
       
       const { address } = await Evm.deriveAddressAndPublicKey(
-        signedAccountId,
+        finalAccountId,
         debouncedDerivationPath,
       );
       setSenderAddress(address);
@@ -137,8 +160,8 @@ export function EVMView({
           path: debouncedDerivationPath,
           keyType: "Ecdsa",
           signerAccount: {
-            accountId: signedAccountId!,
-            signAndSendTransactions,
+            accountId: finalAccountId!,
+            signAndSendTransactions: finalSignAndSendTransactions,
           },
         });
   
