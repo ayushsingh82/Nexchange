@@ -1,6 +1,6 @@
 # NeXchange - Upcoming Roadmap
 
-## 🚀 Phase 1: Multi-Chain Staking Expansion 
+## 🚀 Phase 1: Multi-Chain Staking Expansion  - ( Q4 - 2025)
 
 ### Ethereum Staking Integration
 - **EtherFi Liquid Staking**
@@ -11,7 +11,7 @@
   - Integration with explore page
 
 ### TON Blockchain Integration
-- **TON Staking Protocol**
+- **Bemo Staking Protocol**
   - Implement TON address derivation from NEAR wallet
   - Connect to TON staking pools and validators
   - Add TON staking functionality
@@ -20,7 +20,7 @@
 
 
 
-## 🔧 Phase 2: Advanced Features 
+## 🔧 Phase 2: Advanced Features - (Q1 - 2026)
 
 ### AI-Powered Optimization
 - **Smart Yield Optimization**
@@ -30,22 +30,5 @@
   - Personalized DeFi recommendations
 
 
-
-## 🎯 Long-Term Vision 
-
-### Global DeFi Hub
-- **Universal DeFi Interface**
-  - Single interface for all DeFi activities
-  - Institutional-grade security and compliance
-  - Global regulatory compliance
-
-### Ecosystem Expansion
-- **NeXchange Ecosystem**
-  - Developer SDK and tools
-  - Community governance token
-  - Decentralized autonomous organization (DAO)
-  - Global community of 1M+ users
-
----
 
 **Vision**: Making cross-chain DeFi as simple as traditional banking, where users can manage all their digital assets from a single, secure, and intuitive interface powered by NEAR's cross-chain signature technology.
