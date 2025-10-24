@@ -23,16 +23,8 @@
 ### Multi-Pool Staking & Governance Expansion
 
 #### Cross-Chain Support
-- Introduce support for additional chains such as Solana, Base, and Aptos
-- Expand staking options with diverse validator pools
-
-#### Governance Integration
-- Enable cross-chain governance staking and voting mechanisms
-- Implement on-chain participation for ecosystem decisions
-
-#### Community Onboarding
-- Launch a community-led validator and pool onboarding system
-- Foster ecosystem partnerships and collaborations
+- Introduce support for additional chains such  as  Aptos , etc 
+- Expand staking options with diverse validator pools for teh same achain 
 
 ## 🏗️ Phase 3: Protocol Layer Development (Q2 2026)
 
