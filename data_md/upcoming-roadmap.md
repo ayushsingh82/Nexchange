@@ -24,7 +24,7 @@
 
 #### Cross-Chain Support
 - Introduce support for additional chains such  as  Aptos , etc 
-- Expand staking options with diverse validator pools for teh same achain 
+- Expand staking options with diverse validator pools for a chain 
 
 ## 🏗️ Phase 3: Protocol Layer Development (Q2 2026)
 
