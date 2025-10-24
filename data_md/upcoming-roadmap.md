@@ -20,7 +20,7 @@
 
 ## 🔧 Phase 2: Ecosystem Expansion (Q1 2026)
 
-### Multi-Pool Staking & Governance Expansion
+### Multi-Pool Staking  
 
 #### Cross-Chain Support
 - Introduce support for additional chains such  as  Aptos , etc 
