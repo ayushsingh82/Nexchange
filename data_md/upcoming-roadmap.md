@@ -1,6 +1,6 @@
 # NeXchange - Upcoming Roadmap
 
-## 🚀 Phase 1: Multi-Chain Staking Expansion (Q4 2025)
+##  Phase 1: Multi-Chain Staking Expansion (Q4 2025)
 
 ### Ethereum Staking Integration - November 2025
 - **EtherFi Liquid Staking**
@@ -26,7 +26,7 @@
 - Introduce support for additional chains such  as  Aptos , etc 
 - Expand staking options with diverse validator pools for a chain 
 
-## 🏗️ Phase 3: Protocol Layer Development (Q2 2026)
+##  Phase 3: Protocol Layer Development (Q2 2026)
 
 ### SDKs & API Layer for Builders
 
@@ -42,7 +42,7 @@
 - Collaborate with ecosystem dApps to embed NeXchange staking modules
 - Promote NeXchange as the core cross-chain staking infrastructure layer
 
-## 🤖 Phase 4: Advanced Features (Q3 2026)
+##  Phase 4: Advanced Features (Q3 2026)
 
 ### AI-Powered Optimization
 
@@ -54,6 +54,6 @@
 
 ---
 
-## 🎯 Vision
+##  Vision
 
 To revolutionize cross-chain DeFi staking by enabling truly seamless, one-click staking across multiple blockchains — empowering users to manage, stake, and grow their digital assets from a single, secure, and intuitive interface powered by NEAR's intent-based architecture and cross-chain signature technology.
