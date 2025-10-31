@@ -13,7 +13,7 @@
 ### TON Blockchain Integration - December 2025
 - **Bemo Staking Protocol**
   - Implement TON address derivation from NEAR wallet
-  - Connect to TON staking pools and validators
+  - Connect to TON staking pools 
   - Add TON staking functionality
   - Reward tracking and unstaking for TON
   - TON DeFi protocol integrations
@@ -24,7 +24,7 @@
 
 #### Cross-Chain Support
 - Introduce support for additional chains such  as  Aptos , etc 
-- Expand staking options with diverse validator pools for a chain 
+- Expand staking options with diverse staking pools for a chain 
 
 ##  Phase 3: Protocol Layer Development (Q2 2026)
 
