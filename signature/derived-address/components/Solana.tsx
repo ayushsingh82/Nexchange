@@ -16,7 +16,7 @@ import {
 } from "@near-wallet-selector/core";
 
 // Configure NEAR network here (align with your app). Default to testnet.
-const NEAR_NETWORK: "testnet" | "mainnet" = "testnet";
+const NEAR_NETWORK: "testnet" | "mainnet" = "mainnet";
 
 type StatusSetter = (value: string) => void;
 
