@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useNearWallet } from "../provider/wallet";
-import { chainAdapters } from "chainsig.js";
 import { Connection as SolanaConnection } from "@solana/web3.js";
 import { createPublicClient, http } from "viem";
 import { SIGNET_CONTRACT } from "@signature-derived/config";
@@ -52,6 +51,9 @@ export default function BalanceModal({ isOpen, onClose }: BalanceModalProps) {
       setAddresses({ sol: "", near: "", eth: "", loading: true });
 
       try {
+        // Dynamically import chainsig.js to avoid Node.js module issues in browser
+        const { chainAdapters } = await import("chainsig.js");
+        
         // Initialize chain adapters
         const solanaConnection = new SolanaConnection(SOLANA_RPC_URL);
         const Solana = new chainAdapters.solana.Solana({
