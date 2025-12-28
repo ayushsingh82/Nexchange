@@ -51,17 +51,13 @@ const nextConfig: NextConfig = {
   experimental: {
     externalDir: true,
   },
+  // Simple webpack config to resolve @signature-derived alias
   webpack: (config: any, { isServer }: { isServer: boolean }) => {
-    // Resolve @signature-derived alias
     const signatureDerivedPath = path.resolve(process.cwd(), '../signature/derived-address')
     
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
       ['@signature-derived']: signatureDerivedPath,
-      ['@signature-derived/config']: path.join(signatureDerivedPath, 'config'),
-      // Block problematic packages
-      '@near-wallet-selector/bitte-wallet': false,
-      '@bitte-ai/wallet': false,
     }
     
     // Add signature directory to module resolution
@@ -69,26 +65,6 @@ const nextConfig: NextConfig = {
       config.resolve.modules = []
     }
     config.resolve.modules.push(signatureDerivedPath)
-    
-    // Client-side only configurations
-    if (!isServer) {
-      // Node.js module fallbacks for browser
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        'fs': false,
-        'net': false,
-        'tls': false,
-        'crypto': false,
-        'stream': false,
-        'url': false,
-        'zlib': false,
-        'http': false,
-        'https': false,
-        'assert': false,
-        'os': false,
-        'path': false,
-      }
-    }
     
     return config
   },

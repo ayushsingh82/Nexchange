@@ -1,4 +1,4 @@
-# 🔀 NeXchange
+#  NeXchange
 
 **NeXchange** is a decentralized, intent-based cross-chain execution protocol that allows users to stake NEAR , SOL , ETH ..etc  to their respective staking pools like Jito for Solana , Ethfi for ETH  and beyond — directly from their **NEAR wallet**. No bridging, no wallet switching, no friction.
 

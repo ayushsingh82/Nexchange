@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useNearWallet } from "../provider/wallet";
 import { Connection as SolanaConnection } from "@solana/web3.js";
 import { createPublicClient, http } from "viem";
-import { SIGNET_CONTRACT } from "@signature-derived/config";
+import { SIGNET_CONTRACT } from "../lib/config/signet";
 import { providers } from "near-api-js";
 
 // Constants from the user's code

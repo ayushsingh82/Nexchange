@@ -20,8 +20,6 @@ import { VertoContract, NetworkId } from "../lib/config/near";
 import { providers } from "near-api-js";
 import { MethodParameters } from "../lib/type/type";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
-import { setupHotWallet } from "@near-wallet-selector/hot-wallet";
-import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 
 const THIRTY_TGAS = "30000000000000";
 const NO_DEPOSIT = "0";
@@ -74,8 +72,6 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
       network: NetworkId,
       modules: [
         setupMeteorWallet({}) as WalletModuleFactory,
-        setupBitteWallet({}) as WalletModuleFactory,
-        setupHotWallet() as WalletModuleFactory,
       ],
     }).then((selector) => {
       setWalletSelector(selector);
