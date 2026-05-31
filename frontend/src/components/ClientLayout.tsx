@@ -40,13 +40,21 @@ function NavbarContent() {
                 </Link> */}
                 
                 {/* Explore Link */}
-                <Link 
-                  href="/explore" 
+                <Link
+                  href="/explore"
                   className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
                 >
                   Explore
                 </Link>
-                
+
+                {/* Docs Link */}
+                <Link
+                  href="/docs"
+                  className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
+                >
+                  Docs
+                </Link>
+
                 {/* Jito Link */}
                 {/* <Link 
                   href="/jito" 
