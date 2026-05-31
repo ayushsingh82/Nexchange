@@ -4,6 +4,16 @@ export { LidoBanner } from './LidoBanner';
 export { LidoContractService } from './LidoContractService';
 export { LidoAPIService } from './LidoAPIService';
 
+// Standalone deposit / withdraw functions
+export {
+  depositLido,
+  requestWithdrawalLido,
+  getLidoWithdrawalRequests,
+  claimWithdrawalLido,
+  LIDO_STETH_ADDRESS,
+  LIDO_WITHDRAWAL_QUEUE_ADDRESS,
+} from './LidoStaking';
+
 // Export types
 export type {
   LidoConfig,

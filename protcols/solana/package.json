@@ -14,9 +14,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@marinade.finance/marinade-ts-sdk": "^5.0.10",
     "@solana/spl-stake-pool": "^1.1.8",
     "@solana/spl-token": "^0.4.13",
-    "@solana/web3.js": "^1.98.4"
+    "@solana/web3.js": "^1.98.4",
+    "bn.js": "^5.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
