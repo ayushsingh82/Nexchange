@@ -1,130 +1,135 @@
-#  NeXchange
+# NeXchange
 
-**NeXchange** is a decentralized, intent-based cross-chain execution protocol that allows users to stake NEAR , SOL , ETH ..etc  to their respective staking pools like Jito for Solana , Ethfi for ETH  and beyond — directly from their **NEAR wallet**. No bridging, no wallet switching, no friction.
+**NeXchange** is a decentralized, intent-based cross-chain execution protocol. It allows users to swap and stake assets across Solana, Ethereum, and NEAR — staking into protocols such as Jito and Marinade on Solana or Lido and Ether.fi on Ethereum — directly from a single **NEAR wallet**. No bridging, no wallet switching, no friction.
 
-Built as a **public good** for the NEAR ecosystem, NeXchange empowers real users and developers with seamless, AI-optimized, and verifiable cross-chain functionality.
-
-
+Built as a public good for the NEAR ecosystem, NeXchange provides seamless, AI-optimized, and verifiable cross-chain functionality for users and developers.
 
 ---
 
-## 🌍 What is NeXchange?
-
-Mintlify Docs - https://nexchange.mintlify.app/
-
-
-google docs - https://docs.google.com/document/d/121vsqosl1aIL6oMcbpeE4_PYsnymh6b9_IKkPDDiQl0/edit?addon_store&tab=t.0
+## Overview
 
 NeXchange enables NEAR users to:
 
-- ✅ Swap NEAR → SOL / ETH / USDC and more via AI-optimized execution
-- ✅ Stake directly on Solana staking pool or EVM staking pools and near staking pools from your NEAR wallet
-- ✅ Use one wallet (NEAR) to interact across multiple ecosystems
-- ✅ Automate treasury and DAO operations with verifiable results (coming soon)
-- ✅ Execute DeFi actions (lend, borrow, yield farm) across chains  ( coming soon )
+- Swap NEAR to SOL, ETH, USDC, and more via AI-optimized execution.
+- Stake directly into Solana, Ethereum, and NEAR staking pools from a NEAR wallet.
+- Interact across multiple ecosystems using a single wallet.
+- Automate treasury and DAO operations with verifiable results (planned).
+- Execute cross-chain DeFi actions such as lending, borrowing, and yield farming (planned).
 
-All actions are powered by signed **intents**, which are interpreted and executed by a decentralized network of **solver nodes**.
-
-Twitter link of project - https://x.com/nexchange_near
+All actions are powered by signed **intents**, which are interpreted and settled by a decentralized network of **solver nodes**.
 
 ---
 
-## 🧱 Why It Matters
+## Why It Matters
 
-NeXchange is designed as a **modular, open-source public good** that prioritizes:
+NeXchange is a modular, open-source public good that prioritizes:
 
-- 🔓 **Transparency** – Fully auditable on-chain execution
-- 🔁 **Interoperability** – Seamless NEAR ↔ Solana / EVM integration
-- ⚙️ **Modularity** – Built to be extended and forked by the community
-- 👤 **User Experience** – Zero need to switch wallets or manage gas across chains
-
----
-
-## 🤖 How It Works
-
-1. **Intent Creation**  
-   A user signs an intent from their NEAR wallet (e.g., "swapping SOL on NEAR to SOL on SOL ").
-
-2. **AI Optimization**  
-   The NeXchange AI interprets the intent, finds the best path, and ensures execution safety.
-
-3. **Broadcast to Solvers**  
-   The execution request is broadcast to a decentralized network of solver nodes.
-
-4. **Execution & Verification**  
-   The best solver executes the transaction on Solana or EVM and provides verifiable proof.
+- **Transparency** — fully auditable, on-chain execution.
+- **Interoperability** — seamless NEAR to Solana and EVM integration.
+- **Modularity** — built to be extended and forked by the community.
+- **User Experience** — no wallet switching and no cross-chain gas management.
 
 ---
 
-## 🌟 Key Features
+## How It Works
 
-- **NEAR-First UX**  
-  All cross-chain interactions begin from NEAR. No more wallet chaos.
-
-- **Intent-Based Execution**  
-  Simple signed messages using chain signature to sign transaction cross chain unlock powerful cross-chain actions.
-
-- **AI-Powered Routing**  
-  Get the best price, speed, and reliability without needing to choose.
-
-- **Non-Custodial & Secure**  
-  No bridges. No wrapped tokens. No central intermediaries.
+1. **Intent Creation** — a user signs an intent from their NEAR wallet (for example, swapping NEAR for SOL and staking it).
+2. **AI Optimization** — the intent is interpreted, the optimal route is selected, and execution safety is verified.
+3. **Broadcast to Solvers** — the request is broadcast to a decentralized network of solver nodes.
+4. **Execution and Verification** — the winning solver executes the transaction on the destination chain and provides verifiable proof.
 
 ---
 
-## 💡 Real-World Impact
+## Key Features
 
-- 🧾 **Stake** on Solana or EVM platforms directly from NEAR.
-- 🔄 **Swap** assets (e.g., NEAR → ETH, USDC → SOL) via a single click.
-- 🧠 **Use DeFi** apps across ecosystems without leaving the NEAR environment.
-- 🛠 **Builders** can offer cross-chain functionality natively inside NEAR dApps.
-- 🏛 **DAOs** can manage multi-chain treasuries via intent-based automation.
-
----
-
-## 🛠 Tech Stack
-
-- 🧠 AI-powered Intent Parser
-- 🔗 NEAR Smart Contracts (Intent Signing & Management)
-- 🌐 Cross-chain Signatures
-- 📜 Onchain Proof System for Verifiable Results
+- **NEAR-First UX** — all cross-chain interactions begin from NEAR.
+- **Intent-Based Execution** — signed messages, combined with chain signatures, unlock cross-chain actions.
+- **AI-Powered Routing** — best price, speed, and reliability without manual route selection.
+- **Non-Custodial and Secure** — no bridges, no wrapped tokens, no central intermediaries.
 
 ---
 
-## 🔐 Security
+## Architecture
 
-- No bridging or wrapping
-- On-chain verification of solver execution
-- Replay protection for all intents
-- Permissionless solver participation
+The protocol is organized into four modules:
 
----
-
-## 🚀 Coming Soon
-
-- ✅ MVP with token swaps and staking flows
-- 📚 Full developer docs and SDKs - https://nexchange.mintlify.app/
-- 🌉 Support for additional chains (Cosmos, Aptos, etc.)  (coming soon)
-- 🧱 DAO registry & governance flows (coming soon)
-
+| Module | Description |
+|--------|-------------|
+| **Frontend** | Next.js dApp: wallet connection, staking UI, intents panel, and documentation. |
+| **Intents Engine** | Wraps the 1Click / defuse SDK for the deposit, quote, swap, and withdraw lifecycle. |
+| **Chain Signatures** | `chainsig.js` adapters to derive and sign Solana and EVM transactions from a NEAR account. |
+| **Staking Protocols** | Jito and Marinade (Solana); Lido and Ether.fi (Ethereum). |
 
 ---
 
-## 🤝 Contributing
+## Supported Chains and Protocols
 
-We welcome contributions from developers, protocol teams, and researchers interested in shaping the future of cross-chain execution. Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for more details.
-
----
-
-## 📄 License
-
-This project is released under the MIT License.
+| Chain | Protocols | Status |
+|-------|-----------|--------|
+| Solana | Jito (JitoSOL), Marinade (mSOL) | Available |
+| Ethereum | Lido (stETH), Ether.fi (eETH) | Available |
+| NEAR | Meta Pool, LiNEAR | Planned |
 
 ---
 
-## 🌐 Links
+## Use Cases
 
-- Website: [Coming Soon]
-- Docs: https://nexchange.mintlify.app/
-- Twitter: https://x.com/nexchange_near
+- **Stake** on Solana or Ethereum directly from NEAR.
+- **Swap** assets such as NEAR to ETH or USDC to SOL in a single flow.
+- **Use DeFi** across ecosystems without leaving the NEAR environment.
+- **Build** cross-chain functionality natively inside NEAR dApps.
+- **Manage** multi-chain DAO treasuries via intent-based automation (planned).
+
+---
+
+## Tech Stack
+
+- AI-powered intent parser.
+- NEAR smart contracts for intent signing and management.
+- Cross-chain signatures via NEAR MPC.
+- On-chain proof system for verifiable results.
+
+---
+
+## Security
+
+- No bridging or wrapping of assets across chains.
+- On-chain verification of solver execution.
+- Replay protection and deadlines for all intents.
+- Non-custodial design with MPC-derived addresses.
+- Permissionless solver participation.
+
+---
+
+## Roadmap
+
+- MVP with token swaps and staking flows (live).
+- Developer documentation and SDKs.
+- Support for additional chains such as Cosmos, Aptos, and TON.
+- DAO registry and governance flows.
+- Cross-chain DeFi: lending, borrowing, and yield.
+
+---
+
+## Documentation
+
+Full protocol documentation is available in-app at the `/docs` route.
+
+---
+
+## Contributing
+
+Contributions from developers, protocol teams, and researchers are welcome. Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+
+---
+
+## License
+
+Released under the MIT License.
+
+---
+
+## Links
+
+- Twitter / X: https://x.com/nexchange_near
 - GitHub: https://github.com/ayushsingh82/Nexchange
