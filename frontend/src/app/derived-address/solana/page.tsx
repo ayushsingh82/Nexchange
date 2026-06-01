@@ -37,7 +37,7 @@ export default function Page() {
           Please connect your NEAR wallet first using the navbar.
         </div>
       ) : (
-        <SolanaView props={{ setStatus }} signer={signer} />
+        <SolanaView props={{ setStatus }} signer={signer as any} />
       )}
     </div>
   )
