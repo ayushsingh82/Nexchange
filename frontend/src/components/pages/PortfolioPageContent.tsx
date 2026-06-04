@@ -1,9 +1,18 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import { useNearWallet } from '@/provider/wallet'
 import { useStakingApy } from '../../app/stake/hooks/useStakingApy'
 import { FALLBACK_PRICES } from '../../app/stake/constant'
+import BalanceModal from '@/components/BalanceModal'
+
+const NAV = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'addresses', label: 'Derived Addresses' },
+  { id: 'positions', label: 'Staked Positions' },
+  { id: 'holdings', label: 'Token Holdings' },
+]
 
 const CHAIN_LOGOS = {
   solana: 'https://s3.coinmarketcap.com/static-gravity/image/58ba0011f24d47c4b2e8adaa873bb280.jpg',
@@ -77,18 +86,61 @@ export default function PortfolioPageContent() {
     { name: 'Ethereum', logo: CHAIN_LOGOS.ethereum, path: 'ethereum-1', addr: evmAddr, note: 'Chain-signature derived' },
   ]
 
+  const [copied, setCopied] = useState<string | null>(null)
+  const [balanceOpen, setBalanceOpen] = useState(false)
+
+  const copy = (addr: string) => {
+    navigator.clipboard?.writeText(addr).then(() => {
+      setCopied(addr)
+      setTimeout(() => setCopied((c) => (c === addr ? null : c)), 1500)
+    })
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="container mx-auto px-4 sm:px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-12 flex flex-col lg:flex-row gap-8">
+        {/* Sidebar */}
+        <aside className="lg:w-56 flex-shrink-0">
+          <div className="lg:sticky lg:top-24">
+            <p className="text-xs uppercase tracking-wider text-[#97FBE4]/50 mb-4">Portfolio</p>
+            <nav className="flex lg:flex-col gap-1 overflow-x-auto">
+              {NAV.map((n) => (
+                <a
+                  key={n.id}
+                  href={`#${n.id}`}
+                  className="text-sm px-3 py-2 text-gray-400 hover:text-[#97FBE4] hover:bg-[#97FBE4]/5 transition-colors whitespace-nowrap"
+                >
+                  {n.label}
+                </a>
+              ))}
+            </nav>
+            <div className="mt-6 flex flex-col gap-2">
+              <button
+                onClick={() => setBalanceOpen(true)}
+                className="w-full px-4 py-2.5 text-sm bg-[#97FBE4] text-black font-medium hover:bg-[#5eead4] transition-colors"
+              >
+                View Balance
+              </button>
+              <Link
+                href="/explore"
+                className="w-full px-4 py-2.5 text-sm text-center border border-[#97FBE4]/40 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors"
+              >
+                Stake More
+              </Link>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <div className="flex-1 min-w-0">
         {/* Header */}
-        <div className="mb-10">
-          <p className="text-xs uppercase tracking-wider text-[#97FBE4]/50 mb-2">Portfolio</p>
+        <div id="overview" className="mb-10 scroll-mt-24">
           <h1 className="text-3xl sm:text-4xl font-bold text-[#97FBE4]">Your Cross-Chain Positions</h1>
           <p className="text-[#97FBE4]/70 mt-2 text-sm sm:text-base">
             {accountId ? (
               <>Signed in as <span className="text-white font-medium">{accountId}</span></>
             ) : (
-              <>Connect your NEAR wallet from the navbar to see your own positions — showing demo data for now.</>
+              <>Connect your NEAR wallet to see your own positions — showing demo data for now.</>
             )}
           </p>
         </div>
@@ -109,7 +161,7 @@ export default function PortfolioPageContent() {
         </div>
 
         {/* Derived Addresses */}
-        <section className="mb-12">
+        <section id="addresses" className="mb-12 scroll-mt-24">
           <h2 className="text-xl font-semibold text-[#97FBE4] mb-4">Derived Addresses</h2>
           <p className="text-sm text-[#97FBE4]/60 mb-4">
             One NEAR account controls a native address on every chain via chain signatures.
@@ -124,17 +176,35 @@ export default function PortfolioPageContent() {
                     <p className="text-[10px] text-[#97FBE4]/50">path: {a.path}</p>
                   </div>
                 </div>
-                <p className="font-mono text-xs text-[#97FBE4] break-all bg-black/40 border border-[#97FBE4]/10 px-2 py-2">
-                  {short(a.addr)}
+                <div className="flex items-center gap-2 bg-black/40 border border-[#97FBE4]/10 px-2 py-2">
+                  <p className="font-mono text-xs text-[#97FBE4] break-all flex-1">{short(a.addr)}</p>
+                  <button
+                    onClick={() => copy(a.addr)}
+                    aria-label={`Copy ${a.name} address`}
+                    className="flex-shrink-0 text-[#97FBE4]/60 hover:text-[#97FBE4] transition-colors"
+                  >
+                    {copied === a.addr ? (
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="0" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-500 mt-2">
+                  {copied === a.addr ? 'Copied!' : a.note}
                 </p>
-                <p className="text-[10px] text-gray-500 mt-2">{a.note}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Staked Positions */}
-        <section className="mb-12">
+        <section id="positions" className="mb-12 scroll-mt-24">
           <h2 className="text-xl font-semibold text-[#97FBE4] mb-4">Staked Positions</h2>
           <div className="overflow-x-auto border border-[#97FBE4]/20">
             <table className="w-full text-sm min-w-[640px]">
@@ -187,7 +257,7 @@ export default function PortfolioPageContent() {
         </section>
 
         {/* Token Holdings */}
-        <section className="mb-4">
+        <section id="holdings" className="mb-4 scroll-mt-24">
           <h2 className="text-xl font-semibold text-[#97FBE4] mb-4">Token Holdings</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {positions.map((p, i) => (
@@ -218,7 +288,10 @@ export default function PortfolioPageContent() {
             Stake More
           </Link>
         </div>
+        </div>
       </div>
+
+      <BalanceModal isOpen={balanceOpen} onClose={() => setBalanceOpen(false)} />
     </div>
   )
 }

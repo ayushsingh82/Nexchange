@@ -7,6 +7,7 @@ const CHAIN_LOGOS = {
   solana: 'https://s3.coinmarketcap.com/static-gravity/image/58ba0011f24d47c4b2e8adaa873bb280.jpg',
   ethereum: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJsxR0KYJtHgBOV1xHFe_HhZCX15J9tEWGLw&s',
   near: 'https://s3.coinmarketcap.com/static-gravity/image/ef3ad80e423a4449ab8e961b0d1edea4.png',
+  sui: 'https://s2.coinmarketcap.com/static/img/coins/64x64/20947.png',
   ton: 'https://s2.coinmarketcap.com/static/img/coins/64x64/11419.png',
 }
 
@@ -15,6 +16,11 @@ const PROTOCOL_LOGOS = {
   lido: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAgWY6sAzDq67Qo5bZNKCI_-WYssDSiV9odA&s',
   etherfi: 'https://s3.coinmarketcap.com/static-gravity/image/d841a331a19e4c86a67aa7996197bea8.jpg',
   marinade: 'https://raw.githubusercontent.com/marinade-finance/liquid-staking-program/main/Docs/img/MNDE.png',
+  metapool: 'https://avatars.githubusercontent.com/u/112860635?s=200&v=4',
+  linear: 'https://coin-images.coingecko.com/coins/images/25210/large/sUld7aEX_400x400.png',
+  haedal: 'https://coin-images.coingecko.com/coins/images/33512/large/hasui.png',
+  volo: 'https://coin-images.coingecko.com/coins/images/33243/large/voloSUI_%283%29.png',
+  tonstakers: 'https://coin-images.coingecko.com/coins/images/35404/large/icon_%281%29.png',
 }
 
 interface Protocol {
@@ -64,8 +70,18 @@ const CHAINS: Chain[] = [
     logo: CHAIN_LOGOS.near,
     status: 'Coming Soon',
     protocols: [
-      { name: 'Meta Pool', token: 'stNEAR', logo: CHAIN_LOGOS.near, available: false, fallbackApy: 8.5 },
-      { name: 'LiNEAR', token: 'LiNEAR', logo: CHAIN_LOGOS.near, available: false, fallbackApy: 8.2 },
+      { name: 'Meta Pool', token: 'stNEAR', logo: PROTOCOL_LOGOS.metapool, available: false, fallbackApy: 8.5 },
+      { name: 'LiNEAR', token: 'LiNEAR', logo: PROTOCOL_LOGOS.linear, available: false, fallbackApy: 8.2 },
+    ],
+  },
+  {
+    key: 'sui',
+    name: 'Sui',
+    logo: CHAIN_LOGOS.sui,
+    status: 'Coming Soon',
+    protocols: [
+      { name: 'Haedal', token: 'haSUI', logo: PROTOCOL_LOGOS.haedal, available: false, fallbackApy: 3.2 },
+      { name: 'Volo', token: 'vSUI', logo: PROTOCOL_LOGOS.volo, available: false, fallbackApy: 3.0 },
     ],
   },
   {
@@ -74,8 +90,8 @@ const CHAINS: Chain[] = [
     logo: CHAIN_LOGOS.ton,
     status: 'Coming Soon',
     protocols: [
-      { name: 'Tonstakers', token: 'tsTON', logo: CHAIN_LOGOS.ton, available: false },
-      { name: 'Whales', token: 'wsTON', logo: CHAIN_LOGOS.ton, available: false },
+      { name: 'Tonstakers', token: 'tsTON', logo: PROTOCOL_LOGOS.tonstakers, available: false, fallbackApy: 4.1 },
+      { name: 'Whales', token: 'wsTON', logo: CHAIN_LOGOS.ton, available: false, fallbackApy: 3.9 },
     ],
   },
 ]
