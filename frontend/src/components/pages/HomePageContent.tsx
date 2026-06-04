@@ -10,7 +10,7 @@ const Compare = dynamic(() => import('@/components/ui/compare').then(m => ({ def
 
 function CompareDemo() {
   return (
-    <div className="p-4 border rounded-3xl dark:bg-neutral-900 bg-neutral-100  border-neutral-200 dark:border-neutral-800 px-4">
+    <div className="p-4 border dark:bg-neutral-900 bg-neutral-100  border-neutral-200 dark:border-neutral-800 px-4">
       <Compare
         firstImage="https://assets.aceternity.com/code-problem.png"
         secondImage="https://assets.aceternity.com/code-solution.png"
@@ -66,7 +66,7 @@ export default function HomePageContent() {
             {/* Bento Grid */}
             <div className="grid grid-cols-12 gap-4 auto-rows-[160px]">
               {/* Main Feature */}
-              <div className="col-span-12 md:col-span-8 row-span-2 group relative bg-[#00150E] bg-opacity-80 rounded-2xl p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden">
+              <div className="col-span-12 md:col-span-8 row-span-2 group relative bg-[#00150E] bg-opacity-80 p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden">
                 <div className="relative z-10">
                   <p className="text-sm text-[#97FBE4]/60 mb-4 pixel-font">FEATURED</p>
                   <h3 className="text-3xl font-light mb-3 "> No wallet switching. No friction.</h3>
@@ -77,7 +77,7 @@ export default function HomePageContent() {
                 <div className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-[#97FBE4] to-transparent w-full" />
               </div>
               {/* Live Stats */}
-              <div className="col-span-12 md:col-span-4 row-span-2 bg-[#97FBE4] rounded-2xl p-8 relative overflow-hidden shadow-xl live-stats-box">
+              <div className="col-span-12 md:col-span-4 row-span-2 bg-[#97FBE4] p-8 relative overflow-hidden shadow-xl live-stats-box">
                 <div className="flex flex-col justify-between h-full">
                   <div>
                     <p className="text-sm mb-2 ">LIVE</p>
@@ -92,15 +92,15 @@ export default function HomePageContent() {
                 <div className="absolute top-0 right-0 w-32 h-32 border border-black/10 -translate-y-1/2 translate-x-1/2" />
               </div>
               {/* Feature Cards */}
-              <div className="col-span-6 md:col-span-3 bg-[#00150E] bg-opacity-80 rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
+              <div className="col-span-6 md:col-span-3 bg-[#00150E] bg-opacity-80 p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
                 <h4 className="text-lg font-semibold mb-1 text-[#97FBE4] ">Public good</h4>
                 <p className="text-xs text-[#97FBE4]/80 pixel-font">builders, traders, and communities goes cross-chain.</p>
               </div>
-              <div className="col-span-6 md:col-span-3 bg-[#97FBE4] rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center live-stats-box">
+              <div className="col-span-6 md:col-span-3 bg-[#97FBE4] p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center live-stats-box">
                 <h4 className="text-lg font-semibold mb-1 text-black ">Cross-Chain Signatures</h4>
                 <p className="text-xs text-black font-light pixel-font">stake on any chain directly from NEAR wallet.</p>
               </div>
-              <div className="col-span-12 md:col-span-6 bg-[#00150E] bg-opacity-80 rounded-2xl p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
+              <div className="col-span-12 md:col-span-6 bg-[#00150E] bg-opacity-80 p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center">
                 <h4 className="text-lg font-semibold mb-1 text-[#97FBE4] ">Intents</h4>
                 <p className="text-xs text-[#97FBE4]/80 pixel-font">one click to move funds cross chain.</p>
               </div>
@@ -114,7 +114,7 @@ export default function HomePageContent() {
             <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[#97FBE4] to-[#5eead4] text-transparent bg-clip-text">
               Architecture
             </h2>
-            <div className="bg-[#00150E] bg-opacity-80 p-6 rounded-2xl border border-[#97FBE4]/30 w-full overflow-hidden">
+            <div className="bg-[#00150E] bg-opacity-80 p-6 border border-[#97FBE4]/30 w-full overflow-hidden">
               <div className="relative w-full h-[400px] md:h-[450px] overflow-auto scrollbar-thin scrollbar-thumb-[#97FBE4]/30 scrollbar-track-transparent">
                 <img 
                   src="/NeXchangearchitecture.png" 
@@ -185,7 +185,7 @@ export default function HomePageContent() {
             <h2 className="text-3xl font-light mb-12 text-center">Frequently Asked Questions</h2>
             <div className="space-y-4">
               {faqs.map((faq, index) => (
-                <div key={index} className="border border-[#97FBE4]/30 rounded-2xl overflow-hidden">
+                <div key={index} className="border border-[#97FBE4]/30 overflow-hidden">
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
                     className="w-full p-6 text-left flex items-center justify-between hover:bg-[#00150E]/30 transition-all duration-300"

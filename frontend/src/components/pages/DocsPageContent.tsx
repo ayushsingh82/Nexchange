@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useStakingApy } from '../../app/stake/hooks/useStakingApy'
 
 const SECTIONS = [
   { id: 'introduction', label: 'Introduction' },
@@ -11,11 +12,27 @@ const SECTIONS = [
   { id: 'architecture', label: 'Architecture' },
   { id: 'user-flow', label: 'User Flow' },
   { id: 'chains', label: 'Supported Chains' },
-  { id: 'staking', label: 'Staking Protocols' },
-  { id: 'functions', label: 'Function Reference' },
+  { id: 'staking', label: 'Staking & Best Returns' },
   { id: 'security', label: 'Security' },
   { id: 'roadmap', label: 'Roadmap' },
   { id: 'links', label: 'Links' },
+]
+
+const WEBSITE_URL = 'https://nexchange-near.vercel.app/'
+const X_URL = 'https://x.com/nexchange_near'
+
+// Pools we support. Live APY (Jito/Lido) is fetched; the rest use typical estimates.
+const POOLS: {
+  name: string
+  chain: string
+  token: string
+  symbol?: string
+  fallback: number
+}[] = [
+  { name: 'Jito', chain: 'Solana', token: 'JitoSOL', symbol: 'SOL', fallback: 7.2 },
+  { name: 'Marinade', chain: 'Solana', token: 'mSOL', fallback: 7.0 },
+  { name: 'Lido', chain: 'Ethereum', token: 'stETH', symbol: 'ETH', fallback: 3.0 },
+  { name: 'Ether.fi', chain: 'Ethereum', token: 'eETH', fallback: 3.1 },
 ]
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
@@ -31,7 +48,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <pre className="bg-[#0a0f0d] border border-green-800/40 rounded-lg p-4 overflow-x-auto text-sm text-[#97FBE4] my-4">
+    <pre className="bg-[#0a0f0d] border border-green-800/40 p-4 overflow-x-auto text-sm text-[#97FBE4] my-4">
       <code>{children}</code>
     </pre>
   )
@@ -43,7 +60,7 @@ function Pill({ children, tone = 'teal' }: { children: React.ReactNode; tone?: '
       ? 'bg-[#97FBE4]/10 text-[#97FBE4] border-[#97FBE4]/30'
       : 'bg-gray-700/30 text-gray-400 border-gray-600/40'
   return (
-    <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full border ${cls}`}>
+    <span className={`inline-block text-xs font-medium px-2.5 py-1 border ${cls}`}>
       {children}
     </span>
   )
@@ -51,6 +68,20 @@ function Pill({ children, tone = 'teal' }: { children: React.ReactNode; tone?: '
 
 export default function DocsPageContent() {
   const [active, setActive] = useState('introduction')
+  const { data: apyData, loading: apyLoading } = useStakingApy()
+
+  // Merge live APY into the pool list and rank by return (highest first).
+  const rankedPools = POOLS.map((p) => {
+    const live = p.symbol && apyData ? apyData[p.symbol] : undefined
+    const isLive = !!live && live.source !== 'estimate'
+    return {
+      ...p,
+      apy: isLive ? live!.apy : p.fallback,
+      isLive,
+    }
+  }).sort((a, b) => b.apy - a.apy)
+
+  const best = rankedPools[0]
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -68,7 +99,7 @@ export default function DocsPageContent() {
                     key={s.id}
                     href={`#${s.id}`}
                     onClick={() => setActive(s.id)}
-                    className={`text-sm px-3 py-2 rounded-lg transition-colors ${
+                    className={`text-sm px-3 py-2 transition-colors ${
                       active === s.id
                         ? 'bg-[#97FBE4]/10 text-[#97FBE4]'
                         : 'text-gray-400 hover:text-[#97FBE4] hover:bg-[#97FBE4]/5'
@@ -78,6 +109,33 @@ export default function DocsPageContent() {
                   </a>
                 ))}
               </nav>
+
+              {/* Bottom-left links */}
+              <div className="mt-8 pt-6 border-t border-green-800/40 flex flex-col gap-2">
+                <a
+                  href={X_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#97FBE4] transition-colors px-3 py-2"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                  Follow on X
+                </a>
+                <a
+                  href={WEBSITE_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#97FBE4] transition-colors px-3 py-2"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-current fill-none" strokeWidth={2} aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18" />
+                  </svg>
+                  nexchange-near.vercel.app
+                </a>
+              </div>
             </div>
           </aside>
 
@@ -133,7 +191,7 @@ export default function DocsPageContent() {
                 ].map(([t, d]) => (
                   <div
                     key={t}
-                    className="border border-green-800/40 rounded-lg p-4 bg-[#0a0f0d]"
+                    className="border border-green-800/40 p-4 bg-[#0a0f0d]"
                   >
                     <h3 className="text-[#97FBE4] font-semibold mb-1">{t}</h3>
                     <p className="text-sm text-gray-400">{d}</p>
@@ -200,7 +258,7 @@ export default function DocsPageContent() {
                   ['Chain Signatures', 'chainsig.js adapters to derive and sign Solana / EVM transactions from NEAR.'],
                   ['Staking Protocols', 'Jito & Marinade (Solana), Lido & Ether.fi (Ethereum).'],
                 ].map(([t, d]) => (
-                  <div key={t} className="flex gap-4 border border-green-800/40 rounded-lg p-4 bg-[#0a0f0d]">
+                  <div key={t} className="flex gap-4 border border-green-800/40 p-4 bg-[#0a0f0d]">
                     <div className="text-[#97FBE4] font-semibold w-40 flex-shrink-0">{t}</div>
                     <div className="text-sm text-gray-400">{d}</div>
                   </div>
@@ -225,7 +283,7 @@ export default function DocsPageContent() {
 
             <Section id="chains" title="Supported Chains">
               <div className="overflow-x-auto">
-                <table className="w-full text-sm border border-green-800/40 rounded-lg overflow-hidden">
+                <table className="w-full text-sm border border-green-800/40 overflow-hidden">
                   <thead className="bg-[#0a0f0d] text-[#97FBE4]">
                     <tr>
                       <th className="text-left p-3">Chain</th>
@@ -254,64 +312,97 @@ export default function DocsPageContent() {
               </div>
             </Section>
 
-            <Section id="staking" title="Staking Protocols">
+            <Section id="staking" title="Staking & Best Returns">
               <p>
-                NeXchange integrates liquid-staking protocols on each chain. Deposits mint a liquid
-                staking token (LST); withdrawals redeem it back to the native asset.
+                NeXchange integrates the leading liquid-staking pools on each chain. You deposit the
+                native asset, receive a liquid staking token (LST) that keeps earning, and can
+                redeem it back at any time. Here is every pool we support, ranked by current APY.
               </p>
 
-              <h3 className="text-xl font-semibold text-[#97FBE4] mt-6">Jito — Solana</h3>
-              <p>
-                SPL stake pool. Deposit SOL to receive JitoSOL. Unstake instantly via the pool
-                reserve, or delayed into a native stake account (no fee).
+              {/* Best return callout */}
+              {best && (
+                <div className="border border-[#97FBE4]/40 bg-[#97FBE4]/10 p-5 my-6 flex items-center justify-between flex-wrap gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-[#97FBE4]/70 mb-1">
+                      Highest return right now
+                    </p>
+                    <p className="text-white text-lg font-semibold">
+                      {best.name} <span className="text-gray-400">({best.token} · {best.chain})</span>
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold text-[#97FBE4]">
+                      {apyLoading ? '…' : `${best.apy.toFixed(2)}%`}
+                    </p>
+                    <p className="text-xs text-gray-400">{best.isLive ? 'live APY' : 'est. APY'}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Ranked comparison table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border border-green-800/40 overflow-hidden">
+                  <thead className="bg-[#0a0f0d] text-[#97FBE4]">
+                    <tr>
+                      <th className="text-left p-3">#</th>
+                      <th className="text-left p-3">Pool</th>
+                      <th className="text-left p-3">Chain</th>
+                      <th className="text-left p-3">LST</th>
+                      <th className="text-right p-3">APY</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-300">
+                    {rankedPools.map((p, i) => (
+                      <tr
+                        key={p.name}
+                        className={`border-t border-green-800/30 ${i === 0 ? 'bg-[#97FBE4]/5' : ''}`}
+                      >
+                        <td className="p-3 text-gray-500">{i + 1}</td>
+                        <td className="p-3 font-medium text-white">
+                          {p.name}
+                          {i === 0 && (
+                            <span className="ml-2 align-middle"><Pill>Best APY</Pill></span>
+                          )}
+                        </td>
+                        <td className="p-3">{p.chain}</td>
+                        <td className="p-3">{p.token}</td>
+                        <td className="p-3 text-right font-semibold text-[#97FBE4]">
+                          {apyLoading ? '…' : `${p.apy.toFixed(2)}%`}
+                          <span className="ml-1 text-[10px] text-gray-500">
+                            {p.isLive ? 'live' : 'est'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Live APY is pulled directly from each protocol&apos;s own API (Jito, Lido); pools
+                marked <span className="text-gray-400">est</span> use recent typical yields. As a
+                rule, Solana pools (Jito, Marinade) currently pay the highest returns.
               </p>
 
-              <h3 className="text-xl font-semibold text-[#97FBE4] mt-6">Marinade — Solana</h3>
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">The pools at a glance</h3>
               <p>
-                Deposit SOL to receive mSOL. Unstake instantly via Marinade&apos;s liquidity pool
-                (small fee), or order a delayed unstake ticket and claim after the cooldown.
+                <strong className="text-white">Jito (Solana)</strong> — deposit SOL, receive
+                JitoSOL. Earns staking rewards <em>plus</em> MEV tips, which is why it usually tops
+                the table. Unstake instantly or delayed with no fee.
               </p>
-
-              <h3 className="text-xl font-semibold text-[#97FBE4] mt-6">Lido — Ethereum</h3>
               <p>
-                Deposit ETH to receive stETH. Unstaking is a two-step async flow: request a
-                withdrawal (mints an unstETH NFT), then claim ETH once the request is finalized.
+                <strong className="text-white">Marinade (Solana)</strong> — deposit SOL, receive
+                mSOL. Spreads stake across 100+ validators for resilience. Instant unstake via its
+                liquidity pool, or a no-fee delayed ticket.
               </p>
-
-              <h3 className="text-xl font-semibold text-[#97FBE4] mt-6">Ether.fi — Ethereum</h3>
               <p>
-                Deposit ETH to receive eETH (1:1 with staked ETH). Unstaking mirrors Lido: request
-                a withdrawal (mints a WithdrawRequestNFT), then claim ETH once finalized.
+                <strong className="text-white">Lido (Ethereum)</strong> — deposit ETH, receive
+                stETH, the most liquid LST in DeFi. Lower APY than Solana but on the most battle-
+                tested network.
               </p>
-            </Section>
-
-            <Section id="functions" title="Function Reference">
-              <p>Standalone deposit / withdraw functions exposed by each integration.</p>
-
-              <h3 className="text-lg font-semibold text-[#97FBE4] mt-4">Solana</h3>
-              <Code>{`// Jito
-stakeSOL(amount, wallet, connection?)
-unstakeJitoSOLInstant(amount, wallet, connection?)
-unstakeJitoSOLToStakeAccount(amount, wallet, connection?)
-
-// Marinade
-stakeSOLMarinade(amount, wallet, connection?)
-liquidUnstakeMarinade(amount, wallet, connection?)
-orderUnstakeMarinade(amount, wallet, connection?)  // → { signature, ticketAccount }
-claimUnstakeMarinade(ticketAccount, wallet, connection?)`}</Code>
-
-              <h3 className="text-lg font-semibold text-[#97FBE4] mt-4">Ethereum</h3>
-              <Code>{`// Lido
-depositLido(web3, userAddress, amount, referral?)
-requestWithdrawalLido(web3, userAddress, amount)
-getLidoWithdrawalRequests(web3, userAddress)
-claimWithdrawalLido(web3, userAddress, requestId)
-
-// Ether.fi
-depositEtherFi(web3, userAddress, amount)
-requestWithdrawEtherFi(web3, userAddress, amount)
-isEtherFiRequestFinalized(web3, requestId)
-claimWithdrawEtherFi(web3, userAddress, requestId)`}</Code>
+              <p>
+                <strong className="text-white">Ether.fi (Ethereum)</strong> — deposit ETH, receive
+                eETH. Adds restaking rewards on top of base staking yield.
+              </p>
             </Section>
 
             <Section id="security" title="Security">
@@ -336,16 +427,20 @@ claimWithdrawEtherFi(web3, userAddress, requestId)`}</Code>
 
             <Section id="links" title="Links">
               <div className="flex flex-wrap gap-3">
-                <a href="https://x.com/nexchange_near" target="_blank" rel="noreferrer"
-                  className="px-4 py-2 border border-[#97FBE4]/30 rounded-lg text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
+                <a href={WEBSITE_URL} target="_blank" rel="noreferrer"
+                  className="px-4 py-2 border border-[#97FBE4]/30 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
+                  Website
+                </a>
+                <a href={X_URL} target="_blank" rel="noreferrer"
+                  className="px-4 py-2 border border-[#97FBE4]/30 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
                   Twitter / X
                 </a>
                 <a href="https://github.com/ayushsingh82/Nexchange" target="_blank" rel="noreferrer"
-                  className="px-4 py-2 border border-[#97FBE4]/30 rounded-lg text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
+                  className="px-4 py-2 border border-[#97FBE4]/30 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
                   GitHub
                 </a>
                 <Link href="/explore"
-                  className="px-4 py-2 border border-[#97FBE4]/30 rounded-lg text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
+                  className="px-4 py-2 border border-[#97FBE4]/30 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
                   Explore App
                 </Link>
               </div>
