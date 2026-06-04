@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Syne } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { ClientLayout } from "@/components/ClientLayout";
 
 const inter = Inter({ subsets: ["latin"] });
+const syne = Syne({ subsets: ["latin"], weight: ["700", "800"] });
 
 export const metadata: Metadata = {
   title: "NeXchange- Chain Abstraction & Intents",
@@ -31,14 +32,6 @@ export default function RootLayout({
                 Cross-chain liquid staking from a single NEAR wallet. No bridges, no wallet
                 switching — just stake.
               </p>
-              <a
-                href="https://nexchange-near.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#97FBE4]/60 hover:text-[#97FBE4] text-xs mt-3 transition-colors"
-              >
-                nexchange-near.vercel.app ↗
-              </a>
             </div>
 
             {/* Nav links */}
@@ -87,11 +80,10 @@ export default function RootLayout({
         {/* NeXchange wordmark */}
         <div className="relative w-full overflow-hidden bg-black flex items-center justify-center py-6 sm:py-8">
           <h2
-            className="select-none text-6xl sm:text-7xl md:text-8xl lg:text-9xl 2xl:text-[11rem] font-extrabold w-full text-center bg-gradient-to-b from-[#97FBE4] via-[#5eead4] to-[#0a3b32] text-transparent bg-clip-text"
+            className={`${syne.className} select-none text-6xl sm:text-7xl md:text-8xl lg:text-9xl 2xl:text-[11rem] font-extrabold w-full text-center bg-gradient-to-b from-white via-[#97FBE4] to-[#0a3b32] text-transparent bg-clip-text`}
             style={{
-              fontFamily: "'Courier New', 'Monaco', monospace",
-              letterSpacing: '0.06em',
-              filter: 'drop-shadow(0 0 28px rgba(151,251,228,0.25))',
+              letterSpacing: '-0.02em',
+              filter: 'drop-shadow(0 0 34px rgba(151,251,228,0.3))',
             }}
           >
             NeXchange

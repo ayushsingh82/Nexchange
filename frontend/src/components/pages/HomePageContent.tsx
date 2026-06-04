@@ -1,12 +1,17 @@
 "use client"
 import React from 'react';
 import { Press_Start_2P } from 'next/font/google';
+import dynamic from 'next/dynamic';
+
+const Ferrofluid = dynamic(() => import('@/components/ui/Ferrofluid'), { ssr: false });
 
 // Logos for the supported chains and the staking protocols on each.
 const CHAIN_LOGOS = {
   solana: 'https://s3.coinmarketcap.com/static-gravity/image/58ba0011f24d47c4b2e8adaa873bb280.jpg',
   ethereum: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJsxR0KYJtHgBOV1xHFe_HhZCX15J9tEWGLw&s',
   near: 'https://s3.coinmarketcap.com/static-gravity/image/ef3ad80e423a4449ab8e961b0d1edea4.png',
+  sui: 'https://s2.coinmarketcap.com/static/img/coins/64x64/20947.png',
+  ton: 'https://s2.coinmarketcap.com/static/img/coins/64x64/11419.png',
 };
 
 const PROTOCOL_LOGOS = {
@@ -14,6 +19,12 @@ const PROTOCOL_LOGOS = {
   lido: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAgWY6sAzDq67Qo5bZNKCI_-WYssDSiV9odA&s',
   etherfi: 'https://s3.coinmarketcap.com/static-gravity/image/d841a331a19e4c86a67aa7996197bea8.jpg',
   marinade: 'https://raw.githubusercontent.com/marinade-finance/liquid-staking-program/main/Docs/img/MNDE.png',
+  metapool: 'https://avatars.githubusercontent.com/u/112860635?s=200&v=4',
+  linear: 'https://coin-images.coingecko.com/coins/images/25210/large/sUld7aEX_400x400.png',
+  haedal: 'https://coin-images.coingecko.com/coins/images/33512/large/hasui.png',
+  volo: 'https://coin-images.coingecko.com/coins/images/33243/large/voloSUI_%283%29.png',
+  tonstakers: 'https://coin-images.coingecko.com/coins/images/35404/large/icon_%281%29.png',
+  ton: 'https://s2.coinmarketcap.com/static/img/coins/64x64/11419.png',
 };
 
 const SUPPORTED_CHAINS = [
@@ -43,8 +54,28 @@ const SUPPORTED_CHAINS = [
     logo: CHAIN_LOGOS.near,
     status: 'Soon',
     protocols: [
-      { name: 'Meta Pool', token: 'stNEAR', logo: CHAIN_LOGOS.near },
-      { name: 'LiNEAR', token: 'LiNEAR', logo: CHAIN_LOGOS.near },
+      { name: 'Meta Pool', token: 'stNEAR', logo: PROTOCOL_LOGOS.metapool },
+      { name: 'LiNEAR', token: 'LiNEAR', logo: PROTOCOL_LOGOS.linear },
+    ],
+  },
+  {
+    name: 'Sui',
+    symbol: 'SUI',
+    logo: CHAIN_LOGOS.sui,
+    status: 'Soon',
+    protocols: [
+      { name: 'Haedal', token: 'haSUI', logo: PROTOCOL_LOGOS.haedal },
+      { name: 'Volo', token: 'vSUI', logo: PROTOCOL_LOGOS.volo },
+    ],
+  },
+  {
+    name: 'TON',
+    symbol: 'TON',
+    logo: CHAIN_LOGOS.ton,
+    status: 'Soon',
+    protocols: [
+      { name: 'Tonstakers', token: 'tsTON', logo: PROTOCOL_LOGOS.tonstakers },
+      { name: 'Whales', token: 'wsTON', logo: CHAIN_LOGOS.ton },
     ],
   },
 ];
@@ -126,19 +157,51 @@ export default function HomePageContent() {
     <div className={`min-h-screen bg-black text-[#97FBE4] overflow-hidden flex flex-col ${pixelFont.variable}`}>
       {/* Main Content */}
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative z-10 px-4 pb-20">
+        {/* Hero Section with Ferrofluid effect */}
+        <section className="relative z-10 px-4 pt-10 pb-12">
           <div className="max-w-5xl mx-auto">
-            <div className="mb-16 pt-12">
+            <div className="pt-8 text-center md:text-left">
               <h1 className="text-4xl md:text-6xl font-light mb-4 tracking-tight">
                 <span className="block text-[#97FBE4] ">Seamless. Secure.</span>
                 <span className="block text-[#5eead4] ">Multi-chain.</span>
               </h1>
-              <p className="text-base md:text-lg text-[#97FBE4]/80 max-w-2xl pixel-font">
+              <p className="text-base md:text-lg text-[#97FBE4]/80 max-w-2xl mx-auto md:mx-0 pixel-font">
                 Cross-chain  staking protocol that allows users to stake on multiple chains  directly from  NEAR wallet. No bridging, no wallet switching, no friction.
               </p>
             </div>
-            {/* Bento Grid */}
+
+            {/* Ferrofluid effect */}
+            <div className="relative mt-8 w-full h-[320px] sm:h-[420px] md:h-[500px]">
+              <Ferrofluid
+                colors={['#97FBE4', '#5eead4', '#0a3b32']}
+                speed={0.5}
+                scale={1.6}
+                turbulence={1}
+                fluidity={0.1}
+                rimWidth={0.2}
+                sharpness={2.5}
+                shimmer={1.5}
+                glow={2}
+                flowDirection="down"
+                opacity={1}
+                mouseInteraction
+                mouseStrength={1}
+                mouseRadius={0.35}
+              />
+              {/* scroll hint */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center text-[#97FBE4]/50 text-xs animate-bounce">
+                <span className="pixel-font">scroll</span>
+                <svg className="w-4 h-4 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Bento Grid — revealed on scroll */}
+        <section className="relative z-10 px-4 pb-20">
+          <div className="max-w-5xl mx-auto">
             <div className="grid grid-cols-12 gap-3 sm:gap-4 auto-rows-[130px] sm:auto-rows-[150px] md:auto-rows-[160px]">
               {/* Main Feature */}
               <div className="col-span-12 md:col-span-8 row-span-2 group relative bg-[#00150E] bg-opacity-80 p-6 md:p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden">

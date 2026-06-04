@@ -1,16 +1,12 @@
 'use client';
 
 // import { WalletConfig } from './WalletConfig';
-import { useState } from 'react';
 import NearWalletProvider from '../provider/wallet';
 import WalletSelector from './WalletSelector';
-import BalanceModal from './BalanceModal';
 
 import Link from 'next/link';
 
 function NavbarContent() {
-  const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);
-
   return (
     <>
       <nav className="bg-black border-b border-green-800/50">
@@ -18,7 +14,7 @@ function NavbarContent() {
           <div className="flex items-center h-16">
             {/* Logo/Name - Left */}
             <div className="flex-shrink-0">
-              <Link href="/" className="text-2xl font-bold text-[#97FBE4]">
+              <Link href="/" className="text-2xl font-light tracking-wide text-[#97FBE4]">
                 NeXchange
               </Link>
             </div>
@@ -83,22 +79,11 @@ function NavbarContent() {
 
             {/* Wallet Selectors - Right */}
             <div className="flex-shrink-0 flex items-center gap-4">
-              <button
-                onClick={() => setIsBalanceModalOpen(true)}
-                className="px-3 py-1.5 text-sm bg-[#97FBE4] text-black font-medium hover:bg-[#5eead4] transition-colors"
-              >
-                Balance
-              </button>
               <WalletSelector />
             </div>
           </div>
         </div>
       </nav>
-
-      <BalanceModal 
-        isOpen={isBalanceModalOpen} 
-        onClose={() => setIsBalanceModalOpen(false)} 
-      />
     </>
   );
 }
