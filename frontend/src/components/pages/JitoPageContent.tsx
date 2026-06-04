@@ -1,9 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { useStakingApy } from '../../app/stake/hooks/useStakingApy'
 
 export default function JitoPageContent() {
   const [currentStep, setCurrentStep] = useState(0)
+  const { data: apyData, loading: apyLoading } = useStakingApy()
+  const jitoApy = apyData?.SOL
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [stakingMode, setStakingMode] = useState<'stake' | 'unstake'>('stake')
   const [solAmount, setSolAmount] = useState('')
@@ -210,7 +213,12 @@ export default function JitoPageContent() {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-400">APY:</span>
-                    <span className="ml-2 text-[#97FBE4]">7.2%</span>
+                    <span className="ml-2 text-[#97FBE4]">
+                      {apyLoading || !jitoApy ? '…' : `${jitoApy.apy.toFixed(2)}%`}
+                    </span>
+                    {jitoApy?.source && jitoApy.source !== 'estimate' && (
+                      <span className="ml-1 text-[10px] text-gray-500">(live)</span>
+                    )}
                   </div>
                   <div>
                     <span className="text-gray-400">Total Staked:</span>

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import dynamicImport from "next/dynamic";
 import { SUPPORTED_TOKENS, TokenInfo } from "../../app/stake/constant";
+import { useStakingApy } from "../../app/stake/hooks/useStakingApy";
 
 const TokenSelector = dynamicImport(() => import("../../app/stake/components/TokenSelector").then(m => ({ default: m.TokenSelector })), {
   ssr: false,
@@ -12,6 +13,10 @@ export default function StakePageContent() {
   const [selectedToken, setSelectedToken] = useState<TokenInfo | null>(SUPPORTED_TOKENS[0]);
   const [amount, setAmount] = useState("");
   const [mode, setMode] = useState("stake"); // toggle state
+  const { data: apyData, loading: apyLoading } = useStakingApy();
+
+  const selectedApy =
+    selectedToken && apyData ? apyData[selectedToken.symbol] : undefined;
 
   return (
     <main className="min-h-screen bg-black text-[#97FBE4] font-sans">
@@ -106,7 +111,17 @@ export default function StakePageContent() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-gray-400">APY:</span>
-                        <span className="ml-2 text-[#97FBE4]">5.2%</span>
+                        <span className="ml-2 text-[#97FBE4]">
+                          {apyLoading || !selectedApy
+                            ? "…"
+                            : `${selectedApy.apy.toFixed(2)}%`}
+                        </span>
+                        {selectedApy?.source &&
+                          selectedApy.source !== "estimate" && (
+                            <span className="ml-1 text-[10px] text-gray-500">
+                              (live · {selectedApy.source})
+                            </span>
+                          )}
                       </div>
                       <div>
                         <span className="text-gray-400">Total Staked:</span>
