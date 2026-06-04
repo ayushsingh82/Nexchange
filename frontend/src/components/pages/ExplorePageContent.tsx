@@ -28,6 +28,7 @@ interface Protocol {
   token: string
   logo: string
   available: boolean
+  href?: string // only set when the staking flow is live
   symbol?: 'SOL' | 'ETH' // which live-APY feed to use
   fallbackApy?: number
 }
@@ -47,21 +48,19 @@ const CHAINS: Chain[] = [
     name: 'Solana',
     logo: CHAIN_LOGOS.solana,
     status: 'Available',
-    href: '/jito',
     protocols: [
-      { name: 'Jito', token: 'JitoSOL', logo: PROTOCOL_LOGOS.jito, available: true, symbol: 'SOL', fallbackApy: 7.2 },
-      { name: 'Marinade', token: 'mSOL', logo: PROTOCOL_LOGOS.marinade, available: true, fallbackApy: 7.0 },
+      { name: 'Jito', token: 'JitoSOL', logo: PROTOCOL_LOGOS.jito, available: true, href: '/jito', symbol: 'SOL', fallbackApy: 7.2 },
+      { name: 'Marinade', token: 'mSOL', logo: PROTOCOL_LOGOS.marinade, available: false, fallbackApy: 7.0 },
     ],
   },
   {
     key: 'ethereum',
     name: 'Ethereum',
     logo: CHAIN_LOGOS.ethereum,
-    status: 'Available',
-    href: '/stake',
+    status: 'Coming Soon',
     protocols: [
-      { name: 'Lido', token: 'stETH', logo: PROTOCOL_LOGOS.lido, available: true, symbol: 'ETH', fallbackApy: 3.0 },
-      { name: 'Ether.fi', token: 'eETH', logo: PROTOCOL_LOGOS.etherfi, available: true, fallbackApy: 3.1 },
+      { name: 'Lido', token: 'stETH', logo: PROTOCOL_LOGOS.lido, available: false, symbol: 'ETH', fallbackApy: 3.0 },
+      { name: 'Ether.fi', token: 'eETH', logo: PROTOCOL_LOGOS.etherfi, available: false, fallbackApy: 3.1 },
     ],
   },
   {
@@ -119,9 +118,6 @@ export default function ExplorePageContent() {
       <div className="container mx-auto px-4 sm:px-6 py-12">
         {/* Header */}
         <div className="text-center mb-10">
-          <p className="text-xs sm:text-sm uppercase tracking-wider text-[#97FBE4]/50 mb-3">
-            Explore
-          </p>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#97FBE4] mb-4">
             Staking Protocols
           </h1>
@@ -198,38 +194,29 @@ export default function ExplorePageContent() {
                           <p className="text-[10px] text-[#97FBE4]/50">{protocol.token}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-3 flex-shrink-0">
                         {apy != null && (
                           <span className="text-sm font-semibold text-[#97FBE4]">
                             {apyLoading ? '…' : `${apy.toFixed(2)}%`}
                             <span className="ml-1 text-[9px] text-gray-500">{isLive ? 'live' : 'est'}</span>
                           </span>
                         )}
-                        {protocol.available && (
-                          <span className="text-[10px] bg-green-900/30 text-green-400 px-2 py-0.5 border border-green-500/50">
-                            Live
+                        {protocol.href ? (
+                          <Link
+                            href={protocol.href}
+                            className="text-[10px] sm:text-xs bg-[#97FBE4] text-black font-semibold px-3 py-1.5 hover:bg-[#5eead4] transition-colors whitespace-nowrap"
+                          >
+                            Start Staking
+                          </Link>
+                        ) : (
+                          <span className="text-[10px] sm:text-xs bg-gray-800 text-gray-400 px-3 py-1.5 border border-gray-700 whitespace-nowrap">
+                            Coming Soon
                           </span>
                         )}
                       </div>
                     </div>
                   )
                 })}
-              </div>
-
-              {/* Action Button */}
-              <div className="mt-6">
-                {chain.status === 'Available' && chain.href ? (
-                  <Link
-                    href={chain.href}
-                    className="inline-block px-6 py-3 bg-[#97FBE4] text-black text-sm font-semibold hover:bg-[#5eead4] transition-colors"
-                  >
-                    Start Staking
-                  </Link>
-                ) : (
-                  <div className="inline-block px-6 py-3 bg-gray-800 text-gray-400 text-sm font-semibold cursor-not-allowed">
-                    Coming Soon
-                  </div>
-                )}
               </div>
             </div>
           ))}

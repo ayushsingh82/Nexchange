@@ -33,6 +33,10 @@ const POOLS: {
   { name: 'Marinade', chain: 'Solana', token: 'mSOL', fallback: 7.0 },
   { name: 'Lido', chain: 'Ethereum', token: 'stETH', symbol: 'ETH', fallback: 3.0 },
   { name: 'Ether.fi', chain: 'Ethereum', token: 'eETH', fallback: 3.1 },
+  { name: 'Haedal', chain: 'Sui', token: 'haSUI', fallback: 3.2 },
+  { name: 'Volo', chain: 'Sui', token: 'vSUI', fallback: 3.0 },
+  { name: 'Tonstakers', chain: 'TON', token: 'tsTON', fallback: 4.1 },
+  { name: 'Whales', chain: 'TON', token: 'wsTON', fallback: 3.9 },
 ]
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
@@ -295,21 +299,35 @@ export default function DocsPageContent() {
                     <tr className="border-t border-green-800/30">
                       <td className="p-3 font-medium">Solana</td>
                       <td className="p-3">Jito (JitoSOL), Marinade (mSOL)</td>
-                      <td className="p-3"><Pill>Available</Pill></td>
+                      <td className="p-3"><Pill>Live · Jito</Pill></td>
                     </tr>
                     <tr className="border-t border-green-800/30">
                       <td className="p-3 font-medium">Ethereum</td>
                       <td className="p-3">Lido (stETH), Ether.fi (eETH)</td>
-                      <td className="p-3"><Pill>Available</Pill></td>
+                      <td className="p-3"><Pill tone="gray">Coming Soon</Pill></td>
                     </tr>
                     <tr className="border-t border-green-800/30">
                       <td className="p-3 font-medium">NEAR</td>
                       <td className="p-3">Meta Pool, LiNEAR</td>
                       <td className="p-3"><Pill tone="gray">Coming Soon</Pill></td>
                     </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-medium">Sui</td>
+                      <td className="p-3">Haedal (haSUI), Volo (vSUI)</td>
+                      <td className="p-3"><Pill tone="gray">Coming Soon</Pill></td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-medium">TON</td>
+                      <td className="p-3">Tonstakers (tsTON), Whales (wsTON)</td>
+                      <td className="p-3"><Pill tone="gray">Coming Soon</Pill></td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
+              <p className="text-xs text-gray-500 mt-3">
+                Staking is live on <span className="text-[#97FBE4]">Jito</span> first; the remaining
+                pools are integrated in code and roll out next.
+              </p>
             </Section>
 
             <Section id="staking" title="Staking & Best Returns">
