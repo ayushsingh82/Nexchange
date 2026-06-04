@@ -1,135 +1,232 @@
 'use client'
 
 import Link from 'next/link'
+import { useStakingApy } from '../../app/stake/hooks/useStakingApy'
+
+const CHAIN_LOGOS = {
+  solana: 'https://s3.coinmarketcap.com/static-gravity/image/58ba0011f24d47c4b2e8adaa873bb280.jpg',
+  ethereum: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJsxR0KYJtHgBOV1xHFe_HhZCX15J9tEWGLw&s',
+  near: 'https://s3.coinmarketcap.com/static-gravity/image/ef3ad80e423a4449ab8e961b0d1edea4.png',
+  ton: 'https://s2.coinmarketcap.com/static/img/coins/64x64/11419.png',
+}
+
+const PROTOCOL_LOGOS = {
+  jito: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqLFbY5fdeapK9qPbxMCdmhuZS84T5tCo0Nw&s',
+  lido: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAgWY6sAzDq67Qo5bZNKCI_-WYssDSiV9odA&s',
+  etherfi: 'https://s3.coinmarketcap.com/static-gravity/image/d841a331a19e4c86a67aa7996197bea8.jpg',
+  marinade: 'https://raw.githubusercontent.com/marinade-finance/liquid-staking-program/main/Docs/img/MNDE.png',
+}
+
+interface Protocol {
+  name: string
+  token: string
+  logo: string
+  available: boolean
+  symbol?: 'SOL' | 'ETH' // which live-APY feed to use
+  fallbackApy?: number
+}
+
+interface Chain {
+  key: string
+  name: string
+  logo: string
+  status: 'Available' | 'Coming Soon'
+  href?: string
+  protocols: Protocol[]
+}
+
+const CHAINS: Chain[] = [
+  {
+    key: 'solana',
+    name: 'Solana',
+    logo: CHAIN_LOGOS.solana,
+    status: 'Available',
+    href: '/jito',
+    protocols: [
+      { name: 'Jito', token: 'JitoSOL', logo: PROTOCOL_LOGOS.jito, available: true, symbol: 'SOL', fallbackApy: 7.2 },
+      { name: 'Marinade', token: 'mSOL', logo: PROTOCOL_LOGOS.marinade, available: true, fallbackApy: 7.0 },
+    ],
+  },
+  {
+    key: 'ethereum',
+    name: 'Ethereum',
+    logo: CHAIN_LOGOS.ethereum,
+    status: 'Available',
+    href: '/stake',
+    protocols: [
+      { name: 'Lido', token: 'stETH', logo: PROTOCOL_LOGOS.lido, available: true, symbol: 'ETH', fallbackApy: 3.0 },
+      { name: 'Ether.fi', token: 'eETH', logo: PROTOCOL_LOGOS.etherfi, available: true, fallbackApy: 3.1 },
+    ],
+  },
+  {
+    key: 'near',
+    name: 'NEAR Protocol',
+    logo: CHAIN_LOGOS.near,
+    status: 'Coming Soon',
+    protocols: [
+      { name: 'Meta Pool', token: 'stNEAR', logo: CHAIN_LOGOS.near, available: false, fallbackApy: 8.5 },
+      { name: 'LiNEAR', token: 'LiNEAR', logo: CHAIN_LOGOS.near, available: false, fallbackApy: 8.2 },
+    ],
+  },
+  {
+    key: 'ton',
+    name: 'TON',
+    logo: CHAIN_LOGOS.ton,
+    status: 'Coming Soon',
+    protocols: [
+      { name: 'Tonstakers', token: 'tsTON', logo: CHAIN_LOGOS.ton, available: false },
+      { name: 'Whales', token: 'wsTON', logo: CHAIN_LOGOS.ton, available: false },
+    ],
+  },
+]
 
 export default function ExplorePageContent() {
-  const protocols = {
-    ethereum: {
-      name: "Ethereum",
-      status: "Coming Soon",
-      protocols: [
-        { name: "EtherFi", available: false },
-        { name: "Lido", available: false }, 
-        { name: "Rocket Pool", available: false }
-      ]
-    },
-    solana: {
-      name: "Solana", 
-      status: "Available",
-      protocols: [
-        { name: "Jito", available: true },
-        { name: "Marinade Finance", available: false },
-        { name: "Socean", available: false }
-      ]
-    },
-    near: {
-      name: "NEAR Protocol",
-      status: "Coming Soon", 
-      protocols: [
-        { name: "Meta Pool", available: false },
-        { name: "LiNEAR Protocol", available: false },
-        { name: "Burrow", available: false }
-      ]
-    },
-    ton: {
-      name: "TON",
-      status: "Coming Soon",
-      protocols: [
-        { name: "Tonstakers", available: false },
-        { name: "Stakee", available: false },
-        { name: "Whales", available: false }
-      ]
-    }
+  const { data: apyData, loading: apyLoading } = useStakingApy()
+
+  const apyFor = (p: Protocol) => {
+    const live = p.symbol && apyData ? apyData[p.symbol] : undefined
+    const isLive = !!live && live.source !== 'estimate'
+    return { apy: isLive ? live!.apy : p.fallbackApy, isLive }
   }
+
+  const liveChains = CHAINS.filter((c) => c.status === 'Available').length
+  const livePools = CHAINS.reduce(
+    (n, c) => n + c.protocols.filter((p) => p.available).length,
+    0
+  )
+  const bestApy = Math.max(
+    ...CHAINS.flatMap((c) => c.protocols.map((p) => apyFor(p).apy ?? 0))
+  )
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-12">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-[#97FBE4] mb-4">
-            Explore Protocols for Staking
+        <div className="text-center mb-10">
+          <p className="text-xs sm:text-sm uppercase tracking-wider text-[#97FBE4]/50 mb-3">
+            Explore
+          </p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#97FBE4] mb-4">
+            Staking Protocols
           </h1>
-          <p className="text-xl text-[#97FBE4]/80 max-w-2xl mx-auto">
-            Staking made  easy  and all accessible from your NEAR wallet.
+          <p className="text-base sm:text-xl text-[#97FBE4]/80 max-w-2xl mx-auto">
+            The best liquid-staking pools across chains — all accessible from a single NEAR wallet.
           </p>
         </div>
 
-        {/* Protocol Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {Object.entries(protocols).map(([chainKey, chainData]) => (
-            <div 
-              key={chainKey}
-              className="bg-black border border-gray-800 p-8 hover:border-[#97FBE4] transition-colors"
-            >
-              {/* Chain Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-[#97FBE4]">
-                  {chainData.name}
-                </h2>
-                <div className={`px-3 py-1 text-sm font-medium ${
-                  chainData.status === "Available" 
-                    ? "bg-green-900/30 text-green-400 border border-green-500/50" 
-                    : "bg-gray-800 text-gray-400 border border-gray-700"
-                }`}>
-                  {chainData.status}
-                </div>
-              </div>
-
-              {/* Protocols List */}
-              <div className="space-y-4">
-                {chainData.protocols.map((protocol, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className={`w-2 h-2 rounded-full mt-1 mr-3 flex-shrink-0 ${
-                        protocol.available ? 'bg-[#97FBE4]' : 'bg-gray-600'
-                      }`}></div>
-                      <span className={`leading-relaxed ${
-                        protocol.available ? 'text-[#97FBE4] font-medium' : 'text-gray-400'
-                      }`}>
-                        {protocol.name}
-                      </span>
-                    </div>
-                    {protocol.available && (
-                      <span className="text-xs bg-green-900/30 text-green-400 px-2 py-1 border border-green-500/50">
-                        Live
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Action Button */}
-              {chainData.status === "Available" ? (
-                <div className="mt-8">
-                  <Link 
-                    href="/jito"
-                    className="inline-block px-6 py-3 bg-[#97FBE4] text-black font-semibold hover:bg-[#5eead4] transition-colors"
-                  >
-                    Start Staking
-                  </Link>
-                </div>
-              ) : (
-                <div className="mt-8">
-                  <div className="inline-block px-6 py-3 bg-gray-800 text-gray-400 font-semibold cursor-not-allowed">
-                    Coming Soon
-                  </div>
-                </div>
-              )}
+        {/* Summary stats */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto mb-12">
+          {[
+            { label: 'Chains Live', value: liveChains },
+            { label: 'Pools Live', value: livePools },
+            { label: 'Best APY', value: apyLoading ? '…' : `${bestApy.toFixed(1)}%` },
+          ].map((s) => (
+            <div key={s.label} className="border border-[#97FBE4]/25 bg-[#00150E]/60 p-4 text-center">
+              <p className="text-2xl sm:text-3xl font-light text-[#97FBE4]">{s.value}</p>
+              <p className="text-[10px] sm:text-xs text-[#97FBE4]/50 mt-1">{s.label}</p>
             </div>
           ))}
         </div>
 
-        {/* Additional Info */}
-        <div className="mt-16 text-center">
-          <div className="bg-[#97FBE4] border border-gray-800 p-8 max-w-4xl mx-auto">
-            <h3 className="text-xl font-semibold text-black mb-4">
-              How It Works
-            </h3>
-            <p className="text-slate-900 leading-relaxed">
-              Connect your NEAR wallet once and access staking protocols across all supported blockchains. 
-              No need to manage multiple wallets or switch between different interfaces. 
-              Our cross-chain signature technology makes multi-chain staking as simple as single-chain operations.
+        {/* Protocol Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          {CHAINS.map((chain) => (
+            <div
+              key={chain.key}
+              className="bg-[#00150E]/60 border border-gray-800 p-6 sm:p-8 hover:border-[#97FBE4]/60 transition-colors"
+            >
+              {/* Chain Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={chain.logo}
+                    alt={chain.name}
+                    className="w-11 h-11 object-cover border border-[#97FBE4]/20"
+                  />
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#97FBE4]">{chain.name}</h2>
+                </div>
+                <div
+                  className={`px-3 py-1 text-xs font-medium ${
+                    chain.status === 'Available'
+                      ? 'bg-green-900/30 text-green-400 border border-green-500/50'
+                      : 'bg-gray-800 text-gray-400 border border-gray-700'
+                  }`}
+                >
+                  {chain.status}
+                </div>
+              </div>
+
+              {/* Protocols List */}
+              <div className="space-y-3">
+                {chain.protocols.map((protocol) => {
+                  const { apy, isLive } = apyFor(protocol)
+                  return (
+                    <div
+                      key={protocol.name}
+                      className="flex items-center justify-between border border-[#97FBE4]/10 bg-black/30 px-3 py-2.5"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <img
+                          src={protocol.logo}
+                          alt={protocol.name}
+                          className="w-8 h-8 object-cover border border-[#97FBE4]/20 flex-shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p
+                            className={`text-sm truncate ${
+                              protocol.available ? 'text-white font-medium' : 'text-gray-400'
+                            }`}
+                          >
+                            {protocol.name}
+                          </p>
+                          <p className="text-[10px] text-[#97FBE4]/50">{protocol.token}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {apy != null && (
+                          <span className="text-sm font-semibold text-[#97FBE4]">
+                            {apyLoading ? '…' : `${apy.toFixed(2)}%`}
+                            <span className="ml-1 text-[9px] text-gray-500">{isLive ? 'live' : 'est'}</span>
+                          </span>
+                        )}
+                        {protocol.available && (
+                          <span className="text-[10px] bg-green-900/30 text-green-400 px-2 py-0.5 border border-green-500/50">
+                            Live
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Action Button */}
+              <div className="mt-6">
+                {chain.status === 'Available' && chain.href ? (
+                  <Link
+                    href={chain.href}
+                    className="inline-block px-6 py-3 bg-[#97FBE4] text-black text-sm font-semibold hover:bg-[#5eead4] transition-colors"
+                  >
+                    Start Staking
+                  </Link>
+                ) : (
+                  <div className="inline-block px-6 py-3 bg-gray-800 text-gray-400 text-sm font-semibold cursor-not-allowed">
+                    Coming Soon
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* How It Works */}
+        <div className="mt-16 max-w-4xl mx-auto">
+          <div className="bg-[#97FBE4] p-6 sm:p-8">
+            <h3 className="text-xl font-semibold text-black mb-3">How It Works</h3>
+            <p className="text-slate-900 leading-relaxed text-sm sm:text-base">
+              Connect your NEAR wallet once and access staking protocols across every supported
+              chain — no juggling multiple wallets or interfaces. Cross-chain signatures and NEAR
+              intents make multi-chain staking as simple as a single-chain transaction.
             </p>
           </div>
         </div>

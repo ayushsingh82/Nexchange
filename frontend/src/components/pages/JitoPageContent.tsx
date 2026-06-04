@@ -15,33 +15,59 @@ export default function JitoPageContent() {
   const [stakingStatus, setStakingStatus] = useState('')
   const [showNotification, setShowNotification] = useState(false)
 
+  const iconCls = "w-6 h-6"
   const steps = [
     {
       id: 1,
       title: "Deposit",
       description: "Deposit NEAR tokens to your account",
-      icon: "💳",
+      icon: (
+        <svg className={iconCls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <path d="M2 10h20" />
+          <path d="M6 15h4" />
+        </svg>
+      ),
       details: "Transfer your NEAR tokens to the staking pool to begin the process"
     },
     {
       id: 2,
       title: "Swap",
       description: "Swap NEAR to SOL via cross-chain bridge",
-      icon: "🔄",
+      icon: (
+        <svg className={iconCls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M7 4 3 8l4 4" />
+          <path d="M3 8h14" />
+          <path d="m17 20 4-4-4-4" />
+          <path d="M21 16H7" />
+        </svg>
+      ),
       details: "Convert your NEAR tokens to SOL using our cross-chain swap functionality"
     },
     {
       id: 3,
       title: "Withdraw",
       description: "Withdraw SOL to Solana network",
-      icon: "📤",
+      icon: (
+        <svg className={iconCls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 17V3" />
+          <path d="m6 9 6-6 6 6" />
+          <path d="M5 21h14" />
+        </svg>
+      ),
       details: "Move your SOL tokens to the Solana blockchain for staking"
     },
     {
       id: 4,
       title: "Deposit on Pool",
       description: "Stake SOL on Jito liquid staking pool",
-      icon: "🎯",
+      icon: (
+        <svg className={iconCls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="9" />
+          <circle cx="12" cy="12" r="5" />
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+        </svg>
+      ),
       details: "Deposit your SOL into Jito's liquid staking pool to earn rewards"
     }
   ]
