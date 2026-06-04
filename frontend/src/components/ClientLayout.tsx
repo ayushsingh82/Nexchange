@@ -1,88 +1,87 @@
 'use client';
 
 // import { WalletConfig } from './WalletConfig';
+import { useState } from 'react';
 import NearWalletProvider from '../provider/wallet';
 import WalletSelector from './WalletSelector';
 
 import Link from 'next/link';
 
+const NAV_LINKS = [
+  { href: '/explore', label: 'Explore' },
+  { href: '/portfolio', label: 'Portfolio' },
+  { href: '/docs', label: 'Docs' },
+];
+
 function NavbarContent() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <>
       <nav className="bg-black border-b border-green-800/50">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center h-16">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16">
             {/* Logo/Name - Left */}
             <div className="flex-shrink-0">
-              <Link href="/" className="text-2xl font-light tracking-wide text-[#97FBE4]">
+              <Link href="/" className="text-xl sm:text-2xl font-light tracking-wide text-[#97FBE4]">
                 NeXchange
               </Link>
             </div>
 
-            {/* Navigation Links - Center */}
-            <div className="flex-1 flex justify-center">
+            {/* Navigation Links - Center (desktop) */}
+            <div className="hidden md:flex flex-1 justify-center">
               <div className="flex items-center gap-6">
-                {/* <Link 
-                  href="/protocol" 
-                  className="text-[#97FBE4] transition-colors"
-                >
-                  Protocol
-                </Link>
-                <Link 
-                  href="/dashboard" 
-                  className="text-[#97FBE4] transition-colors"
-                >
-                  Dashboard
-                </Link> */}
-                
-                {/* Explore Link */}
-                <Link
-                  href="/explore"
-                  className="text-sm text-[#97FBE4] hover:text-[#5eead4] transition-colors"
-                >
-                  Explore
-                </Link>
-
-                {/* Portfolio Link */}
-                <Link
-                  href="/portfolio"
-                  className="text-sm text-[#97FBE4] hover:text-[#5eead4] transition-colors"
-                >
-                  Portfolio
-                </Link>
-
-                {/* Docs Link */}
-                <Link
-                  href="/docs"
-                  className="text-sm text-[#97FBE4] hover:text-[#5eead4] transition-colors"
-                >
-                  Docs
-                </Link>
-
-                {/* Jito Link */}
-                {/* <Link 
-                  href="/jito" 
-                  className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
-                >
-                  Jito
-                </Link> */}
-                
-                {/* Stake Link */}
-                {/* <Link 
-                  href="/stake" 
-                  className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
-                >
-                  Stake
-                </Link> */}
+                {NAV_LINKS.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className="text-sm text-[#97FBE4] hover:text-[#5eead4] transition-colors"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
               </div>
             </div>
 
-            {/* Wallet Selectors - Right */}
-            <div className="flex-shrink-0 flex items-center gap-4">
+            {/* Right cluster */}
+            <div className="flex-shrink-0 flex items-center gap-2 sm:gap-4">
               <WalletSelector />
+              {/* Hamburger - mobile only */}
+              <button
+                onClick={() => setMobileOpen((o) => !o)}
+                aria-label="Toggle menu"
+                aria-expanded={mobileOpen}
+                className="md:hidden p-2 text-[#97FBE4] hover:text-[#5eead4] transition-colors"
+              >
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  {mobileOpen ? (
+                    <path d="M6 18 18 6M6 6l12 12" />
+                  ) : (
+                    <path d="M3 6h18M3 12h18M3 18h18" />
+                  )}
+                </svg>
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileOpen && (
+          <div className="md:hidden border-t border-green-800/50 bg-black">
+            <div className="container mx-auto px-4 py-2 flex flex-col">
+              {NAV_LINKS.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="text-sm text-[#97FBE4] hover:text-[#5eead4] hover:bg-[#97FBE4]/5 transition-colors py-3 px-2"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
     </>
   );

@@ -1,6 +1,9 @@
 "use client"
 import React from 'react';
 import { Press_Start_2P } from 'next/font/google';
+import dynamic from 'next/dynamic';
+
+const Ferrofluid = dynamic(() => import('@/components/ui/Ferrofluid'), { ssr: false });
 
 // Logos for the supported chains and the staking protocols on each.
 const CHAIN_LOGOS = {
@@ -154,9 +157,33 @@ export default function HomePageContent() {
     <div className={`min-h-screen bg-black text-[#97FBE4] overflow-hidden flex flex-col ${pixelFont.variable}`}>
       {/* Main Content */}
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative z-10 px-4 pt-16 pb-12">
-          <div className="max-w-3xl mx-auto text-center">
+        {/* Hero Section — Ferrofluid effect full-bleed behind, text centered on top */}
+        <section className="relative overflow-hidden min-h-[85vh] flex items-center justify-center px-4 py-16">
+          {/* Full-bleed effect (covers corners), behind the text */}
+          <div className="absolute inset-0 z-0">
+            <Ferrofluid
+              colors={['#97FBE4', '#5eead4', '#0a3b32']}
+              speed={0.5}
+              scale={1.6}
+              turbulence={1}
+              fluidity={0.1}
+              rimWidth={0.2}
+              sharpness={2.5}
+              shimmer={1.5}
+              glow={2}
+              flowDirection="down"
+              opacity={1}
+              mouseInteraction
+              mouseStrength={1}
+              mouseRadius={0.35}
+            />
+          </div>
+
+          {/* Centered hero text, above the effect */}
+          <div
+            className="relative z-10 max-w-3xl mx-auto text-center"
+            style={{ textShadow: '0 2px 24px rgba(0,0,0,0.9)' }}
+          >
             <h1 className="text-4xl md:text-6xl font-light mb-5 tracking-tight">
               <span className="block text-[#97FBE4]">Seamless. Secure.</span>
               <span className="block text-[#5eead4]">Multi-chain.</span>
@@ -168,11 +195,15 @@ export default function HomePageContent() {
         </section>
 
         {/* Bento Grid */}
-        <section className="relative z-10 px-4 py-12">
+        <section className="relative z-10 px-4 pt-20 md:pt-28 pb-12">
           <div className="max-w-5xl mx-auto">
-            <div className="mb-8 text-center">
-              <p className="text-xs text-[#97FBE4]/50 mb-2 pixel-font">WHY NEXCHANGE</p>
-              <h2 className="text-2xl md:text-3xl font-light">Built different from the ground up</h2>
+            <div className="mb-10 text-center">
+              <h2 className="text-2xl md:text-4xl font-light tracking-tight">
+                One wallet. Every chain. <span className="text-[#5eead4]">No bridges.</span>
+              </h2>
+              <p className="text-sm text-[#97FBE4]/60 mt-3 max-w-xl mx-auto">
+                The best liquid-staking pools across networks — accessed natively from your NEAR account.
+              </p>
             </div>
             <div className="grid grid-cols-12 gap-3 sm:gap-4 auto-rows-[130px] sm:auto-rows-[150px] md:auto-rows-[160px]">
               {/* Main Feature */}
@@ -218,7 +249,7 @@ export default function HomePageContent() {
                   <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" /><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
                 </svg>
                 <h4 className="text-lg font-semibold mb-1 text-black">Cross-Chain Signatures</h4>
-                <p className="text-xs text-black font-light pixel-font">stake on any chain directly from NEAR wallet.</p>
+                <p className="text-xs text-black/80 font-medium">stake on any chain directly from your NEAR wallet.</p>
               </div>
               <div className="col-span-12 md:col-span-6 group bg-black p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center hover:border-[#97FBE4]/70 transition-all duration-300">
                 <svg className="w-6 h-6 mb-3 text-[#97FBE4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
@@ -255,11 +286,30 @@ export default function HomePageContent() {
         </section>
         */}
 
-        {/* Supported Chains Section */}
-        <section className="relative z-10 px-4 py-12 md:py-20">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <p className="text-sm text-[#97FBE4]/50 mb-3 pixel-font">SUPPORTED CHAINS</p>
+        {/* Supported Chains Section — Ferrofluid effect behind, cards on top */}
+        <section className="relative px-4 py-12 md:py-20 overflow-hidden">
+          {/* Effect behind the section */}
+          <div className="absolute inset-0 z-0 opacity-60">
+            <Ferrofluid
+              colors={['#97FBE4', '#5eead4', '#0a3b32']}
+              speed={0.4}
+              scale={1.8}
+              turbulence={1}
+              fluidity={0.1}
+              rimWidth={0.2}
+              sharpness={2.5}
+              shimmer={1.5}
+              glow={2}
+              flowDirection="up"
+              opacity={1}
+              mouseInteraction
+              mouseStrength={1}
+              mouseRadius={0.35}
+            />
+          </div>
+
+          <div className="relative z-10 max-w-6xl mx-auto">
+            <div className="text-center mb-12" style={{ textShadow: '0 2px 24px rgba(0,0,0,0.9)' }}>
               <h2 className="text-3xl md:text-4xl font-light mb-4">
                 Stake across every major chain
               </h2>
