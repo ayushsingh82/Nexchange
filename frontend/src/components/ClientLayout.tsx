@@ -42,15 +42,23 @@ function NavbarContent() {
                 {/* Explore Link */}
                 <Link
                   href="/explore"
-                  className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
+                  className="text-sm text-[#97FBE4] hover:text-[#5eead4] transition-colors"
                 >
                   Explore
+                </Link>
+
+                {/* Portfolio Link */}
+                <Link
+                  href="/portfolio"
+                  className="text-sm text-[#97FBE4] hover:text-[#5eead4] transition-colors"
+                >
+                  Portfolio
                 </Link>
 
                 {/* Docs Link */}
                 <Link
                   href="/docs"
-                  className="text-[#97FBE4] hover:text-[#5eead4] transition-colors"
+                  className="text-sm text-[#97FBE4] hover:text-[#5eead4] transition-colors"
                 >
                   Docs
                 </Link>
@@ -77,7 +85,7 @@ function NavbarContent() {
             <div className="flex-shrink-0 flex items-center gap-4">
               <button
                 onClick={() => setIsBalanceModalOpen(true)}
-                className="px-4 py-2 bg-[#97FBE4] text-black font-medium rounded-lg hover:bg-[#5eead4] transition-colors"
+                className="px-3 py-1.5 text-sm bg-[#97FBE4] text-black font-medium hover:bg-[#5eead4] transition-colors"
               >
                 Balance
               </button>

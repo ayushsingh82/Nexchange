@@ -1,24 +1,99 @@
 "use client"
 import React from 'react';
 import { Press_Start_2P } from 'next/font/google';
-import dynamic from 'next/dynamic';
 
-const Compare = dynamic(() => import('@/components/ui/compare').then(m => ({ default: m.Compare })), {
-  ssr: false,
-  loading: () => <div>Loading...</div>
-});
+// Logos for the supported chains and the staking protocols on each.
+const CHAIN_LOGOS = {
+  solana: 'https://s3.coinmarketcap.com/static-gravity/image/58ba0011f24d47c4b2e8adaa873bb280.jpg',
+  ethereum: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJsxR0KYJtHgBOV1xHFe_HhZCX15J9tEWGLw&s',
+  near: 'https://s3.coinmarketcap.com/static-gravity/image/ef3ad80e423a4449ab8e961b0d1edea4.png',
+};
 
-function CompareDemo() {
+const PROTOCOL_LOGOS = {
+  jito: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqLFbY5fdeapK9qPbxMCdmhuZS84T5tCo0Nw&s',
+  lido: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAgWY6sAzDq67Qo5bZNKCI_-WYssDSiV9odA&s',
+  etherfi: 'https://s3.coinmarketcap.com/static-gravity/image/d841a331a19e4c86a67aa7996197bea8.jpg',
+  marinade: 'https://raw.githubusercontent.com/marinade-finance/liquid-staking-program/main/Docs/img/MNDE.png',
+};
+
+const SUPPORTED_CHAINS = [
+  {
+    name: 'Solana',
+    symbol: 'SOL',
+    logo: CHAIN_LOGOS.solana,
+    status: 'Live',
+    protocols: [
+      { name: 'Jito', token: 'JitoSOL', logo: PROTOCOL_LOGOS.jito },
+      { name: 'Marinade', token: 'mSOL', logo: PROTOCOL_LOGOS.marinade },
+    ],
+  },
+  {
+    name: 'Ethereum',
+    symbol: 'ETH',
+    logo: CHAIN_LOGOS.ethereum,
+    status: 'Live',
+    protocols: [
+      { name: 'Lido', token: 'stETH', logo: PROTOCOL_LOGOS.lido },
+      { name: 'Ether.fi', token: 'eETH', logo: PROTOCOL_LOGOS.etherfi },
+    ],
+  },
+  {
+    name: 'NEAR',
+    symbol: 'NEAR',
+    logo: CHAIN_LOGOS.near,
+    status: 'Soon',
+    protocols: [
+      { name: 'Meta Pool', token: 'stNEAR', logo: CHAIN_LOGOS.near },
+      { name: 'LiNEAR', token: 'LiNEAR', logo: CHAIN_LOGOS.near },
+    ],
+  },
+];
+
+// A code-editor style visual showing the stake / unstake flow.
+function StakeCodeEffect() {
   return (
-    <div className="p-4 border dark:bg-neutral-900 bg-neutral-100  border-neutral-200 dark:border-neutral-800 px-4">
-      <Compare
-        firstImage="https://assets.aceternity.com/code-problem.png"
-        secondImage="https://assets.aceternity.com/code-solution.png"
-        firstImageClassName="object-cover object-left-top"
-        secondImageClassname="object-cover object-left-top"
-        className="h-[250px] w-[200px] md:h-[500px] md:w-[500px]"
-        slideMode="hover"
-      />
+    <div className="w-full max-w-md border border-[#97FBE4]/30 bg-[#00120C] shadow-2xl overflow-x-auto font-mono text-xs sm:text-sm">
+      {/* Window bar */}
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-[#97FBE4]/20 bg-[#00150E]">
+        <span className="w-3 h-3 bg-[#ff5f56]/80 block" />
+        <span className="w-3 h-3 bg-[#ffbd2e]/80 block" />
+        <span className="w-3 h-3 bg-[#27c93f]/80 block" />
+        <span className="ml-3 text-xs text-[#97FBE4]/50">nexchange.ts</span>
+      </div>
+
+      {/* Code body */}
+      <div className="p-5 leading-relaxed text-[#97FBE4]/90 space-y-1">
+        <p className="text-[#97FBE4]/40">{`// stake straight from your NEAR wallet`}</p>
+        <p>
+          <span className="text-[#5eead4]">await</span>{' '}
+          <span className="text-white">stake</span>({'{'}
+        </p>
+        <p className="pl-4"><span className="text-[#97FBE4]/60">chain:</span> <span className="text-amber-300">&quot;solana&quot;</span>,</p>
+        <p className="pl-4"><span className="text-[#97FBE4]/60">protocol:</span> <span className="text-amber-300">&quot;jito&quot;</span>,</p>
+        <p className="pl-4"><span className="text-[#97FBE4]/60">amount:</span> <span className="text-orange-400">10</span>,</p>
+        <p>{'}'})</p>
+        <p className="flex items-center gap-2 text-[#27c93f]">
+          <img src={PROTOCOL_LOGOS.jito} alt="Jito" className="w-4 h-4 object-cover" />
+          ✓ 10 SOL → 9.81 JitoSOL
+        </p>
+
+        <div className="h-3" />
+
+        <p>
+          <span className="text-[#5eead4]">await</span>{' '}
+          <span className="text-white">unstake</span>({'{'}
+        </p>
+        <p className="pl-4"><span className="text-[#97FBE4]/60">protocol:</span> <span className="text-amber-300">&quot;lido&quot;</span>,</p>
+        <p className="pl-4"><span className="text-[#97FBE4]/60">amount:</span> <span className="text-orange-400">2</span>,</p>
+        <p>{'}'})</p>
+        <p className="flex items-center gap-2 text-[#27c93f]">
+          <img src={PROTOCOL_LOGOS.lido} alt="Lido" className="w-4 h-4 object-cover" />
+          ✓ 2 stETH → 2 ETH
+        </p>
+        <p className="flex items-center">
+          <span className="inline-block w-2 h-4 bg-[#97FBE4] animate-pulse" />
+        </p>
+      </div>
     </div>
   );
 }
@@ -64,24 +139,24 @@ export default function HomePageContent() {
               </p>
             </div>
             {/* Bento Grid */}
-            <div className="grid grid-cols-12 gap-4 auto-rows-[160px]">
+            <div className="grid grid-cols-12 gap-3 sm:gap-4 auto-rows-[130px] sm:auto-rows-[150px] md:auto-rows-[160px]">
               {/* Main Feature */}
-              <div className="col-span-12 md:col-span-8 row-span-2 group relative bg-[#00150E] bg-opacity-80 p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden">
+              <div className="col-span-12 md:col-span-8 row-span-2 group relative bg-[#00150E] bg-opacity-80 p-6 md:p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-sm text-[#97FBE4]/60 mb-4 pixel-font">FEATURED</p>
-                  <h3 className="text-3xl font-light mb-3 "> No wallet switching. No friction.</h3>
-                  <p className="text-[#97FBE4]/80 max-w-lg pixel-font text-sm">
+                  <p className="text-xs sm:text-sm text-[#97FBE4]/60 mb-3 md:mb-4 pixel-font">FEATURED</p>
+                  <h3 className="text-2xl md:text-3xl font-light mb-3 "> No wallet switching. No friction.</h3>
+                  <p className="text-[#97FBE4]/80 max-w-lg pixel-font text-xs sm:text-sm">
                     Just intent-based interoperability built for the next wave of Web3 users.
                   </p>
                 </div>
                 <div className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-[#97FBE4] to-transparent w-full" />
               </div>
               {/* Live Stats */}
-              <div className="col-span-12 md:col-span-4 row-span-2 bg-[#97FBE4] p-8 relative overflow-hidden shadow-xl live-stats-box">
+              <div className="col-span-12 md:col-span-4 row-span-2 bg-[#97FBE4] p-6 md:p-8 relative overflow-hidden shadow-xl live-stats-box">
                 <div className="flex flex-col justify-between h-full">
                   <div>
                     <p className="text-sm mb-2 ">LIVE</p>
-                    <p className="text-5xl font-light text-black ">$1.2M+</p>
+                    <p className="text-4xl md:text-5xl font-light text-black ">$1.2M+</p>
                     <p className="text-sm mt-1 text-black ">TVL Staked</p>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -108,25 +183,18 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* Architecture Section */}
-        <section className="relative z-10 px-4 py-20">
+        {/* Architecture Section — temporarily commented out
+        <section className="relative z-10 px-4 py-12 md:py-20">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-[#97FBE4] to-[#5eead4] text-transparent bg-clip-text">
               Architecture
             </h2>
             <div className="bg-[#00150E] bg-opacity-80 p-6 border border-[#97FBE4]/30 w-full overflow-hidden">
               <div className="relative w-full h-[400px] md:h-[450px] overflow-auto scrollbar-thin scrollbar-thumb-[#97FBE4]/30 scrollbar-track-transparent">
-                <img 
-                  src="/NeXchangearchitecture.png" 
+                <img
+                  src="/NeXchangearchitecture.png"
                   alt="NeXchange Architecture Diagram"
                   className="w-full h-auto object-contain"
-                  style={{ 
-                    maxWidth: '40%', 
-                    margin: '0 auto',
-                    backgroundColor: '#000000',
-                    padding: '20px',
-                    borderRadius: '12px'
-                  }}
                 />
               </div>
               <div className="mt-4 text-center">
@@ -137,9 +205,82 @@ export default function HomePageContent() {
             </div>
           </div>
         </section>
+        */}
+
+        {/* Supported Chains Section */}
+        <section className="relative z-10 px-4 py-12 md:py-20">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-sm text-[#97FBE4]/50 mb-3 pixel-font">SUPPORTED CHAINS</p>
+              <h2 className="text-3xl md:text-4xl font-light mb-4">
+                Stake across every major chain
+              </h2>
+              <p className="text-[#97FBE4]/70 max-w-2xl mx-auto">
+                One NEAR wallet, the best liquid-staking pools on each network. No bridging,
+                no wallet switching — just pick a chain and stake.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {SUPPORTED_CHAINS.map((chain) => (
+                <div
+                  key={chain.name}
+                  className="group bg-[#00150E] bg-opacity-80 border border-[#97FBE4]/30 p-6 shadow-xl hover:border-[#97FBE4]/70 transition-colors duration-300"
+                >
+                  {/* Chain header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={chain.logo}
+                        alt={chain.name}
+                        className="w-12 h-12 object-cover border border-[#97FBE4]/20 group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div>
+                        <p className="text-lg font-medium text-white">{chain.name}</p>
+                        <p className="text-xs text-[#97FBE4]/50">{chain.symbol}</p>
+                      </div>
+                    </div>
+                    <span
+                      className={`text-[10px] font-medium px-2 py-1 border ${
+                        chain.status === 'Live'
+                          ? 'text-[#27c93f] border-[#27c93f]/40 bg-[#27c93f]/10'
+                          : 'text-amber-300 border-amber-300/40 bg-amber-300/10'
+                      }`}
+                    >
+                      {chain.status === 'Live' ? '● Live' : 'Soon'}
+                    </span>
+                  </div>
+
+                  {/* Protocols */}
+                  <p className="text-xs uppercase tracking-wider text-[#97FBE4]/40 mb-3">
+                    Staking Pools
+                  </p>
+                  <div className="space-y-2">
+                    {chain.protocols.map((p) => (
+                      <div
+                        key={p.name}
+                        className="flex items-center gap-3 border border-[#97FBE4]/15 bg-black/30 px-3 py-2 hover:border-[#97FBE4]/40 transition-colors"
+                      >
+                        <img
+                          src={p.logo}
+                          alt={p.name}
+                          className="w-7 h-7 object-cover border border-[#97FBE4]/20"
+                        />
+                        <div className="flex-1">
+                          <p className="text-sm text-white">{p.name}</p>
+                          <p className="text-[10px] text-[#97FBE4]/50">{p.token}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Built for Agents + CompareDemo Section */}
-        <section className="relative z-10 px-4 py-20">
+        <section className="relative z-10 px-4 py-12 md:py-20">
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             {/* Left: Built for Agents */}
             <div>
@@ -170,17 +311,17 @@ export default function HomePageContent() {
                 ))}
               </div>
             </div>
-            {/* Right: CompareDemo */}
+            {/* Right: stake/unstake code effect */}
             <div className="flex justify-center items-center">
-              <div className="hover:scale-105 transition-transform duration-300">
-                <CompareDemo />
+              <div className="hover:scale-[1.02] transition-transform duration-300 w-full">
+                <StakeCodeEffect />
               </div>
             </div>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="relative z-10 px-4 py-20 border-t border-[#97FBE4]/20">
+        <section className="relative z-10 px-4 py-12 md:py-20 border-t border-[#97FBE4]/20">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-light mb-12 text-center">Frequently Asked Questions</h2>
             <div className="space-y-4">
