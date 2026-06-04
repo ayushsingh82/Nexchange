@@ -4,8 +4,8 @@
 
 **Mission:** Build the world's first intent-based cross-chain staking platform powered by NEAR wallet, enabling users to stake on any chain from a single interface with seamless cross-chain signatures.
 
-**Q1 Goal:** Launch MVP with cross-chain staking on 2-3 chains
-**Q2 Goal:** Scale to 5+ chains with advanced dashboard and automation features
+**Near-term Goal:** Launch MVP with cross-chain staking on 2-3 chains
+**Next Goal:** Scale to 5+ chains with advanced dashboard and automation features
 
 ---
 
@@ -103,8 +103,6 @@
   - Community engagement
 
 ---
-
-## 📅 **Q2 2025 (April - June)**
 
 ### **Phase 4: Scale & Expansion (Weeks 14-20)**
 
@@ -245,7 +243,7 @@ interface StakingPool {
 
 ## 📊 **Success Metrics & KPIs**
 
-### **Q1 Targets**
+### **Initial Targets**
 - **Technical Metrics**
   - Cross-chain transaction success rate: >95%
   - Average execution time: <30 seconds
@@ -258,7 +256,7 @@ interface StakingPool {
   - Cross-chain transactions: 500+
   - User retention: >80%
 
-### **Q2 Targets**
+### **Scale Targets**
 - **Technical Metrics**
   - Supported chains: 10+
   - Cross-chain transaction success rate: >98%
