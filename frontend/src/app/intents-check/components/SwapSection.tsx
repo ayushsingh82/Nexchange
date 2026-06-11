@@ -6,11 +6,17 @@ import { getQuote, transferMultiTokenForQuote, waitUntilQuoteExecutionCompletes 
 import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
 const COMMON_TOKENS = [
-  { value: "nep141:wrap.near", label: "NEAR (wrap.near)" },
-  { value: "nep141:sol.omft.near", label: "SOL" },
-  { value: "nep141:eth.omft.near", label: "ETH" },
-  { value: "nep141:usdc.omft.near", label: "USDC" },
+  { value: "nep141:wrap.near", label: "NEAR (wrap.near)", decimals: 24 },
+  { value: "nep141:sol.omft.near", label: "SOL", decimals: 9 },
+  { value: "nep141:eth.omft.near", label: "ETH", decimals: 18 },
+  { value: "nep141:usdc.omft.near", label: "USDC", decimals: 6 },
 ];
+
+function toSmallestUnit(amount: string, decimals: number): string {
+  const [whole, frac = ""] = amount.split(".");
+  const fracPadded = frac.padEnd(decimals, "0").slice(0, decimals);
+  return (BigInt(whole) * BigInt(10 ** decimals) + BigInt(fracPadded || "0")).toString();
+}
 
 export default function SwapSection() {
   const { accountId, status, callMethod } = useNearWallet();
@@ -42,8 +48,8 @@ export default function SwapSection() {
     setQuote(null);
 
     try {
-      // Convert amount to smallest unit (assuming 18 decimals for most tokens)
-      const amountInSmallestUnit = (BigInt(Math.floor(parseFloat(amount) * 1e18))).toString();
+      const inputDecimals = COMMON_TOKENS.find(t => t.value === inputToken)?.decimals ?? 18;
+      const amountInSmallestUnit = toSmallestUnit(amount, inputDecimals);
 
       const deadline = new Date();
       deadline.setMinutes(deadline.getMinutes() + 5);

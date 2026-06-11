@@ -1,7 +1,7 @@
 const contractPerNetwork = {
-    mainnet: "verto.rynzaro.near",
+    mainnet: "intents.near",
     testnet: "verto.testnet",
   };
-  
-export const NetworkId = "testnet";
+
+export const NetworkId = "mainnet";
 export const VertoContract = contractPerNetwork[NetworkId];
