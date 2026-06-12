@@ -31,7 +31,7 @@ interface SolanaViewProps {
   signer?: ExternalSigner;
 }
 
-const connection = new SolanaConnection("https://api.devnet.solana.com");
+const connection = new SolanaConnection("https://solana.publicnode.com");
 
 const Solana = new chainAdapters.solana.Solana({
   solanaConnection: connection,

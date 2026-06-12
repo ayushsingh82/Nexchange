@@ -9,7 +9,7 @@ import { Connection as SolanaConnection } from "@solana/web3.js";
 import { bigIntToDecimal } from "../utils/bigIntToDecimal";
 import { decimalToBigInt } from "../utils/decimalToBigInt";
 
-const connection = new SolanaConnection("https://api.devnet.solana.com");
+const connection = new SolanaConnection("https://solana.publicnode.com");
 
 const Solana = new chainAdapters.solana.Solana({
   solanaConnection: connection,
