@@ -1,6 +1,7 @@
 import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
 const INTENTS_CONTRACT_ID = "intents.near";
+const THIRTY_TGAS = "30000000000000";
 
 // Single NEAR transaction with two batch actions — executes in order on-chain:
 // 1. near_deposit wraps NEAR → wNEAR
