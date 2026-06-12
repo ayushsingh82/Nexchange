@@ -18,12 +18,12 @@ function NavbarContent() {
 
   return (
     <>
-      <nav className="bg-black border-b border-green-800/50">
+      <nav className="sticky top-0 z-50 bg-black border-b border-[#97FBE4]/25">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo/Name - Left */}
             <div className="flex-shrink-0">
-              <Link href="/" className="text-xl sm:text-2xl font-light tracking-wide text-[#97FBE4]">
+              <Link href="/" className="text-xl sm:text-2xl font-semibold tracking-[0.12em] text-[#97FBE4]">
                 NeXchange
               </Link>
             </div>

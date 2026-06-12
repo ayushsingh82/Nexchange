@@ -13,6 +13,7 @@ const SECTIONS = [
   { id: 'user-flow', label: 'User Flow' },
   { id: 'chains', label: 'Supported Chains' },
   { id: 'staking', label: 'Staking & Best Returns' },
+  { id: 'jito', label: 'Jito Integration' },
   { id: 'security', label: 'Security' },
   { id: 'roadmap', label: 'Roadmap' },
   { id: 'links', label: 'Links' },
@@ -93,7 +94,7 @@ export default function DocsPageContent() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Sidebar */}
           <aside className="lg:w-64 flex-shrink-0">
-            <div className="lg:sticky lg:top-24">
+            <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto">
               <p className="text-xs uppercase tracking-wider text-gray-500 mb-4">
                 Documentation
               </p>
@@ -421,6 +422,133 @@ export default function DocsPageContent() {
                 <strong className="text-white">Ether.fi (Ethereum)</strong> — deposit ETH, receive
                 eETH. Adds restaking rewards on top of base staking yield.
               </p>
+            </Section>
+
+            <Section id="jito" title="Jito Integration">
+              <p>
+                NeXchange stakes SOL on the Jito liquid staking pool using{' '}
+                <strong className="text-white">NEAR Chain Signatures</strong>. Your NEAR account
+                derives a deterministic Solana address (via{' '}
+                <code className="text-[#97FBE4]">v1.signer</code>), SOL is delivered there via the
+                1Click solver network, then a <code className="text-[#97FBE4]">depositSol</code>{' '}
+                instruction is signed by the MPC and broadcast directly to Solana.
+              </p>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-6">Demo Account</h3>
+              <div className="overflow-x-auto mb-4">
+                <table className="w-full text-sm border border-green-800/40">
+                  <tbody className="text-gray-300 font-mono text-xs">
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white w-40">NEAR Account</td>
+                      <td className="p-3">nexchangenear.near</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">Derivation Path</td>
+                      <td className="p-3">solana-1 (fixed)</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">Derived Solana Addr</td>
+                      <td className="p-3 break-all">Deterministic via v1.signer MPC — connect wallet to see live address</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-6">Verified Contract Addresses</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border border-green-800/40">
+                  <thead className="bg-[#0a0f0d] text-[#97FBE4]">
+                    <tr>
+                      <th className="text-left p-3">Name</th>
+                      <th className="text-left p-3">Address</th>
+                      <th className="text-left p-3">Network</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-300 font-mono text-xs">
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">Jito Stake Pool</td>
+                      <td className="p-3 break-all">Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P815Awbb</td>
+                      <td className="p-3 font-sans">Solana Mainnet</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">jitoSOL Mint</td>
+                      <td className="p-3 break-all">J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn</td>
+                      <td className="p-3 font-sans">Solana Mainnet</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">SPL Stake Pool Program</td>
+                      <td className="p-3 break-all">SPoo1Ku8WFXoNDMHPsrGSTSG1Y47rzgn41SLUNakuHy</td>
+                      <td className="p-3 font-sans">Solana Mainnet</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">NEAR MPC Signer</td>
+                      <td className="p-3">v1.signer</td>
+                      <td className="p-3 font-sans">NEAR Mainnet</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">Intents Contract</td>
+                      <td className="p-3">intents.near</td>
+                      <td className="p-3 font-sans">NEAR Mainnet</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">Derivation Path</td>
+                      <td className="p-3">solana-1</td>
+                      <td className="p-3 font-sans">Fixed (all users)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">4-Step Flow</h3>
+              <Code>{`// Step 1: Deposit NEAR → intents.near (wrap.near → ft_transfer_call)
+depositNearAsMultiToken(accountId, amount, callMethod)
+
+// Step 2: Swap wNEAR → nep141:sol.omft.near via 1Click solver
+getQuote({ originAsset: "nep141:wrap.near", destinationAsset: "nep141:sol.omft.near", ... })
+transferMultiTokenForQuote(accountId, quote, "nep141:wrap.near", callMethod)
+
+// Step 3: Withdraw SOL to chain-sig derived Solana address
+getQuote({
+  originAsset: "nep141:sol.omft.near",
+  destinationAsset: "solana:So11111111111111111111111111111111111111112",
+  recipient: derivedSolanaAddress,   // from Solana.deriveAddressAndPublicKey()
+  recipientType: "DESTINATION_CHAIN"
+})
+
+// Step 4: Stake via NEAR MPC (chain signatures)
+const instructions = await depositSol(connection, JITO_STAKE_POOL, fromPubkey, lamports)
+// → SIGNET_CONTRACT.sign({ payloads, path: "solana-1", keyType: "Eddsa" })
+// → Solana.broadcastTx(finalizedTx)   // jitoSOL arrives at derived address`}</Code>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">Unstaking Flow</h3>
+              <p>
+                <strong className="text-white">Instant via reserve (implemented):</strong> NeXchange
+                calls <code className="text-[#97FBE4]">withdrawSol</code> on the SPL stake pool
+                library. Burns jitoSOL from the derived address&apos;s ATA and returns SOL instantly
+                from Jito&apos;s reserve pool. Signed via NEAR chain signatures — no separate Solana wallet needed.
+              </p>
+              <Code>{`// Unstake flow — all via NEAR chain sig
+const instructions = await withdrawSol(
+  connection,
+  JITO_STAKE_POOL,   // Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P815Awbb
+  derivedPubkey,     // tokenOwner  = nexchangenear.near's solana-1 address
+  derivedPubkey,     // solReceiver = same derived address
+  0.001,             // SOL amount to receive (library converts to lamports)
+)
+// → SIGNET_CONTRACT.sign({ payloads, path: "solana-1", keyType: "Eddsa" })
+// → Solana.broadcastTx(finalizedTx)`}</Code>
+              <p className="mt-2">
+                <strong className="text-white">Delayed (0.1% fee, up to 2 days):</strong>{' '}
+                <code className="text-[#97FBE4]">withdrawStake</code> creates a stake account at the
+                derived address → deactivate → wait 1 epoch → withdraw. Useful for large amounts
+                where the reserve might have insufficient liquidity.
+              </p>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">Token Decimals Reference</h3>
+              <Code>{`nep141:wrap.near      → 24 decimals  (yoctoNEAR)
+nep141:sol.omft.near  →  9 decimals  (lamports)
+nep141:eth.omft.near  → 18 decimals  (wei)
+nep141:usdc.omft.near →  6 decimals`}</Code>
             </Section>
 
             <Section id="security" title="Security">

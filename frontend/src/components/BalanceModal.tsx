@@ -11,7 +11,7 @@ import { providers } from "near-api-js";
 const INTENTS_CONTRACT_ID = "intents.near";
 const SOL_DEFUSE_ASSET_ID = "nep141:sol.omft.near"; // Default SOL asset ID
 const ETH_DEFUSE_ASSET_ID = "nep141:eth.omft.near"; // ETH asset ID
-const SOLANA_RPC_URL = "https://api.devnet.solana.com";
+const SOLANA_RPC_URL = "https://solana.publicnode.com";
 const ETHEREUM_RPC_URL = "https://sepolia.drpc.org";
 const NEAR_RPC_URL = "https://rpc.mainnet.near.org";
 

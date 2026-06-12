@@ -16,17 +16,16 @@ const WalletSelector = () => {
   if (status === "authenticated" && accountId) {
     return (
       <div className="flex items-center gap-3">
-        <div className="px-3 py-1 bg-green-900/30 border border-green-500/50 rounded-lg">
-          <span className="text-green-400 text-sm font-mono">
-            {accountId.length > 20 
-              ? `${accountId.slice(0, 8)}...${accountId.slice(-8)}` 
-              : accountId
-            }
+        <div className="px-3 py-1 border border-[#97FBE4]/50 rounded-lg">
+          <span className="text-[#97FBE4] text-sm font-mono">
+            {accountId.length > 20
+              ? `${accountId.slice(0, 8)}…${accountId.slice(-6)}`
+              : accountId}
           </span>
         </div>
         <button
           onClick={signOut}
-          className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors"
+          className="px-3 py-1 border border-[#97FBE4]/30 text-[#97FBE4] hover:bg-[#97FBE4]/10 text-sm rounded-lg transition-colors"
         >
           Disconnect
         </button>
