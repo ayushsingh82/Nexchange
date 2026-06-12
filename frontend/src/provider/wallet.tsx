@@ -41,12 +41,20 @@ interface CallMethodParams {
   deposit: string;
 }
 
+interface BatchAction {
+  method: string;
+  args: Record<string, unknown>;
+  gas: string;
+  deposit: string;
+}
+
 const NearWalletContext = createContext<{
   signIn: () => Promise<void | string>;
   signOut: () => void;
   viewMethod: (params: ViewMethodParams) => Promise<unknown>;
   callMethod: (params: CallMethodParams) => Promise<unknown>;
   callMethods: (walletParameters: MethodParameters[]) => Promise<unknown>;
+  callMethodBatch: (contractId: string, actions: BatchAction[]) => Promise<unknown>;
   accountId: string | null;
   status: AuthStatusType;
   getTransactionResult: (transactionHash: string) => Promise<unknown>;
@@ -55,6 +63,7 @@ const NearWalletContext = createContext<{
   callMethod: async () => {},
   getTransactionResult: async () => {},
   callMethods: async () => {},
+  callMethodBatch: async () => {},
   status: "loading",
   accountId: null,
   signIn: async () => {},
@@ -198,6 +207,27 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     return outcome;
   };
 
+  // Single NEAR transaction with multiple batch actions — executes sequentially on-chain
+  const callMethodBatch = async (contractId: string, actions: BatchAction[]): Promise<unknown> => {
+    if (!walletSelector) return;
+    const selectedWallet = await walletSelector.wallet();
+    let outcome;
+    try {
+      outcome = await selectedWallet.signAndSendTransaction({
+        receiverId: contractId,
+        actions: actions.map((a) => ({
+          type: "FunctionCall" as const,
+          params: { methodName: a.method, args: a.args, gas: a.gas, deposit: a.deposit },
+        })),
+      });
+    } catch (err) {
+      if (err === null || err === undefined) return null;
+      throw err;
+    }
+    if (!outcome) return null;
+    return providers.getTransactionLastResult(outcome);
+  };
+
   const getTransactionResult = async (transactionHash: string): Promise<unknown> => {
     if (!walletSelector) {
       return;
@@ -221,6 +251,7 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
         viewMethod,
         callMethod,
         callMethods,
+        callMethodBatch,
         getTransactionResult,
       }}
     >

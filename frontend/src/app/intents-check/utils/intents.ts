@@ -1,35 +1,31 @@
-import { MethodParameters } from "@/lib/type/type";
 import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
 const INTENTS_CONTRACT_ID = "intents.near";
-// NEAR max gas per transaction is 300 TGas
-const GAS_NEAR_DEPOSIT   = "30000000000000";   // 30 TGas — simple payable call
-const GAS_FT_TRANSFER    = "200000000000000";  // 200 TGas — cross-contract call
 
-// Batch near_deposit + ft_transfer_call in one wallet approval.
-// Both go to wrap.near, so NEAR executes them in nonce order (deposit first).
+// Single NEAR transaction with two batch actions — executes in order on-chain:
+// 1. near_deposit wraps NEAR → wNEAR
+// 2. ft_transfer_call sends wNEAR → intents.near
+// Using batch actions (not two separate txs) guarantees sequential execution.
 export async function depositNearAsMultiToken(
   accountId: string,
   amount: string,
-  callMethods: (params: MethodParameters[]) => Promise<unknown>
+  callMethodBatch: (contractId: string, actions: Array<{ method: string; args: Record<string, unknown>; gas: string; deposit: string }>) => Promise<unknown>
 ): Promise<void> {
-  await callMethods([
+  await callMethodBatch("wrap.near", [
     {
-      contractId: "wrap.near",
       method: "near_deposit",
       args: {},
-      gas: GAS_NEAR_DEPOSIT,
+      gas: "10000000000000",   // 10 TGas
       deposit: amount,
     },
     {
-      contractId: "wrap.near",
       method: "ft_transfer_call",
       args: {
         receiver_id: INTENTS_CONTRACT_ID,
         amount,
         msg: accountId,
       },
-      gas: GAS_FT_TRANSFER,
+      gas: "50000000000000",   // 50 TGas
       deposit: "1",
     },
   ]);
@@ -66,11 +62,8 @@ export async function transferMultiTokenForQuote(
   return result as string;
 }
 
-// Proxy through Next.js API to avoid CORS (real base: https://1click.chaindefuser.com)
-const ONE_CLICK_PROXY = "/api/1click";
-
 export async function getQuote(requestBody: QuoteRequest): Promise<any> {
-  const response = await fetch(`${ONE_CLICK_PROXY}/v0/quote`, {
+  const response = await fetch("/api/1click/quote", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestBody),
@@ -78,11 +71,10 @@ export async function getQuote(requestBody: QuoteRequest): Promise<any> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || `Quote failed: ${response.status}`);
+    throw new Error(error.error || error.message || `Quote failed: ${response.status}`);
   }
 
-  const data = await response.json();
-  return data.quote ?? data;
+  return response.json();
 }
 
 export async function waitUntilQuoteExecutionCompletes(
@@ -97,15 +89,13 @@ export async function waitUntilQuoteExecutionCompletes(
   while (attempts > 0) {
     try {
       const response = await fetch(
-        `${ONE_CLICK_PROXY}/v0/status?depositAddress=${quote.depositAddress}`
+        `/api/1click/status?depositAddress=${quote.depositAddress}`
       );
 
       if (response.ok) {
         const result = await response.json();
-        if (result.status === "SUCCESS") {
-          return;
-        }
-        console.log(`Current quote status is ${result.status}`);
+        if (result.status === "SUCCESS") return;
+        console.log(`Quote status: ${result.status}`);
       }
     } catch (error) {
       console.error("Failed to query execution status:", error);

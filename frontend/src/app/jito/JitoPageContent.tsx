@@ -115,7 +115,7 @@ function StepCard({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function JitoPageContent() {
-  const { accountId, status, callMethod, callMethods } = useNearWallet();
+  const { accountId, status, callMethod, callMethods, callMethodBatch } = useNearWallet();
   const isAuthenticated = status === "authenticated" && accountId;
 
   // Derived Solana address from chain sig
@@ -144,11 +144,11 @@ export default function JitoPageContent() {
 
   // ── Step 1: Deposit NEAR to intents ────────────────────────────────────────
   const handleDeposit = useCallback(async () => {
-    if (!accountId || !callMethods) return;
+    if (!accountId || !callMethodBatch) return;
     setStep1({ status: "loading", message: "Depositing NEAR to intents contract…" });
     try {
       const amountYocto = toSmallestUnit(depositAmount, 24);
-      await depositNearAsMultiToken(accountId, amountYocto, callMethods);
+      await depositNearAsMultiToken(accountId, amountYocto, callMethodBatch);
       setStep1({
         status: "done",
         message: `Deposited ${depositAmount} NEAR to intents.near`,
@@ -162,7 +162,7 @@ export default function JitoPageContent() {
           : { status: "error", message: msg }
       );
     }
-  }, [accountId, callMethods, depositAmount]);
+  }, [accountId, callMethodBatch, depositAmount]);
 
   // ── Step 2: Swap wNEAR → SOL via 1Click ────────────────────────────────────
   const handleSwap = useCallback(async () => {

@@ -5,7 +5,7 @@ import { useNearWallet } from "@/provider/wallet";
 import { depositNearAsMultiToken } from "../utils/intents";
 
 export default function DepositSection() {
-  const { accountId, status, callMethods } = useNearWallet();
+  const { accountId, status, callMethodBatch } = useNearWallet();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +14,7 @@ export default function DepositSection() {
   const isAuthenticated = status === "authenticated" && accountId;
 
   const handleDeposit = async () => {
-    if (!isAuthenticated || !accountId || !callMethods) {
+    if (!isAuthenticated || !accountId || !callMethodBatch) {
       setError("Please connect your wallet");
       return;
     }
@@ -31,7 +31,7 @@ export default function DepositSection() {
     try {
       const amountInYocto = (BigInt(Math.floor(parseFloat(amount) * 1e24))).toString();
 
-      await depositNearAsMultiToken(accountId, amountInYocto, callMethods);
+      await depositNearAsMultiToken(accountId, amountInYocto, callMethodBatch);
 
       setSuccess(`Deposit successful!`);
       setAmount("");
