@@ -2,44 +2,35 @@ import { MethodParameters } from "@/lib/type/type";
 import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
 const INTENTS_CONTRACT_ID = "intents.near";
-const TGas = BigInt(1_000_000_000_000);
 const THIRTY_TGAS = "30000000000000";
-const NO_DEPOSIT = "0";
 
+// Batch near_deposit + ft_transfer_call in one wallet approval to avoid
+// the redirect-and-null problem that occurs with two sequential callMethod calls.
 export async function depositNearAsMultiToken(
   accountId: string,
   amount: string,
-  callMethod: (params: {
-    contractId: string;
-    method: string;
-    args: Record<string, unknown>;
-    gas: string;
-    deposit: string;
-  }) => Promise<unknown>
-): Promise<string> {
-  // First, deposit NEAR to wrap.near
-  await callMethod({
-    contractId: "wrap.near",
-    method: "near_deposit",
-    args: {},
-    gas: String(10n * BigInt(THIRTY_TGAS)),
-    deposit: amount,
-  });
-
-  // Then transfer wrapped NEAR to intents contract
-  const result = await callMethod({
-    contractId: "wrap.near",
-    method: "ft_transfer_call",
-    args: {
-      receiver_id: INTENTS_CONTRACT_ID,
-      amount: amount,
-      msg: accountId,
+  callMethods: (params: MethodParameters[]) => Promise<unknown>
+): Promise<void> {
+  await callMethods([
+    {
+      contractId: "wrap.near",
+      method: "near_deposit",
+      args: {},
+      gas: String(10n * BigInt(THIRTY_TGAS)),
+      deposit: amount,
     },
-    gas: String(50n * BigInt(THIRTY_TGAS)),
-    deposit: "1",
-  });
-
-  return JSON.stringify(result);
+    {
+      contractId: "wrap.near",
+      method: "ft_transfer_call",
+      args: {
+        receiver_id: INTENTS_CONTRACT_ID,
+        amount,
+        msg: accountId,
+      },
+      gas: String(50n * BigInt(THIRTY_TGAS)),
+      deposit: "1",
+    },
+  ]);
 }
 
 export async function transferMultiTokenForQuote(

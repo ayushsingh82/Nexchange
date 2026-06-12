@@ -144,11 +144,11 @@ export default function JitoPageContent() {
 
   // ── Step 1: Deposit NEAR to intents ────────────────────────────────────────
   const handleDeposit = useCallback(async () => {
-    if (!accountId || !callMethod) return;
+    if (!accountId || !callMethods) return;
     setStep1({ status: "loading", message: "Depositing NEAR to intents contract…" });
     try {
       const amountYocto = toSmallestUnit(depositAmount, 24);
-      await depositNearAsMultiToken(accountId, amountYocto, callMethod);
+      await depositNearAsMultiToken(accountId, amountYocto, callMethods);
       setStep1({
         status: "done",
         message: `Deposited ${depositAmount} NEAR to intents.near`,
@@ -159,7 +159,7 @@ export default function JitoPageContent() {
         message: err instanceof Error ? err.message : String(err),
       });
     }
-  }, [accountId, callMethod, depositAmount]);
+  }, [accountId, callMethods, depositAmount]);
 
   // ── Step 2: Swap wNEAR → SOL via 1Click ────────────────────────────────────
   const handleSwap = useCallback(async () => {
