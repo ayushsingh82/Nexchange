@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import { Press_Start_2P } from 'next/font/google';
+import { Press_Start_2P, Barlow_Condensed } from 'next/font/google';
 import dynamic from 'next/dynamic';
 
 const Ferrofluid = dynamic(() => import('@/components/ui/Ferrofluid'), { ssr: false });
@@ -150,11 +150,48 @@ const pixelFont = Press_Start_2P({
   variable: '--font-pixel',
 });
 
+const condensed = Barlow_Condensed({
+  weight: ['300', '400', '600'],
+  subsets: ['latin'],
+  variable: '--font-condensed',
+});
+
+const HERO_SUFFIXES = ['bridging.', 'wallet switching.', 'friction.'];
+
+function CyclingText({ phrases }: { phrases: string[] }) {
+  const [index, setIndex] = React.useState(0);
+  const [show, setShow] = React.useState(true);
+
+  React.useEffect(() => {
+    const hold = setTimeout(() => {
+      setShow(false);
+      setTimeout(() => {
+        setIndex((i) => (i + 1) % phrases.length);
+        setShow(true);
+      }, 380);
+    }, 2400);
+    return () => clearTimeout(hold);
+  }, [index, phrases.length]);
+
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        opacity: show ? 1 : 0,
+        transform: show ? 'translateY(0px)' : 'translateY(-12px)',
+        transition: 'opacity 380ms ease, transform 380ms ease',
+      }}
+    >
+      {phrases[index]}
+    </span>
+  );
+}
+
 export default function HomePageContent() {
   const [expandedFaq, setExpandedFaq] = React.useState<number | null>(null);
 
   return (
-    <div className={`min-h-screen bg-black text-[#97FBE4] overflow-hidden flex flex-col ${pixelFont.variable}`}>
+    <div className={`min-h-screen bg-black text-[#97FBE4] overflow-hidden flex flex-col ${pixelFont.variable} ${condensed.variable}`}>
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section — Ferrofluid effect full-bleed behind, text centered on top */}
@@ -181,16 +218,47 @@ export default function HomePageContent() {
 
           {/* Centered hero text, above the effect */}
           <div
-            className="relative z-10 max-w-3xl mx-auto text-center"
+            className="relative z-10 max-w-4xl mx-auto text-center"
             style={{ textShadow: '0 2px 24px rgba(0,0,0,0.9)' }}
           >
-            <h1 className="text-4xl md:text-6xl font-light mb-5 tracking-tight">
-              <span className="block text-[#97FBE4]">Seamless. Secure.</span>
-              <span className="block text-[#5eead4]">Multi-chain.</span>
+            <h1
+              className="mb-6 whitespace-nowrap font-semibold tracking-tight"
+              style={{ fontFamily: 'var(--font-condensed)', fontSize: 'clamp(2rem, 6vw, 5.5rem)', letterSpacing: '-0.01em' }}
+            >
+              <span className="text-[#97FBE4]">Seamless. Secure. </span>
+              <span className="text-[#5eead4]">Multi-chain.</span>
             </h1>
-            <p className="text-base md:text-lg text-[#97FBE4]/90 max-w-2xl mx-auto pixel-font">
-              Cross-chain  staking protocol that allows users to stake on multiple chains  directly from  NEAR wallet. No bridging, no wallet switching, no friction.
+            <div className="text-4xl sm:text-5xl md:text-6xl text-[#97FBE4]/80 min-h-[3.5rem]"
+              style={{ fontFamily: 'var(--font-condensed)', letterSpacing: '-0.01em' }}
+            >
+              <span className="font-semibold">No </span>
+              <CyclingText phrases={HERO_SUFFIXES} />
+            </div>
+            <p className="mt-6 text-sm text-white max-w-xl mx-auto leading-relaxed pixel-font">
+              Cross-chain staking protocol that allows users to stake on multiple chains directly from NEAR wallet.
             </p>
+
+            {/* Supports — static 4 logos */}
+            <div className="mt-8">
+              <p className="text-[10px] tracking-widest text-white uppercase mb-3">Supports</p>
+              <div className="flex items-center justify-center gap-6">
+                {[
+                  { name: 'NEAR', logo: 'https://s3.coinmarketcap.com/static-gravity/image/ef3ad80e423a4449ab8e961b0d1edea4.png' },
+                  { name: 'SOL',  logo: 'https://s3.coinmarketcap.com/static-gravity/image/58ba0011f24d47c4b2e8adaa873bb280.jpg' },
+                  { name: 'TON',  logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkAQuBTA6cF67DuhxtdWrLx-4Iid_nOKmGVQlTGIxejA&s=10' },
+                  { name: 'ETH',  logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJsxR0KYJtHgBOV1xHFe_HhZCX15J9tEWGLw&s' },
+                ].map((chain) => (
+                  <div key={chain.name} className="flex items-center gap-2">
+                    <img
+                      src={chain.logo}
+                      alt={chain.name}
+                      className="w-6 h-6 rounded-full object-cover border border-[#97FBE4]/20"
+                    />
+                    <span className="text-sm font-medium text-white tracking-wide">{chain.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
