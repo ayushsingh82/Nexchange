@@ -1,297 +1,476 @@
 'use client'
 
-import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNearWallet } from '@/provider/wallet'
-import { useStakingApy } from '../../app/stake/hooks/useStakingApy'
-import { FALLBACK_PRICES } from '../../app/stake/constant'
-import BalanceModal from '@/components/BalanceModal'
+import { useChainSigSolanaAddress } from '@/hooks/useChainSigSolanaAddress'
+import { providers } from 'near-api-js'
+import { PublicKey, Connection } from '@solana/web3.js'
+import Link from 'next/link'
 
-const NAV = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'addresses', label: 'Derived Addresses' },
-  { id: 'positions', label: 'Staked Positions' },
-  { id: 'holdings', label: 'Token Holdings' },
-]
+const SOLANA_RPC = 'https://solana.publicnode.com'
+const DERIVATION_PATH = 'solana-1'
+const INTENTS_CONTRACT = 'intents.near'
+const JITO_SOL_MINT = 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn'
+const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+const ASSOC_TOKEN_PROG = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJe1bRS'
 
-const CHAIN_LOGOS = {
-  solana: 'https://s3.coinmarketcap.com/static-gravity/image/58ba0011f24d47c4b2e8adaa873bb280.jpg',
-  ethereum: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJsxR0KYJtHgBOV1xHFe_HhZCX15J9tEWGLw&s',
-  near: 'https://s3.coinmarketcap.com/static-gravity/image/ef3ad80e423a4449ab8e961b0d1edea4.png',
+// Token icon components
+function NearIcon({ size = 32 }: { size?: number }) {
+  return (
+    <div
+      style={{ width: size, height: size }}
+      className="rounded-full bg-black border border-[#97FBE4]/40 flex items-center justify-center overflow-hidden flex-shrink-0"
+    >
+      <img
+        src="https://s3.coinmarketcap.com/static-gravity/image/ef3ad80e423a4449ab8e961b0d1edea4.png"
+        alt="NEAR"
+        style={{ width: size, height: size }}
+        className="object-cover"
+      />
+    </div>
+  )
 }
 
-const PROTOCOL_LOGOS = {
-  jito: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqLFbY5fdeapK9qPbxMCdmhuZS84T5tCo0Nw&s',
-  lido: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAgWY6sAzDq67Qo5bZNKCI_-WYssDSiV9odA&s',
-  marinade: 'https://raw.githubusercontent.com/marinade-finance/liquid-staking-program/main/Docs/img/MNDE.png',
+function SolIcon({ size = 32 }: { size?: number }) {
+  return (
+    <div
+      style={{ width: size, height: size }}
+      className="rounded-full bg-black border border-[#97FBE4]/40 flex items-center justify-center overflow-hidden flex-shrink-0"
+    >
+      <img
+        src="https://s3.coinmarketcap.com/static-gravity/image/58ba0011f24d47c4b2e8adaa873bb280.jpg"
+        alt="SOL"
+        style={{ width: size, height: size }}
+        className="object-cover"
+      />
+    </div>
+  )
 }
 
-// Deterministic pseudo-address derivation from a NEAR account + derivation path.
-// Mirrors the demo MPC derivation used elsewhere in the app (no live RPC here).
-function hashHex(input: string, len: number) {
-  let h = 0x811c9dc5
-  let out = ''
-  let i = 0
-  while (out.length < len) {
-    h ^= (input.charCodeAt(i % input.length) || 1) + i
-    h = Math.imul(h, 0x01000193) >>> 0
-    out += (h >>> 0).toString(16).padStart(8, '0')
-    i++
-  }
-  return out.slice(0, len)
+function JitoIcon({ size = 32 }: { size?: number }) {
+  return (
+    <div
+      style={{ width: size, height: size }}
+      className="rounded-full bg-black border border-[#97FBE4]/40 flex items-center justify-center overflow-hidden flex-shrink-0"
+    >
+      <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqLFbY5fdeapK9qPbxMCdmhuZS84T5tCo0Nw&s"
+        alt="Jito"
+        style={{ width: size, height: size }}
+        className="object-cover"
+      />
+    </div>
+  )
 }
 
-const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-function deriveEvm(account: string) {
-  return '0x' + hashHex(account + ':ethereum-1', 40)
-}
-function deriveSolana(account: string) {
-  const hex = hashHex(account + ':solana-1', 88)
-  let out = ''
-  for (let i = 0; i < 44; i++) out += B58[parseInt(hex.substr(i * 2, 2), 16) % 58]
-  return out
+function IntentsIcon({ size = 32 }: { size?: number }) {
+  return (
+    <div
+      style={{ width: size, height: size }}
+      className="rounded-full bg-[#97FBE4]/10 border border-[#97FBE4]/30 flex items-center justify-center flex-shrink-0"
+    >
+      <svg width={size * 0.5} height={size * 0.5} viewBox="0 0 24 24" fill="none" stroke="#97FBE4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
+        <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
+      </svg>
+    </div>
+  )
 }
 
-function short(addr: string) {
-  return addr.length > 16 ? `${addr.slice(0, 8)}…${addr.slice(-6)}` : addr
+function Spinner() {
+  return (
+    <div className="w-4 h-4 border-2 border-[#97FBE4]/20 border-t-[#97FBE4] rounded-full animate-spin" />
+  )
+}
+
+function StatCard({ label, value, sub, loading }: { label: string; value: string; sub?: string; loading?: boolean }) {
+  return (
+    <div className="border border-gray-800 bg-[#00150E]/40 p-4">
+      <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">{label}</p>
+      {loading ? (
+        <div className="flex items-center h-7"><Spinner /></div>
+      ) : (
+        <>
+          <p className="text-xl font-light text-[#97FBE4] font-mono">{value}</p>
+          {sub && <p className="text-[10px] text-gray-600 mt-0.5">{sub}</p>}
+        </>
+      )}
+    </div>
+  )
+}
+
+interface AssetRowProps {
+  icon: React.ReactNode
+  symbol: string
+  name: string
+  balance: string
+  tag?: string
+  tagColor?: string
+  loading?: boolean
+  action?: { label: string; href: string }
+}
+
+function AssetRow({ icon, symbol, name, balance, tag, tagColor = '#97FBE4', loading, action }: AssetRowProps) {
+  return (
+    <div className="flex items-center gap-3 py-3.5 border-b border-gray-900 last:border-0">
+      {icon}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-white text-sm font-medium">{symbol}</span>
+          {tag && (
+            <span
+              className="text-[9px] px-1.5 py-0.5 border font-medium tracking-wide"
+              style={{ color: tagColor, borderColor: `${tagColor}40` }}
+            >
+              {tag}
+            </span>
+          )}
+        </div>
+        <p className="text-gray-500 text-xs truncate">{name}</p>
+      </div>
+      <div className="text-right flex items-center gap-3">
+        {loading ? (
+          <Spinner />
+        ) : (
+          <span className="text-white text-sm font-mono tabular-nums">{balance}</span>
+        )}
+        {action && (
+          <Link
+            href={action.href}
+            className="text-[10px] px-2 py-1 bg-[#97FBE4]/10 border border-[#97FBE4]/30 text-[#97FBE4] hover:bg-[#97FBE4]/20 transition-colors whitespace-nowrap"
+          >
+            {action.label}
+          </Link>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Section({
+  title,
+  children,
+  badge,
+}: {
+  title: string
+  children: React.ReactNode
+  badge?: string
+}) {
+  return (
+    <div className="border border-gray-800 bg-black/60">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
+        <h2 className="text-[10px] font-semibold tracking-widest text-gray-500 uppercase">{title}</h2>
+        {badge && (
+          <span className="text-[9px] px-2 py-0.5 border border-[#97FBE4]/20 text-[#97FBE4]/60">{badge}</span>
+        )}
+      </div>
+      <div className="px-5">{children}</div>
+    </div>
+  )
 }
 
 export default function PortfolioPageContent() {
-  const { accountId } = useNearWallet()
-  const { data: apyData, loading: apyLoading } = useStakingApy()
+  const { accountId, status, viewMethod, signIn } = useNearWallet()
+  const isAuthenticated = status === 'authenticated' && accountId
 
-  const account = accountId || 'demo.near'
-  const solAddr = deriveSolana(account)
-  const evmAddr = deriveEvm(account)
+  const [showPath, setShowPath] = useState(false)
+  const [copied, setCopied] = useState(false)
 
-  const solApy = apyData?.SOL?.apy ?? 7.2
-  const ethApy = apyData?.ETH?.apy ?? 3.0
+  const { address: solAddress, balance: solBalance, loading: addrLoading, addrError } =
+    useChainSigSolanaAddress(accountId, DERIVATION_PATH)
 
-  const prices = { SOL: FALLBACK_PRICES.SOL, ETH: FALLBACK_PRICES.ETH, NEAR: FALLBACK_PRICES.NEAR }
+  // NEAR wallet balance
+  const [nearBalance, setNearBalance] = useState<string | null>(null)
+  const [nearLoading, setNearLoading] = useState(false)
+  useEffect(() => {
+    if (!accountId) return
+    setNearLoading(true)
+    const provider = new providers.JsonRpcProvider({ url: 'https://rpc.mainnet.near.org' })
+    provider.query({ request_type: 'view_account', account_id: accountId, finality: 'optimistic' })
+      .then((res: any) => setNearBalance((Number(BigInt(res.amount)) / 1e24).toFixed(4)))
+      .catch(() => setNearBalance(null))
+      .finally(() => setNearLoading(false))
+  }, [accountId])
 
-  // Demo staked positions for the connected account.
-  const positions = [
-    { chain: 'Solana', chainLogo: CHAIN_LOGOS.solana, protocol: 'Jito', protoLogo: PROTOCOL_LOGOS.jito, token: 'JitoSOL', amount: 12.4, priceSym: 'SOL' as const, apy: solApy, apyLive: apyData?.SOL?.source !== 'estimate', address: solAddr },
-    { chain: 'Solana', chainLogo: CHAIN_LOGOS.solana, protocol: 'Marinade', protoLogo: PROTOCOL_LOGOS.marinade, token: 'mSOL', amount: 5.0, priceSym: 'SOL' as const, apy: 7.0, apyLive: false, address: solAddr },
-    { chain: 'Ethereum', chainLogo: CHAIN_LOGOS.ethereum, protocol: 'Lido', protoLogo: PROTOCOL_LOGOS.lido, token: 'stETH', amount: 0.8, priceSym: 'ETH' as const, apy: ethApy, apyLive: apyData?.ETH?.source !== 'estimate', address: evmAddr },
-  ]
+  // jitoSOL balance
+  const [jitoSolBalance, setJitoSolBalance] = useState<string | null>(null)
+  const [jitoLoading, setJitoLoading] = useState(false)
+  useEffect(() => {
+    if (!solAddress) return
+    setJitoLoading(true)
+    ;(async () => {
+      try {
+        const connection = new Connection(SOLANA_RPC, 'confirmed')
+        const derivedPubkey = new PublicKey(solAddress)
+        const [ata] = PublicKey.findProgramAddressSync(
+          [
+            derivedPubkey.toBuffer(),
+            new PublicKey(TOKEN_PROGRAM).toBuffer(),
+            new PublicKey(JITO_SOL_MINT).toBuffer(),
+          ],
+          new PublicKey(ASSOC_TOKEN_PROG),
+        )
+        const info = await connection.getTokenAccountBalance(ata)
+        setJitoSolBalance(info.value.uiAmountString ?? '0')
+      } catch {
+        setJitoSolBalance('0')
+      } finally {
+        setJitoLoading(false)
+      }
+    })()
+  }, [solAddress])
 
-  const valueOf = (p: { amount: number; priceSym: 'SOL' | 'ETH' }) => p.amount * prices[p.priceSym]
-  const totalStaked = positions.reduce((s, p) => s + valueOf(p), 0)
-  const yearlyRewards = positions.reduce((s, p) => s + valueOf(p) * (p.apy / 100), 0)
+  // Intents balances
+  const [intentsNEAR, setIntentsNEAR] = useState<string | null>(null)
+  const [intentsSOL, setIntentsSOL] = useState<string | null>(null)
+  const [intentsLoading, setIntentsLoading] = useState(false)
+  useEffect(() => {
+    if (!accountId || !viewMethod) return
+    setIntentsLoading(true)
+    Promise.all([
+      viewMethod({ contractId: INTENTS_CONTRACT, method: 'mt_balance_of', args: { account_id: accountId, token_id: 'nep141:wrap.near' } })
+        .then((b: any) => setIntentsNEAR((Number(BigInt(b ?? '0')) / 1e24).toFixed(4)))
+        .catch(() => setIntentsNEAR('0')),
+      viewMethod({ contractId: INTENTS_CONTRACT, method: 'mt_balance_of', args: { account_id: accountId, token_id: 'nep141:sol.omft.near' } })
+        .then((b: any) => setIntentsSOL((Number(BigInt(b ?? '0')) / 1e9).toFixed(6)))
+        .catch(() => setIntentsSOL('0')),
+    ]).finally(() => setIntentsLoading(false))
+  }, [accountId, viewMethod])
 
-  const addresses = [
-    { name: 'NEAR', logo: CHAIN_LOGOS.near, path: '—', addr: account, note: 'Your signing account' },
-    { name: 'Solana', logo: CHAIN_LOGOS.solana, path: 'solana-1', addr: solAddr, note: 'Chain-signature derived' },
-    { name: 'Ethereum', logo: CHAIN_LOGOS.ethereum, path: 'ethereum-1', addr: evmAddr, note: 'Chain-signature derived' },
-  ]
-
-  const [copied, setCopied] = useState<string | null>(null)
-  const [balanceOpen, setBalanceOpen] = useState(false)
-
-  const copy = (addr: string) => {
-    navigator.clipboard?.writeText(addr).then(() => {
-      setCopied(addr)
-      setTimeout(() => setCopied((c) => (c === addr ? null : c)), 1500)
+  function copyAddress(addr: string) {
+    navigator.clipboard.writeText(addr).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
     })
   }
 
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-6 px-4">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-light text-[#97FBE4] tracking-tight">Portfolio</h1>
+          <p className="text-gray-500 text-sm">Connect your NEAR wallet to view your assets</p>
+        </div>
+        <button
+          onClick={signIn}
+          className="px-6 py-2.5 border border-[#97FBE4] text-[#97FBE4] text-sm hover:bg-[#97FBE4]/10 transition-colors"
+        >
+          Connect Wallet
+        </button>
+      </div>
+    )
+  }
+
+  const hasJitoStake = jitoSolBalance !== null && parseFloat(jitoSolBalance) > 0
+  const hasIntentsNEAR = intentsNEAR !== null && parseFloat(intentsNEAR) > 0
+  const hasIntentsSOL = intentsSOL !== null && parseFloat(intentsSOL) > 0
+
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="container mx-auto px-4 sm:px-6 py-12 flex flex-col lg:flex-row gap-8">
-        {/* Sidebar */}
-        <aside className="lg:w-56 flex-shrink-0">
-          <div className="lg:sticky lg:top-24">
-            <p className="text-xs uppercase tracking-wider text-[#97FBE4]/50 mb-4">Portfolio</p>
-            <nav className="flex lg:flex-col gap-1 overflow-x-auto">
-              {NAV.map((n) => (
-                <a
-                  key={n.id}
-                  href={`#${n.id}`}
-                  className="text-sm px-3 py-2 text-gray-400 hover:text-[#97FBE4] hover:bg-[#97FBE4]/5 transition-colors whitespace-nowrap"
-                >
-                  {n.label}
-                </a>
-              ))}
-            </nav>
-            <div className="mt-6 flex flex-col gap-2">
-              <button
-                onClick={() => setBalanceOpen(true)}
-                className="w-full px-4 py-2.5 text-sm bg-[#97FBE4] text-black font-medium hover:bg-[#5eead4] transition-colors"
-              >
-                View Balance
-              </button>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-4">
+
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-light text-[#97FBE4] tracking-tight">Portfolio</h1>
+            <p className="text-gray-600 text-[11px] font-mono mt-0.5 truncate">{accountId}</p>
+          </div>
+          <div className="flex-shrink-0">
+            <NearIcon size={36} />
+          </div>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          <StatCard
+            label="NEAR"
+            value={nearBalance !== null ? `${nearBalance}` : '—'}
+            sub="wallet balance"
+            loading={nearLoading}
+          />
+          <StatCard
+            label="SOL"
+            value={solBalance !== null ? `${solBalance}` : '—'}
+            sub="derived address"
+            loading={addrLoading}
+          />
+          <StatCard
+            label="jitoSOL"
+            value={jitoSolBalance !== null && jitoSolBalance !== '0' ? jitoSolBalance : '—'}
+            sub="staked"
+            loading={jitoLoading}
+          />
+        </div>
+
+        {/* Derived Solana Address */}
+        <Section title="Derived Solana Address" badge="MPC · v1.signer">
+          <div className="py-4 space-y-3">
+            {addrLoading ? (
+              <div className="flex items-center gap-2 text-yellow-400 text-sm">
+                <Spinner />
+                <span>Deriving address…</span>
+              </div>
+            ) : addrError ? (
+              <p className="text-red-400 text-sm">{addrError}</p>
+            ) : (
+              <>
+                <div className="flex items-start gap-3">
+                  <SolIcon size={28} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[#97FBE4] font-mono text-xs sm:text-sm break-all leading-relaxed">
+                      {solAddress}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    onClick={() => solAddress && copyAddress(solAddress)}
+                    className="text-[10px] px-2 py-1 border border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 transition-colors"
+                  >
+                    {copied ? '✓ Copied' : 'Copy address'}
+                  </button>
+                  <button
+                    onClick={() => setShowPath(p => !p)}
+                    className="text-[10px] px-2 py-1 border border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 transition-colors"
+                  >
+                    {showPath ? 'Hide path' : 'Show path'}
+                  </button>
+                  {showPath && (
+                    <span className="text-[10px] font-mono text-gray-500">
+                      path: <span className="text-[#97FBE4]">{DERIVATION_PATH}</span>
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </Section>
+
+        {/* NEAR Wallet */}
+        <Section title="NEAR Wallet">
+          <AssetRow
+            icon={<NearIcon size={32} />}
+            symbol="NEAR"
+            name="NEAR Protocol"
+            balance={nearBalance !== null ? `${nearBalance} NEAR` : '—'}
+            loading={nearLoading}
+          />
+          {hasIntentsNEAR && (
+            <AssetRow
+              icon={<IntentsIcon size={32} />}
+              symbol="wNEAR"
+              name="Wrapped NEAR (intents)"
+              balance={`${intentsNEAR} NEAR`}
+              tag="intents"
+              loading={intentsLoading}
+            />
+          )}
+          {!hasIntentsNEAR && intentsNEAR !== null && (
+            <div className="py-2 pb-3">
+              <p className="text-[10px] text-gray-700">No intents balances.</p>
+            </div>
+          )}
+        </Section>
+
+        {/* Solana (Derived) */}
+        <Section title="Solana — Derived Address">
+          <AssetRow
+            icon={<SolIcon size={32} />}
+            symbol="SOL"
+            name="Solana (on-chain)"
+            balance={addrLoading ? '…' : addrError ? 'error' : solBalance !== null ? `${solBalance} SOL` : '—'}
+            loading={addrLoading}
+          />
+          {hasIntentsSOL && (
+            <AssetRow
+              icon={<IntentsIcon size={32} />}
+              symbol="SOL"
+              name="SOL (in intents)"
+              balance={`${intentsSOL} SOL`}
+              tag="intents"
+              loading={intentsLoading}
+            />
+          )}
+        </Section>
+
+        {/* Staking Portfolio */}
+        <Section title="Staking Portfolio">
+          {jitoLoading ? (
+            <div className="py-4 flex items-center gap-2">
+              <Spinner />
+              <span className="text-gray-500 text-xs">Loading staking positions…</span>
+            </div>
+          ) : hasJitoStake ? (
+            <AssetRow
+              icon={<JitoIcon size={32} />}
+              symbol="jitoSOL"
+              name="Jito Liquid Staked SOL"
+              balance={`${jitoSolBalance} jitoSOL`}
+              tag="staked"
+              tagColor="#27c93f"
+              action={{ label: 'Manage', href: '/jito' }}
+            />
+          ) : (
+            <div className="py-5 flex flex-col items-center gap-3 text-center">
+              <JitoIcon size={40} />
+              <div>
+                <p className="text-gray-500 text-sm">No staked positions yet</p>
+                <p className="text-gray-700 text-xs mt-1">Stake SOL via Jito to earn liquid staking rewards</p>
+              </div>
               <Link
-                href="/explore"
-                className="w-full px-4 py-2.5 text-sm text-center border border-[#97FBE4]/40 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors"
+                href="/jito"
+                className="text-xs px-4 py-2 border border-[#97FBE4]/40 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors"
               >
-                Stake More
+                Start Staking →
               </Link>
             </div>
-          </div>
-        </aside>
+          )}
+        </Section>
 
-        {/* Main */}
-        <div className="flex-1 min-w-0">
-        {/* Header */}
-        <div id="overview" className="mb-10 scroll-mt-24">
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#97FBE4]">Your Cross-Chain Positions</h1>
-          <p className="text-[#97FBE4]/70 mt-2 text-sm sm:text-base">
-            {accountId ? (
-              <>Signed in as <span className="text-white font-medium">{accountId}</span></>
-            ) : (
-              <>Connect your NEAR wallet to see your own positions — showing demo data for now.</>
-            )}
-          </p>
-        </div>
-
-        {/* Summary cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-12">
-          {[
-            { label: 'Total Staked', value: `$${totalStaked.toLocaleString(undefined, { maximumFractionDigits: 0 })}` },
-            { label: 'Est. Yearly Rewards', value: `$${yearlyRewards.toLocaleString(undefined, { maximumFractionDigits: 0 })}` },
-            { label: 'Active Positions', value: positions.length },
-            { label: 'Chains', value: 2 },
-          ].map((s) => (
-            <div key={s.label} className="border border-[#97FBE4]/25 bg-[#00150E]/60 p-4 sm:p-5">
-              <p className="text-2xl sm:text-3xl font-light text-[#97FBE4]">{s.value}</p>
-              <p className="text-[10px] sm:text-xs text-[#97FBE4]/50 mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Derived Addresses */}
-        <section id="addresses" className="mb-12 scroll-mt-24">
-          <h2 className="text-xl font-semibold text-[#97FBE4] mb-4">Derived Addresses</h2>
-          <p className="text-sm text-[#97FBE4]/60 mb-4">
-            One NEAR account controls a native address on every chain via chain signatures.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {addresses.map((a) => (
-              <div key={a.name} className="border border-[#97FBE4]/20 bg-[#00150E]/60 p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <img src={a.logo} alt={a.name} className="w-9 h-9 object-cover border border-[#97FBE4]/20" />
-                  <div>
-                    <p className="text-white font-medium">{a.name}</p>
-                    <p className="text-[10px] text-[#97FBE4]/50">path: {a.path}</p>
-                  </div>
+        {/* Quick Actions */}
+        <Section title="Quick Actions">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 py-3">
+            {[
+              { label: 'Stake on Jito', sub: 'NEAR → jitoSOL', href: '/jito', icon: <JitoIcon size={24} /> },
+              { label: 'Explore Pools', sub: 'all protocols', href: '/explore', icon: (
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#97FBE4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                  </svg>
                 </div>
-                <div className="flex items-center gap-2 bg-black/40 border border-[#97FBE4]/10 px-2 py-2">
-                  <p className="font-mono text-xs text-[#97FBE4] break-all flex-1">{short(a.addr)}</p>
-                  <button
-                    onClick={() => copy(a.addr)}
-                    aria-label={`Copy ${a.name} address`}
-                    className="flex-shrink-0 text-[#97FBE4]/60 hover:text-[#97FBE4] transition-colors"
-                  >
-                    {copied === a.addr ? (
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 6 9 17l-5-5" />
-                      </svg>
-                    ) : (
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="0" />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                      </svg>
-                    )}
-                  </button>
+              )},
+              { label: 'Stake Tokens', sub: 'multi-chain', href: '/stake', icon: (
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#97FBE4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+                  </svg>
                 </div>
-                <p className="text-[10px] text-gray-500 mt-2">
-                  {copied === a.addr ? 'Copied!' : a.note}
-                </p>
-              </div>
+              )},
+            ].map((a) => (
+              <Link
+                key={a.href}
+                href={a.href}
+                className="flex items-center gap-2.5 border border-gray-800 bg-[#00150E]/40 p-3 hover:border-[#97FBE4]/40 hover:bg-[#97FBE4]/5 transition-colors group"
+              >
+                {a.icon}
+                <div className="min-w-0">
+                  <p className="text-white text-xs font-medium group-hover:text-[#97FBE4] transition-colors truncate">{a.label}</p>
+                  <p className="text-gray-600 text-[10px] truncate">{a.sub}</p>
+                </div>
+              </Link>
             ))}
           </div>
-        </section>
+        </Section>
 
-        {/* Staked Positions */}
-        <section id="positions" className="mb-12 scroll-mt-24">
-          <h2 className="text-xl font-semibold text-[#97FBE4] mb-4">Staked Positions</h2>
-          <div className="overflow-x-auto border border-[#97FBE4]/20">
-            <table className="w-full text-sm min-w-[640px]">
-              <thead className="bg-[#00150E] text-[#97FBE4]/70 text-xs uppercase tracking-wider">
-                <tr>
-                  <th className="text-left p-3">Pool</th>
-                  <th className="text-left p-3">Chain</th>
-                  <th className="text-right p-3">Amount</th>
-                  <th className="text-right p-3">Value</th>
-                  <th className="text-right p-3">APY</th>
-                  <th className="text-right p-3">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {positions.map((p, i) => (
-                  <tr key={i} className="border-t border-[#97FBE4]/10 hover:bg-[#97FBE4]/5">
-                    <td className="p-3">
-                      <div className="flex items-center gap-3">
-                        <img src={p.protoLogo} alt={p.protocol} className="w-7 h-7 object-cover border border-[#97FBE4]/20" />
-                        <div>
-                          <p className="text-white font-medium">{p.protocol}</p>
-                          <p className="text-[10px] text-[#97FBE4]/50">{p.token}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex items-center gap-2">
-                        <img src={p.chainLogo} alt={p.chain} className="w-5 h-5 object-cover border border-[#97FBE4]/20" />
-                        <span className="text-gray-300">{p.chain}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 text-right text-white">{p.amount} {p.token}</td>
-                    <td className="p-3 text-right text-gray-300">
-                      ${valueOf(p).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                    </td>
-                    <td className="p-3 text-right font-semibold text-[#97FBE4]">
-                      {apyLoading ? '…' : `${p.apy.toFixed(2)}%`}
-                      <span className="ml-1 text-[9px] text-gray-500">{p.apyLive ? 'live' : 'est'}</span>
-                    </td>
-                    <td className="p-3 text-right">
-                      <span className="text-[10px] bg-green-900/30 text-green-400 px-2 py-0.5 border border-green-500/50">
-                        Staked
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Token Holdings */}
-        <section id="holdings" className="mb-4 scroll-mt-24">
-          <h2 className="text-xl font-semibold text-[#97FBE4] mb-4">Token Holdings</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {positions.map((p, i) => (
-              <div key={i} className="flex items-center justify-between border border-[#97FBE4]/20 bg-[#00150E]/60 px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <img src={p.protoLogo} alt={p.token} className="w-8 h-8 object-cover border border-[#97FBE4]/20" />
-                  <div>
-                    <p className="text-white text-sm font-medium">{p.token}</p>
-                    <p className="text-[10px] text-[#97FBE4]/50">{p.protocol} · {p.chain}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-white text-sm">{p.amount}</p>
-                  <p className="text-[10px] text-gray-500">
-                    ${valueOf(p).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <div className="mt-8">
-          <Link
-            href="/explore"
-            className="inline-block px-6 py-3 bg-[#97FBE4] text-black text-sm font-semibold hover:bg-[#5eead4] transition-colors"
-          >
-            Stake More
-          </Link>
-        </div>
-        </div>
       </div>
-
-      <BalanceModal isOpen={balanceOpen} onClose={() => setBalanceOpen(false)} />
     </div>
   )
 }
