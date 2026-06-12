@@ -2,10 +2,12 @@ import { MethodParameters } from "@/lib/type/type";
 import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
 const INTENTS_CONTRACT_ID = "intents.near";
-const THIRTY_TGAS = "30000000000000";
+// NEAR max gas per transaction is 300 TGas
+const GAS_NEAR_DEPOSIT   = "30000000000000";   // 30 TGas — simple payable call
+const GAS_FT_TRANSFER    = "200000000000000";  // 200 TGas — cross-contract call
 
-// Batch near_deposit + ft_transfer_call in one wallet approval to avoid
-// the redirect-and-null problem that occurs with two sequential callMethod calls.
+// Batch near_deposit + ft_transfer_call in one wallet approval.
+// Both go to wrap.near, so NEAR executes them in nonce order (deposit first).
 export async function depositNearAsMultiToken(
   accountId: string,
   amount: string,
@@ -16,7 +18,7 @@ export async function depositNearAsMultiToken(
       contractId: "wrap.near",
       method: "near_deposit",
       args: {},
-      gas: String(10n * BigInt(THIRTY_TGAS)),
+      gas: GAS_NEAR_DEPOSIT,
       deposit: amount,
     },
     {
@@ -27,7 +29,7 @@ export async function depositNearAsMultiToken(
         amount,
         msg: accountId,
       },
-      gas: String(50n * BigInt(THIRTY_TGAS)),
+      gas: GAS_FT_TRANSFER,
       deposit: "1",
     },
   ]);

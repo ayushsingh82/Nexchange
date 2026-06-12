@@ -154,10 +154,13 @@ export default function JitoPageContent() {
         message: `Deposited ${depositAmount} NEAR to intents.near`,
       });
     } catch (err) {
-      setStep1({
-        status: "error",
-        message: err instanceof Error ? err.message : String(err),
-      });
+      const msg = err instanceof Error ? err.message : String(err);
+      // null = wallet redirect after successful broadcast (Meteor Wallet)
+      setStep1(
+        msg === "null" || msg === "undefined"
+          ? { status: "done", message: `Deposit submitted — check wallet for confirmation` }
+          : { status: "error", message: msg }
+      );
     }
   }, [accountId, callMethods, depositAmount]);
 

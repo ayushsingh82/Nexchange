@@ -145,61 +145,56 @@ const NearWalletProvider = ({ children }: { children: ReactNode }) => {
     gas = THIRTY_TGAS,
     deposit = NO_DEPOSIT,
   }: CallMethodParams): Promise<unknown> => {
-    if (!walletSelector) {
-      return;
-    }
+    if (!walletSelector) return;
     const selectedWallet = await walletSelector.wallet();
-    const outcome = await selectedWallet.signAndSendTransaction({
-      receiverId: contractId,
-      actions: [
-        {
-          type: "FunctionCall",
-          params: {
-            methodName: method,
-            args,
-            gas,
-            deposit,
+    let outcome;
+    try {
+      outcome = await selectedWallet.signAndSendTransaction({
+        receiverId: contractId,
+        actions: [
+          {
+            type: "FunctionCall",
+            params: { methodName: method, args, gas, deposit },
           },
-        },
-      ],
-    });
-
-    if (!outcome) {
-      console.error("No outcome");
-      return null;
+        ],
+      });
+    } catch (err) {
+      // Redirect-based wallets (Meteor Wallet) throw null after the tx is
+      // broadcast — the transaction succeeded, the page just navigated away.
+      if (err === null || err === undefined) return null;
+      throw err;
     }
+    if (!outcome) return null;
     return providers.getTransactionLastResult(outcome);
   };
 
   const callMethods = async (methodParameters: MethodParameters[]): Promise<unknown> => {
-    if (!walletSelector) {
-      return;
-    }
+    if (!walletSelector) return;
     const selectedWallet = await walletSelector.wallet();
-
-    const outcome = await selectedWallet.signAndSendTransactions({
-      transactions: methodParameters.map((parameters) => ({
-        receiverId: parameters.contractId,
-
-        actions: [
-          {
-            type: "FunctionCall",
-            params: {
-              methodName: parameters.method,
-              args: parameters.args,
-              gas: parameters.gas,
-              deposit: parameters.deposit,
+    let outcome;
+    try {
+      outcome = await selectedWallet.signAndSendTransactions({
+        transactions: methodParameters.map((parameters) => ({
+          receiverId: parameters.contractId,
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: parameters.method,
+                args: parameters.args,
+                gas: parameters.gas,
+                deposit: parameters.deposit,
+              },
             },
-          },
-        ],
-      })),
-    });
-
-    if (!outcome) {
-      console.error("No outcome");
-      return null;
+          ],
+        })),
+      });
+    } catch (err) {
+      // Redirect-based wallets throw null after broadcast — tx succeeded.
+      if (err === null || err === undefined) return null;
+      throw err;
     }
-
+    if (!outcome) return null;
     return outcome;
   };
 
