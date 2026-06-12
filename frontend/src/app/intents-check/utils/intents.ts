@@ -66,22 +66,23 @@ export async function transferMultiTokenForQuote(
   return result as string;
 }
 
+// Proxy through Next.js API to avoid CORS (real base: https://1click.chaindefuser.com)
+const ONE_CLICK_PROXY = "/api/1click";
+
 export async function getQuote(requestBody: QuoteRequest): Promise<any> {
-  const response = await fetch("https://api.1click.fi/v1/quote", {
+  const response = await fetch(`${ONE_CLICK_PROXY}/v0/quote`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to get quote");
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || `Quote failed: ${response.status}`);
   }
 
   const data = await response.json();
-  return data.quote;
+  return data.quote ?? data;
 }
 
 export async function waitUntilQuoteExecutionCompletes(
@@ -96,7 +97,7 @@ export async function waitUntilQuoteExecutionCompletes(
   while (attempts > 0) {
     try {
       const response = await fetch(
-        `https://api.1click.fi/v1/execution-status/${quote.depositAddress}`
+        `${ONE_CLICK_PROXY}/v0/status?depositAddress=${quote.depositAddress}`
       );
 
       if (response.ok) {
