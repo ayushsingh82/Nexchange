@@ -205,9 +205,9 @@ export default function HomePageContent() {
                 The best liquid-staking pools across networks — accessed natively from your NEAR account.
               </p>
             </div>
-            <div className="grid grid-cols-12 gap-3 sm:gap-4 auto-rows-[130px] sm:auto-rows-[150px] md:auto-rows-[160px]">
+            <div className="grid grid-cols-12 gap-3 sm:gap-4 md:auto-rows-[160px]">
               {/* Main Feature */}
-              <div className="col-span-12 md:col-span-8 row-span-2 group relative bg-black p-6 md:p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden hover:border-[#97FBE4]/70 transition-all duration-300">
+              <div className="col-span-12 md:col-span-8 md:row-span-2 min-h-[180px] md:min-h-0 group relative bg-black p-6 md:p-8 border border-[#97FBE4]/30 shadow-xl overflow-hidden hover:border-[#97FBE4]/70 transition-all duration-300">
                 <div className="relative z-10">
                   <span className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#97FBE4]/60 mb-3 md:mb-4 pixel-font">
                     <span className="w-1.5 h-1.5 bg-[#97FBE4] animate-pulse" /> FEATURED
@@ -220,7 +220,7 @@ export default function HomePageContent() {
                 <div className="absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-[#97FBE4] to-transparent w-full" />
               </div>
               {/* Live Stats */}
-              <div className="col-span-12 md:col-span-4 row-span-2 bg-[#97FBE4] p-6 md:p-8 relative overflow-hidden shadow-xl live-stats-box">
+              <div className="col-span-12 md:col-span-4 md:row-span-2 min-h-[160px] md:min-h-0 bg-[#97FBE4] p-6 md:p-8 relative overflow-hidden shadow-xl live-stats-box">
                 <div className="flex flex-col justify-between h-full">
                   <div>
                     <p className="text-sm mb-2 flex items-center gap-2">
@@ -237,14 +237,14 @@ export default function HomePageContent() {
                 <div className="absolute top-0 right-0 w-32 h-32 border border-black/10 -translate-y-1/2 translate-x-1/2" />
               </div>
               {/* Feature Cards */}
-              <div className="col-span-6 md:col-span-3 group bg-black p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center hover:border-[#97FBE4]/70 hover:-translate-y-0.5 transition-all duration-300">
+              <div className="col-span-12 sm:col-span-6 md:col-span-3 group bg-black p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center hover:border-[#97FBE4]/70 hover:-translate-y-0.5 transition-all duration-300">
                 <svg className="w-6 h-6 mb-3 text-[#97FBE4]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
                 </svg>
                 <h4 className="text-lg font-semibold mb-1 text-[#97FBE4]">Public good</h4>
                 <p className="text-xs text-[#97FBE4]/80 pixel-font">builders, traders, and communities goes cross-chain.</p>
               </div>
-              <div className="col-span-6 md:col-span-3 bg-[#97FBE4] p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center live-stats-box">
+              <div className="col-span-12 sm:col-span-6 md:col-span-3 bg-[#97FBE4] p-6 border border-[#97FBE4]/30 shadow-md flex flex-col justify-center live-stats-box">
                 <svg className="w-6 h-6 mb-3 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" /><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
                 </svg>
