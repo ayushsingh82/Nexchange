@@ -31,7 +31,8 @@ async function deriveSOLAddress(accountId: string, path: string): Promise<string
 
 export function useChainSigSolanaAddress(
   accountId: string | null,
-  derivationPath = "solana-1"
+  derivationPath = "solana-1",
+  balanceRefreshTrigger = 0
 ) {
   const [address, setAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<string | null>(null);
@@ -39,6 +40,7 @@ export function useChainSigSolanaAddress(
   const [addrError, setAddrError] = useState<string | null>(null);
   const [balError, setBalError] = useState<string | null>(null);
 
+  // Derive address once — only re-runs when accountId or path changes
   useEffect(() => {
     if (!accountId) {
       setAddress(null);
@@ -51,36 +53,39 @@ export function useChainSigSolanaAddress(
     let cancelled = false;
     setLoading(true);
     setAddrError(null);
-    setBalError(null);
 
-    (async () => {
-      // Step 1: derive address — pure crypto, no Solana RPC needed
-      let solAddress: string;
-      try {
-        solAddress = await deriveSOLAddress(accountId, derivationPath);
+    deriveSOLAddress(accountId, derivationPath)
+      .then((solAddress) => {
         if (!cancelled) setAddress(solAddress);
-      } catch (err) {
-        if (!cancelled) {
-          setAddrError(err instanceof Error ? err.message : String(err));
-          setLoading(false);
-        }
-        return;
-      }
-
-      // Step 2: fetch balance — hits Solana RPC, can fail independently
-      try {
-        const lamports = await solanaConnection.getBalance(new PublicKey(solAddress));
-        if (cancelled) return;
-        setBalance((lamports / 1e9).toFixed(6));
-      } catch {
-        if (!cancelled) setBalError("balance unavailable");
-      } finally {
+      })
+      .catch((err) => {
+        if (!cancelled) setAddrError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => {
         if (!cancelled) setLoading(false);
-      }
-    })();
+      });
 
     return () => { cancelled = true; };
   }, [accountId, derivationPath]);
+
+  // Fetch balance separately — re-runs whenever address changes OR balanceRefreshTrigger increments
+  useEffect(() => {
+    if (!address) return;
+
+    let cancelled = false;
+    setBalError(null);
+
+    solanaConnection
+      .getBalance(new PublicKey(address))
+      .then((lamports) => {
+        if (!cancelled) setBalance((lamports / 1e9).toFixed(6));
+      })
+      .catch(() => {
+        if (!cancelled) setBalError("balance unavailable");
+      });
+
+    return () => { cancelled = true; };
+  }, [address, balanceRefreshTrigger]);
 
   return { address, balance, loading, addrError, balError, MPC_CONTRACT, solanaConnection };
 }

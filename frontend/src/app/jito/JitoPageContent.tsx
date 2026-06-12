@@ -14,6 +14,30 @@ import { providers } from "near-api-js";
 
 // ─── Token/amount helpers ────────────────────────────────────────────────────
 
+// chainsig.js passes actions using @near-js/transactions actionCreators format:
+//   { functionCall: { methodName, args: Uint8Array, gas: BigInt, deposit: BigInt } }
+// Our callMethods expects wallet-selector format: { contractId, method, args, gas, deposit }
+function mapChainSigTxs(transactions: any[]) {
+  return transactions.map((tx: any) => {
+    const action = tx.actions[0];
+    const fc = action.functionCall ?? action.params ?? action;
+    const rawArgs = fc.args;
+    const args =
+      rawArgs instanceof Uint8Array
+        ? JSON.parse(new TextDecoder().decode(rawArgs))
+        : rawArgs instanceof Buffer
+        ? JSON.parse(rawArgs.toString())
+        : rawArgs ?? {};
+    return {
+      contractId: tx.receiverId,
+      method: fc.methodName,
+      args,
+      gas: fc.gas?.toString() ?? "300000000000000",
+      deposit: fc.deposit?.toString() ?? "1",
+    };
+  });
+}
+
 function toSmallestUnit(amount: string, decimals: number): string {
   const [whole, frac = ""] = amount.split(".");
   const fracPadded = frac.padEnd(decimals, "0").slice(0, decimals);
@@ -119,9 +143,12 @@ export default function JitoPageContent() {
   const { accountId, status, callMethod, callMethods, callMethodBatch, viewMethod } = useNearWallet();
   const isAuthenticated = status === "authenticated" && accountId;
 
-  // Derived Solana address from chain sig
+  // Increment to force SOL balance refresh after withdraw/stake
+  const [solRefresh, setSolRefresh] = useState(0);
+
+  // Derived Solana address from chain sig — pass solRefresh so balance re-fetches after withdraw/stake
   const { address: derivedSolAddress, balance: solBalance, loading: addrLoading, addrError } =
-    useChainSigSolanaAddress(accountId, "solana-1");
+    useChainSigSolanaAddress(accountId, "solana-1", solRefresh);
 
   // Step states
   const [step1, setStep1] = useState<StepState>(INIT);
@@ -301,6 +328,7 @@ export default function JitoPageContent() {
         status: "done",
         message: `SOL delivered to derived address: ${derivedSolAddress}`,
       });
+      setSolRefresh((n) => n + 1);
     } catch (err) {
       setStep3({
         status: "error",
@@ -478,6 +506,17 @@ export default function JitoPageContent() {
             state={INIT}
             active={!!isAuthenticated}
           >
+            <div className="mb-4 p-3 border border-yellow-600/40 bg-yellow-900/10 text-yellow-300 text-xs space-y-1">
+              <div className="font-semibold">Requirements before staking</div>
+              <ul className="list-disc list-inside space-y-0.5 text-yellow-400/90">
+                <li>Derived Solana address needs <span className="font-mono font-bold">≥ 0.005 SOL</span> on-chain</li>
+                <li>~0.002 SOL is reserved for jitoSOL token account creation (one-time rent)</li>
+                <li>Minimum stake: <span className="font-mono">0.001 SOL</span> + fees</li>
+              </ul>
+              <div className="text-yellow-500/70 pt-0.5">
+                If the balance is too low, go back to Step 3 and withdraw more SOL first.
+              </div>
+            </div>
             <JitoStakeStep
               accountId={accountId}
               derivedSolAddress={derivedSolAddress}
@@ -531,32 +570,91 @@ function JitoStakeStep({
 
       const connection = new Connection("https://solana.publicnode.com", "confirmed");
 
-      // ── Verified Jito mainnet addresses (from official Jito docs) ──
-      // Stake pool program: taken from @solana/spl-stake-pool library constant
-      // Jito stake pool: Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P815Awbb (jito.network docs)
-      // jitoSOL mint:    J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn (jito.network docs)
+      // Jito stake pool account and its CUSTOM program (fork of SPL Stake Pool)
+      // Library uses SPoo1Ku8WFXoNDMHPsrGSTSG1Y47rzf1KbCe6T1NjcX (wrong for Jito)
+      // Jito's actual program verified via getAccountInfo on mainnet:
       const JITO_STAKE_POOL_ADDRESS = new PublicKey("Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P815Awbb");
+      const JITO_PROGRAM_ID        = new PublicKey("SPoo1Ku8WFXoNDMHPsrGSTSG1Y47rzgn41SLUNakuHy");
 
       const fromPubkey = new PublicKey(derivedSolAddress);
       const lamports = Math.round(parseFloat(stakeAmount) * LAMPORTS_PER_SOL);
 
-      // ── Use @solana/spl-stake-pool library (handles all account derivation) ──
-      // depositSol fetches pool state, derives withdraw authority PDA, finds/creates ATA
-      setStakeState({ status: "loading", message: "Fetching Jito pool state and building instructions via spl-stake-pool library…" });
+      setStakeState({ status: "loading", message: "Fetching Jito pool state…" });
 
-      const instructions = await solanaStakePool.depositSol(
-        connection,
-        JITO_STAKE_POOL_ADDRESS,
-        fromPubkey,
-        lamports
+      // Get pool state (layout-compatible with SPL Stake Pool)
+      const { getStakePoolAccount } = solanaStakePool;
+      const stakePoolAccount = await getStakePoolAccount(connection, JITO_STAKE_POOL_ADDRESS);
+      const sp = stakePoolAccount.account.data;
+
+      // Derive withdraw authority PDA using Jito's actual program ID
+      const [withdrawAuthority] = await PublicKey.findProgramAddress(
+        [JITO_STAKE_POOL_ADDRESS.toBuffer(), Buffer.from("withdraw")],
+        JITO_PROGRAM_ID,
       );
 
+      const { SYSVAR_CLOCK_PUBKEY, SYSVAR_STAKE_HISTORY_PUBKEY, TransactionInstruction, SystemProgram } =
+        await import("@solana/web3.js");
+      const { TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction } =
+        await import("@solana/spl-token");
+
+      const jitoSolAta = getAssociatedTokenAddressSync(sp.poolMint, fromPubkey);
+
+      // Balance check: ATA rent ~0.00204 SOL + stake amount + fees
+      const solBalLamports = await connection.getBalance(fromPubkey);
+      const minNeeded = 2_039_280 + lamports + 10_000; // ATA rent + stake + fees
+      if (solBalLamports < minNeeded) {
+        throw new Error(
+          `Insufficient SOL at derived address. Have ${(solBalLamports / 1e9).toFixed(6)} SOL, ` +
+          `need at least ${(minNeeded / 1e9).toFixed(4)} SOL (ATA rent + stake amount + fees). ` +
+          `Withdraw more SOL from intents in Step 3.`
+        );
+      }
+
+      // depositSol instruction data: index=14, lamports as u64 LE (same layout as SPL fork)
+      const depositData = Buffer.alloc(9);
+      depositData.writeUInt8(14, 0);
+      depositData.writeBigUInt64LE(BigInt(lamports), 1);
+
+      // Jito's solDepositAuthority is NONE on mainnet — no extra signer needed
+      const depositAuthKeys: { pubkey: typeof fromPubkey; isSigner: boolean; isWritable: boolean }[] = [];
+      if (sp.solDepositAuthority) {
+        depositAuthKeys.push({ pubkey: sp.solDepositAuthority, isSigner: true, isWritable: false });
+      }
+
+      // Instructions: ATA creation FIRST (fromPubkey needs full balance for rent),
+      // then depositSol with fromPubkey as direct fundingAccount (no ephemeral needed —
+      // Jito has no solDepositAuthority so fromPubkey can fund directly).
+      const txInstructions = [
+        // 0: Create jitoSOL ATA (idempotent — no-op if it already exists)
+        createAssociatedTokenAccountIdempotentInstruction(fromPubkey, jitoSolAta, fromPubkey, sp.poolMint),
+        // 1: depositSol — fromPubkey is feePayer AND fundingAccount (single MPC signer)
+        new TransactionInstruction({
+          programId: JITO_PROGRAM_ID,
+          keys: [
+            { pubkey: JITO_STAKE_POOL_ADDRESS, isSigner: false, isWritable: true },
+            { pubkey: withdrawAuthority,        isSigner: false, isWritable: false },
+            { pubkey: sp.reserveStake,          isSigner: false, isWritable: true },
+            { pubkey: fromPubkey,              isSigner: true,  isWritable: true },  // fundingAccount
+            { pubkey: jitoSolAta,              isSigner: false, isWritable: true },  // destination
+            { pubkey: sp.managerFeeAccount,    isSigner: false, isWritable: true },
+            { pubkey: jitoSolAta,              isSigner: false, isWritable: true },  // referral
+            { pubkey: sp.poolMint,             isSigner: false, isWritable: true },
+            { pubkey: SYSVAR_CLOCK_PUBKEY,     isSigner: false, isWritable: false },
+            { pubkey: SYSVAR_STAKE_HISTORY_PUBKEY, isSigner: false, isWritable: false },
+            { pubkey: TOKEN_PROGRAM_ID,        isSigner: false, isWritable: false },
+            { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+            ...depositAuthKeys,
+          ],
+          data: depositData,
+        }),
+      ];
+
       const { blockhash } = await connection.getLatestBlockhash("confirmed");
-      const transaction = new Transaction({
-        feePayer: fromPubkey,
-        recentBlockhash: blockhash,
-      });
-      transaction.add(...instructions);
+      const transaction = new Transaction({ feePayer: fromPubkey, recentBlockhash: blockhash });
+      transaction.add(...txInstructions);
+
+      // Single signer: fromPubkey via MPC (no ephemeral needed)
+      const messageBytes = transaction.serializeMessage();
 
       // ── Sign via NEAR chain signatures ──
       setStakeState({ status: "loading", message: "Asking NEAR MPC to sign transaction (v1.signer)…" });
@@ -567,27 +665,18 @@ function JitoStakeStep({
       });
 
       const rsvSignatures = await MPC_CONTRACT.sign({
-        payloads: [transaction.serializeMessage()],
+        payloads: [messageBytes],
         path: "solana-1",
         keyType: "Eddsa",
         signerAccount: {
           accountId: accountId!,
           signAndSendTransactions: (params: { transactions: any[] }) =>
-            callMethods(
-              params.transactions.map((tx: any) => ({
-                contractId: tx.receiverId,
-                method: tx.actions[0].params.methodName,
-                args: tx.actions[0].params.args,
-                gas: tx.actions[0].params.gas,
-                deposit: tx.actions[0].params.deposit,
-              }))
-            ),
+            callMethods(mapChainSigTxs(params.transactions)),
         },
       });
 
       if (!rsvSignatures[0]) throw new Error("MPC signing failed — no signature returned");
 
-      // ── Finalize transaction with signature ──
       const SolanaAdapter = new chainAdapters.solana.Solana({
         solanaConnection: connection,
         contract: MPC_CONTRACT,
@@ -752,11 +841,9 @@ function JitoUnstakeSection({
 
       setUnstakeState({ status: "loading", message: "Fetching pool state and building withdrawSol instructions…" });
 
-      // withdrawSol(connection, stakePoolAddress, tokenOwner, solReceiver, amount)
-      // - tokenOwner = derived address (owns jitoSOL ATA)
-      // - solReceiver = derived address (receives SOL back)
-      // - amount = SOL units (library converts to lamports internally)
-      const instructions = await solanaStakePool.withdrawSol(
+      // withdrawSol returns { instructions, signers } where signers[0] is an ephemeral
+      // delegate keypair we can sign with normally; MPC signs for our derived address.
+      const { instructions, signers } = await solanaStakePool.withdrawSol(
         connection,
         JITO_POOL,
         derivedPubkey,
@@ -771,6 +858,12 @@ function JitoUnstakeSection({
       });
       transaction.add(...instructions);
 
+      // Ephemeral delegate signs first (we have the keypair)
+      transaction.partialSign(...signers);
+
+      // Message bytes are signature-independent — same before or after partialSign
+      const messageBytes = transaction.serializeMessage();
+
       setUnstakeState({ status: "loading", message: "Asking NEAR MPC (v1.signer) to sign transaction…" });
 
       const MPC_CONTRACT = new contracts.ChainSignatureContract({
@@ -779,39 +872,30 @@ function JitoUnstakeSection({
       });
 
       const rsvSignatures = await MPC_CONTRACT.sign({
-        payloads: [transaction.serializeMessage()],
+        payloads: [messageBytes],
         path: "solana-1",
         keyType: "Eddsa",
         signerAccount: {
           accountId: accountId!,
           signAndSendTransactions: (params: { transactions: any[] }) =>
-            callMethods(
-              params.transactions.map((tx: any) => ({
-                contractId: tx.receiverId,
-                method: tx.actions[0].params.methodName,
-                args: tx.actions[0].params.args,
-                gas: tx.actions[0].params.gas,
-                deposit: tx.actions[0].params.deposit,
-              }))
-            ),
+            callMethods(mapChainSigTxs(params.transactions)),
         },
       });
 
       if (!rsvSignatures[0]) throw new Error("MPC signing failed — no signature returned");
+
+      // Add MPC signature for derived address alongside the ephemeral signature
+      const mpcSig = (rsvSignatures[0] as any).signature;
+      transaction.addSignature(derivedPubkey, Buffer.from(mpcSig));
+      const serialized = transaction.serialize().toString("base64");
 
       const SolanaAdapter = new chainAdapters.solana.Solana({
         solanaConnection: connection,
         contract: MPC_CONTRACT,
       });
 
-      const finalizedTx = SolanaAdapter.finalizeTransactionSigning({
-        transaction,
-        rsvSignatures: rsvSignatures[0] as any,
-        senderAddress: derivedSolAddress,
-      });
-
       setUnstakeState({ status: "loading", message: "Broadcasting to Solana mainnet…" });
-      const txHash = await SolanaAdapter.broadcastTx(finalizedTx as any);
+      const txHash = await SolanaAdapter.broadcastTx(serialized as any);
       const hashStr = (txHash as any)?.hash ?? String(txHash);
 
       setUnstakeState({
