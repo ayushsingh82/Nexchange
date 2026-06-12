@@ -20,11 +20,11 @@ function NavbarContent() {
     <>
       <nav className="sticky top-0 z-50 bg-black border-b border-[#97FBE4]/25">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-13">
             {/* Logo/Name - Left */}
             <div className="flex-shrink-0">
-              <Link href="/" className="text-xl sm:text-2xl font-semibold tracking-[0.12em] text-[#97FBE4]">
-                NeXchange
+              <Link href="/" className="text-lg sm:text-xl font-light tracking-[-0.02em] text-[#97FBE4]">
+                <span className="tracking-[-0.04em]">NeX</span><span>change</span>
               </Link>
             </div>
 

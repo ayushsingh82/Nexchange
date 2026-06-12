@@ -51,15 +51,9 @@ export default function BalanceModal({ isOpen, onClose }: BalanceModalProps) {
       setAddresses({ sol: "", near: "", eth: "", loading: true });
 
       try {
-        // Dynamically import chainsig.js to avoid Node.js module issues in browser
-        const { chainAdapters } = await import("chainsig.js");
-        
-        // Initialize chain adapters
-        const solanaConnection = new SolanaConnection(SOLANA_RPC_URL);
-        const Solana = new chainAdapters.solana.Solana({
-          solanaConnection,
-          contract: SIGNET_CONTRACT,
-        });
+        // chainsig.js v1.1.14 broke Solana derivation — use getDerivedPublicKey directly
+        const { PublicKey: SolanaPublicKey } = await import("@solana/web3.js");
+        const { chainAdapters, contracts: chainsigContracts } = await import("chainsig.js");
 
         const publicClient = createPublicClient({
           transport: http(ETHEREUM_RPC_URL),
@@ -77,11 +71,17 @@ export default function BalanceModal({ isOpen, onClose }: BalanceModalProps) {
         let ethAddress = "";
 
         try {
-          const { publicKey } = await Solana.deriveAddressAndPublicKey(
-            accountId,
-            derivationPathSol
-          );
-          solAddress = publicKey;
+          const mpc = new chainsigContracts.ChainSignatureContract({
+            networkId: "mainnet",
+            contractId: "v1.signer",
+          });
+          const raw = await mpc.getDerivedPublicKey({
+            path: derivationPathSol,
+            predecessor: accountId,
+            IsEd25519: true,
+          });
+          const hexKey = raw.startsWith("04") ? raw.slice(2) : raw;
+          solAddress = new SolanaPublicKey(Buffer.from(hexKey, "hex")).toBase58();
         } catch (error) {
           console.error("Error deriving Solana address:", error);
         }
