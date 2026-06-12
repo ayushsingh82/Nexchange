@@ -10,6 +10,7 @@ import {
   waitUntilQuoteExecutionCompletes,
 } from "@/app/intents-check/utils/intents";
 import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
+import { providers } from "near-api-js";
 
 // ─── Token/amount helpers ────────────────────────────────────────────────────
 
@@ -115,11 +116,11 @@ function StepCard({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function JitoPageContent() {
-  const { accountId, status, callMethod, callMethods, callMethodBatch } = useNearWallet();
+  const { accountId, status, callMethod, callMethods, callMethodBatch, viewMethod } = useNearWallet();
   const isAuthenticated = status === "authenticated" && accountId;
 
   // Derived Solana address from chain sig
-  const { address: derivedSolAddress, balance: solBalance, loading: addrLoading, addrError, balError } =
+  const { address: derivedSolAddress, balance: solBalance, loading: addrLoading, addrError } =
     useChainSigSolanaAddress(accountId, "solana-1");
 
   // Step states
@@ -131,6 +132,64 @@ export default function JitoPageContent() {
   const [depositAmount, setDepositAmount] = useState("0.5");
   const [swapAmount, setSwapAmount] = useState("0.1");
   const [withdrawAmount, setWithdrawAmount] = useState("0.001");
+
+  // Balances
+  const [nearBalance, setNearBalance] = useState<string | null>(null);
+  const [intentsNEARBalance, setIntentsNEARBalance] = useState<string | null>(null);
+  const [intentsSOLBalance, setIntentsSOLBalance] = useState<string | null>(null);
+
+  // Fetch NEAR balance
+  useEffect(() => {
+    if (!accountId) return;
+    (async () => {
+      try {
+        const url = "https://rpc.mainnet.near.org";
+        const provider = new providers.JsonRpcProvider({ url });
+        const account = await provider.query({
+          request_type: "view_account",
+          account_id: accountId,
+          finality: "optimistic",
+        }) as { amount: string };
+        const yocto = BigInt(account.amount);
+        const near = Number(yocto) / 1e24;
+        setNearBalance(near.toFixed(4));
+      } catch { /* ignore */ }
+    })();
+  }, [accountId, step1.status]);
+
+  // Fetch intents wNEAR balance
+  useEffect(() => {
+    if (!accountId || !viewMethod) return;
+    (async () => {
+      try {
+        const bal = await viewMethod({
+          contractId: "intents.near",
+          method: "mt_balance_of",
+          args: { account_id: accountId, token_id: "nep141:wrap.near" },
+        }) as string;
+        const yocto = BigInt(bal ?? "0");
+        const near = Number(yocto) / 1e24;
+        setIntentsNEARBalance(near.toFixed(4));
+      } catch { /* no balance yet */ }
+    })();
+  }, [accountId, viewMethod, step1.status, step2.status]);
+
+  // Fetch intents SOL balance (sol.omft.near inside intents.near)
+  useEffect(() => {
+    if (!accountId || !viewMethod) return;
+    (async () => {
+      try {
+        const bal = await viewMethod({
+          contractId: "intents.near",
+          method: "mt_balance_of",
+          args: { account_id: accountId, token_id: "nep141:sol.omft.near" },
+        }) as string;
+        const lamports = BigInt(bal ?? "0");
+        const sol = Number(lamports) / 1e9;
+        setIntentsSOLBalance(sol.toFixed(6));
+      } catch { /* no balance yet */ }
+    })();
+  }, [accountId, viewMethod, step2.status, step3.status]);
 
   // Active step tracking
   const currentStep =
@@ -221,7 +280,7 @@ export default function JitoPageContent() {
         slippageTolerance: 50,
         depositType: QuoteRequest.depositType.INTENTS,
         originAsset: "nep141:sol.omft.near",
-        destinationAsset: "solana:So11111111111111111111111111111111111111112",
+        destinationAsset: "nep141:sol.omft.near",
         amount: toSmallestUnit(withdrawAmount, 9),
         refundTo: accountId,
         refundType: QuoteRequest.refundType.INTENTS,
@@ -302,6 +361,11 @@ export default function JitoPageContent() {
             state={step1}
             active={!!isAuthenticated}
           >
+            {nearBalance !== null && (
+              <div className="text-xs text-gray-400 mb-2">
+                Wallet balance: <span className="text-[#97FBE4] font-mono">{nearBalance} NEAR</span>
+              </div>
+            )}
             <div className="flex gap-3 items-center">
               <input
                 type="number"
@@ -333,6 +397,11 @@ export default function JitoPageContent() {
             state={step2}
             active={!!isAuthenticated}
           >
+            {intentsNEARBalance !== null && (
+              <div className="text-xs text-gray-400 mb-2">
+                In intents: <span className="text-[#97FBE4] font-mono">{intentsNEARBalance} NEAR</span>
+              </div>
+            )}
             <div className="flex gap-3 items-center">
               <input
                 type="number"
@@ -368,8 +437,13 @@ export default function JitoPageContent() {
               <p className="text-yellow-400 text-sm">Waiting for derived address…</p>
             ) : (
               <div className="space-y-3">
-                <div className="text-xs text-gray-400 font-mono break-all">
-                  To: {derivedSolAddress}
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-400 font-mono break-all">To: {derivedSolAddress}</span>
+                  {intentsSOLBalance !== null && (
+                    <span className="text-gray-400 shrink-0 ml-3">
+                      In intents: <span className="text-[#97FBE4] font-mono">{intentsSOLBalance} SOL</span>
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-3 items-center">
                   <input
