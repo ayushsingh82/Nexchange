@@ -8,7 +8,7 @@
 | Jito Stake Pool Program | `SPoo1Ku8WFXoNDMHPsrGSTSG1Y47rzgn41SLUNakuHy` |
 | jitoSOL Mint | `J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn` |
 | Token Program | `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA` |
-| Associated Token Program | `ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJe1bRS` |
+| Associated Token Program | `ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL` |
 | NEAR MPC Signer | `v1.signer` (NEAR Mainnet) |
 | Intents Contract | `intents.near` (NEAR Mainnet) |
 | Derivation Path | `solana-1` |

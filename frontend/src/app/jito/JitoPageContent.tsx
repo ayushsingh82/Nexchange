@@ -781,7 +781,7 @@ function JitoStakeStep({
 const JITO_STAKE_POOL_ADDR = "Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P815Awbb";
 const JITO_SOL_MINT_ADDR   = "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn";
 const TOKEN_PROGRAM_ADDR   = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
-const ASSOC_TOKEN_PROG_ADDR = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJe1bRS";
+const ASSOC_TOKEN_PROG_ADDR = "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
 
 function JitoUnstakeSection({
   accountId,

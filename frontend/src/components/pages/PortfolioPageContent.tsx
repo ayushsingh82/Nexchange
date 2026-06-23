@@ -12,7 +12,7 @@ const DERIVATION_PATH = 'solana-1'
 const INTENTS_CONTRACT = 'intents.near'
 const JITO_SOL_MINT = 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn'
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
-const ASSOC_TOKEN_PROG = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJe1bRS'
+const ASSOC_TOKEN_PROG = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
 
 // Token icon components
 function NearIcon({ size = 32 }: { size?: number }) {
