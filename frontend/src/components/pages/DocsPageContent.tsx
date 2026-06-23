@@ -520,6 +520,14 @@ const instructions = await depositSol(connection, JITO_STAKE_POOL, fromPubkey, l
 // → SIGNET_CONTRACT.sign({ payloads, path: "solana-1", keyType: "Eddsa" })
 // → Solana.broadcastTx(finalizedTx)   // jitoSOL arrives at derived address`}</Code>
 
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">Requirements Before Staking</h3>
+              <ul className="list-disc pl-6 space-y-2 text-gray-300 mt-2">
+                <li>Derived Solana address needs <strong className="text-white">≥ 0.005 SOL</strong> on-chain.</li>
+                <li><strong className="text-white">~0.002 SOL</strong> is reserved for jitoSOL token account creation (one-time rent).</li>
+                <li>Minimum stake: <strong className="text-white">0.001 SOL</strong> + transaction fees.</li>
+                <li>If the balance is too low, go back to Step 3 and withdraw more SOL first.</li>
+              </ul>
+
               <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">Unstaking Flow</h3>
               <p>
                 <strong className="text-white">Instant via reserve (implemented):</strong> NeXchange

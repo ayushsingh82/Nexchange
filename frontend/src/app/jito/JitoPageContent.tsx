@@ -592,7 +592,7 @@ function JitoStakeStep({
         JITO_PROGRAM_ID,
       );
 
-      const { SYSVAR_CLOCK_PUBKEY, SYSVAR_STAKE_HISTORY_PUBKEY, TransactionInstruction, SystemProgram } =
+      const { TransactionInstruction, SystemProgram } =
         await import("@solana/web3.js");
       const { TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction } =
         await import("@solana/spl-token");
@@ -639,10 +639,8 @@ function JitoStakeStep({
             { pubkey: sp.managerFeeAccount,    isSigner: false, isWritable: true },
             { pubkey: jitoSolAta,              isSigner: false, isWritable: true },  // referral
             { pubkey: sp.poolMint,             isSigner: false, isWritable: true },
-            { pubkey: SYSVAR_CLOCK_PUBKEY,     isSigner: false, isWritable: false },
-            { pubkey: SYSVAR_STAKE_HISTORY_PUBKEY, isSigner: false, isWritable: false },
-            { pubkey: TOKEN_PROGRAM_ID,        isSigner: false, isWritable: false },
             { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+            { pubkey: TOKEN_PROGRAM_ID,        isSigner: false, isWritable: false },
             ...depositAuthKeys,
           ],
           data: depositData,
