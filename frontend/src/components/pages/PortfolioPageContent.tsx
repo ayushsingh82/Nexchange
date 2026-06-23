@@ -206,17 +206,18 @@ export default function PortfolioPageContent() {
       try {
         const connection = new Connection(SOLANA_RPC, 'confirmed')
         const derivedPubkey = new PublicKey(solAddress!)
-        const { value: accounts } = await connection.getParsedTokenAccountsByOwner(
-          derivedPubkey,
-          { mint: new PublicKey(JITO_SOL_MINT) },
+        const [ata] = PublicKey.findProgramAddressSync(
+          [
+            derivedPubkey.toBuffer(),
+            new PublicKey(TOKEN_PROGRAM).toBuffer(),
+            new PublicKey(JITO_SOL_MINT).toBuffer(),
+          ],
+          new PublicKey(ASSOC_TOKEN_PROG),
         )
-        if (accounts.length > 0) {
-          const amount = accounts[0].account.data.parsed.info.tokenAmount.uiAmountString
-          setJitoSolBalance(amount ?? '0')
-        } else {
-          setJitoSolBalance('0')
-        }
+        const info = await connection.getTokenAccountBalance(ata)
+        setJitoSolBalance(info.value.uiAmountString ?? '0')
       } catch {
+        // ATA doesn't exist yet (pre-stake) — show 0
         setJitoSolBalance('0')
       } finally {
         setJitoLoading(false)
