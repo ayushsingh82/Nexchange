@@ -807,27 +807,35 @@ function JitoUnstakeSection({
 
     (async () => {
       try {
-        const { PublicKey, Connection } = await import("@solana/web3.js");
-        const connection = new Connection("https://solana.publicnode.com", "confirmed");
+        const { PublicKey } = await import("@solana/web3.js");
         const derivedPubkey = new PublicKey(derivedSolAddress);
-        const JITO_SOL_MINT  = new PublicKey(JITO_SOL_MINT_ADDR);
-        const TOKEN_PROG     = new PublicKey(TOKEN_PROGRAM_ADDR);
-        const ASSOC_PROG     = new PublicKey(ASSOC_TOKEN_PROG_ADDR);
 
         const [jitoSolAta] = PublicKey.findProgramAddressSync(
-          [derivedPubkey.toBuffer(), TOKEN_PROG.toBuffer(), JITO_SOL_MINT.toBuffer()],
-          ASSOC_PROG,
+          [
+            derivedPubkey.toBuffer(),
+            new PublicKey(TOKEN_PROGRAM_ADDR).toBuffer(),
+            new PublicKey(JITO_SOL_MINT_ADDR).toBuffer(),
+          ],
+          new PublicKey(ASSOC_TOKEN_PROG_ADDR),
         );
 
-        const info = await connection.getTokenAccountBalance(jitoSolAta);
-        const amount = info.value.uiAmountString ?? "0";
+        // Raw JSON-RPC fetch — avoids any web3.js Connection issues in the browser
+        const res = await fetch("https://solana.publicnode.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0", id: 1,
+            method: "getTokenAccountBalance",
+            params: [jitoSolAta.toBase58(), { commitment: "confirmed" }],
+          }),
+        });
+        const json = await res.json();
+        const amount = json.result?.value?.uiAmountString ?? "0";
         if (!cancelled) {
           setJitoSolBalance(amount);
-          // pre-fill unstake input with full balance if user hasn't changed it from the default
           setUnstakeAmount((prev) => (prev === "0.001" ? amount : prev));
         }
       } catch {
-        // ATA doesn't exist yet (pre-stake) — show 0
         if (!cancelled) setJitoSolBalance("0");
       } finally {
         if (!cancelled) setBalanceLoading(false);

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useNearWallet } from '@/provider/wallet'
 import { useChainSigSolanaAddress } from '@/hooks/useChainSigSolanaAddress'
 import { providers } from 'near-api-js'
-import { PublicKey, Connection } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js'
 import Link from 'next/link'
 
 const SOLANA_RPC = 'https://solana.publicnode.com'
@@ -204,7 +204,7 @@ export default function PortfolioPageContent() {
 
     async function fetchJitoBalance() {
       try {
-        const connection = new Connection(SOLANA_RPC, 'confirmed')
+        // Compute ATA address deterministically
         const derivedPubkey = new PublicKey(solAddress!)
         const [ata] = PublicKey.findProgramAddressSync(
           [
@@ -214,10 +214,20 @@ export default function PortfolioPageContent() {
           ],
           new PublicKey(ASSOC_TOKEN_PROG),
         )
-        const info = await connection.getTokenAccountBalance(ata)
-        setJitoSolBalance(info.value.uiAmountString ?? '0')
+        // Raw JSON-RPC fetch — avoids any web3.js Connection issues in the browser
+        const res = await fetch(SOLANA_RPC, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0', id: 1,
+            method: 'getTokenAccountBalance',
+            params: [ata.toBase58(), { commitment: 'confirmed' }],
+          }),
+        })
+        const json = await res.json()
+        const amount = json.result?.value?.uiAmountString
+        setJitoSolBalance(amount ?? '0')
       } catch {
-        // ATA doesn't exist yet (pre-stake) — show 0
         setJitoSolBalance('0')
       } finally {
         setJitoLoading(false)
