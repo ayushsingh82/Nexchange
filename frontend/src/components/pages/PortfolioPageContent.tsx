@@ -154,14 +154,15 @@ function Section({
 }: {
   title: string
   children: React.ReactNode
-  badge?: string
+  badge?: React.ReactNode
 }) {
   return (
     <div className="border border-gray-800 bg-black/60">
       <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
         <h2 className="text-[10px] font-semibold tracking-widest text-gray-500 uppercase">{title}</h2>
-        {badge && (
-          <span className="text-[9px] px-2 py-0.5 border border-[#97FBE4]/20 text-[#97FBE4]/60">{badge}</span>
+        {badge && (typeof badge === 'string'
+          ? <span className="text-[9px] px-2 py-0.5 border border-[#97FBE4]/20 text-[#97FBE4]/60">{badge}</span>
+          : badge
         )}
       </div>
       <div className="px-5">{children}</div>
@@ -192,9 +193,12 @@ export default function PortfolioPageContent() {
       .finally(() => setNearLoading(false))
   }, [accountId])
 
-  // jitoSOL balance — fetched on mount and polled every 30 s so it stays fresh after staking
+  // jitoSOL balance — uses getParsedTokenAccountsByOwner (never throws for missing ATA)
+  // polled every 30 s and re-fetchable via refreshJito counter
   const [jitoSolBalance, setJitoSolBalance] = useState<string | null>(null)
   const [jitoLoading, setJitoLoading] = useState(false)
+  const [refreshJito, setRefreshJito] = useState(0)
+
   useEffect(() => {
     if (!solAddress) return
 
@@ -202,16 +206,16 @@ export default function PortfolioPageContent() {
       try {
         const connection = new Connection(SOLANA_RPC, 'confirmed')
         const derivedPubkey = new PublicKey(solAddress!)
-        const [ata] = PublicKey.findProgramAddressSync(
-          [
-            derivedPubkey.toBuffer(),
-            new PublicKey(TOKEN_PROGRAM).toBuffer(),
-            new PublicKey(JITO_SOL_MINT).toBuffer(),
-          ],
-          new PublicKey(ASSOC_TOKEN_PROG),
+        const { value: accounts } = await connection.getParsedTokenAccountsByOwner(
+          derivedPubkey,
+          { mint: new PublicKey(JITO_SOL_MINT) },
         )
-        const info = await connection.getTokenAccountBalance(ata)
-        setJitoSolBalance(info.value.uiAmountString ?? '0')
+        if (accounts.length > 0) {
+          const amount = accounts[0].account.data.parsed.info.tokenAmount.uiAmountString
+          setJitoSolBalance(amount ?? '0')
+        } else {
+          setJitoSolBalance('0')
+        }
       } catch {
         setJitoSolBalance('0')
       } finally {
@@ -223,7 +227,7 @@ export default function PortfolioPageContent() {
     fetchJitoBalance()
     const interval = setInterval(fetchJitoBalance, 30_000)
     return () => clearInterval(interval)
-  }, [solAddress])
+  }, [solAddress, refreshJito])
 
   // Intents balances
   const [intentsNEAR, setIntentsNEAR] = useState<string | null>(null)
@@ -407,7 +411,15 @@ export default function PortfolioPageContent() {
         </Section>
 
         {/* Staking Portfolio */}
-        <Section title="Staking Portfolio">
+        <Section title="Staking Portfolio" badge={
+          <button
+            onClick={() => { setRefreshJito(n => n + 1) }}
+            disabled={jitoLoading}
+            className="text-[9px] px-2 py-0.5 border border-[#97FBE4]/20 text-[#97FBE4]/60 hover:border-[#97FBE4]/50 hover:text-[#97FBE4] transition-colors disabled:opacity-40"
+          >
+            {jitoLoading ? 'refreshing…' : '↻ Refresh'}
+          </button>
+        }>
           {jitoLoading ? (
             <div className="py-4 flex items-center gap-2">
               <Spinner />
