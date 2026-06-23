@@ -66,8 +66,9 @@ The protocol is organized into four modules:
 
 | Chain | Protocols | Status |
 |-------|-----------|--------|
-| Solana | Jito (JitoSOL), Marinade (mSOL) | Available |
-| Ethereum | Lido (stETH), Ether.fi (eETH) | Available |
+| Solana | Jito (JitoSOL) | Live |
+| Solana | Marinade (mSOL) | Planned |
+| Ethereum | Lido (stETH), Ether.fi (eETH) | Planned |
 | NEAR | Meta Pool, LiNEAR | Planned |
 
 ---
