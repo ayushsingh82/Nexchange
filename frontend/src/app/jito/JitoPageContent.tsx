@@ -799,7 +799,7 @@ function JitoUnstakeSection({
   const [unstakeAmount, setUnstakeAmount] = useState("0.001");
   const [unstakeState, setUnstakeState] = useState<StepState>(INIT);
 
-  // Fetch jitoSOL ATA balance whenever derived address is known
+  // Fetch jitoSOL balance — use getParsedTokenAccountsByOwner so it never throws on a missing ATA
   useEffect(() => {
     if (!derivedSolAddress) return;
     let cancelled = false;
@@ -809,21 +809,24 @@ function JitoUnstakeSection({
       try {
         const { PublicKey, Connection } = await import("@solana/web3.js");
         const connection = new Connection("https://solana.publicnode.com", "confirmed");
-
         const derivedPubkey = new PublicKey(derivedSolAddress);
-        const JITO_SOL_MINT  = new PublicKey(JITO_SOL_MINT_ADDR);
-        const TOKEN_PROG     = new PublicKey(TOKEN_PROGRAM_ADDR);
-        const ASSOC_PROG     = new PublicKey(ASSOC_TOKEN_PROG_ADDR);
 
-        const [jitoSolAta] = PublicKey.findProgramAddressSync(
-          [derivedPubkey.toBuffer(), TOKEN_PROG.toBuffer(), JITO_SOL_MINT.toBuffer()],
-          ASSOC_PROG
+        const { value: accounts } = await connection.getParsedTokenAccountsByOwner(
+          derivedPubkey,
+          { mint: new PublicKey(JITO_SOL_MINT_ADDR) },
         );
 
-        const info = await connection.getTokenAccountBalance(jitoSolAta);
-        if (!cancelled) setJitoSolBalance(info.value.uiAmountString ?? "0");
+        if (!cancelled) {
+          if (accounts.length > 0) {
+            const amount = accounts[0].account.data.parsed.info.tokenAmount.uiAmountString ?? "0";
+            setJitoSolBalance(amount);
+            // pre-fill unstake input with the full balance if user hasn't changed it
+            setUnstakeAmount((prev) => (prev === "0.001" ? amount : prev));
+          } else {
+            setJitoSolBalance("0");
+          }
+        }
       } catch {
-        // ATA doesn't exist yet = no jitoSOL
         if (!cancelled) setJitoSolBalance("0");
       } finally {
         if (!cancelled) setBalanceLoading(false);
