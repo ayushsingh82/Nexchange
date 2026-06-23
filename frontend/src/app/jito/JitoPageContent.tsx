@@ -146,6 +146,9 @@ export default function JitoPageContent() {
   // Increment to force SOL balance refresh after withdraw/stake
   const [solRefresh, setSolRefresh] = useState(0);
 
+  // Increment to force jitoSOL balance re-fetch in unstake section after a stake succeeds
+  const [jitoRefresh, setJitoRefresh] = useState(0);
+
   // Derived Solana address from chain sig — pass solRefresh so balance re-fetches after withdraw/stake
   const { address: derivedSolAddress, balance: solBalance, loading: addrLoading, addrError } =
     useChainSigSolanaAddress(accountId, "solana-1", solRefresh);
@@ -521,6 +524,7 @@ export default function JitoPageContent() {
               accountId={accountId}
               derivedSolAddress={derivedSolAddress}
               callMethods={callMethods}
+              onStakeSuccess={() => { setSolRefresh(n => n + 1); setJitoRefresh(n => n + 1); }}
             />
           </StepCard>
         </div>
@@ -535,6 +539,7 @@ export default function JitoPageContent() {
             accountId={accountId}
             derivedSolAddress={derivedSolAddress}
             callMethods={callMethods}
+            jitoRefresh={jitoRefresh}
           />
         </div>
 
@@ -549,10 +554,12 @@ function JitoStakeStep({
   accountId,
   derivedSolAddress,
   callMethods,
+  onStakeSuccess,
 }: {
   accountId: string | null;
   derivedSolAddress: string | null;
   callMethods: (params: any[]) => Promise<unknown>;
+  onStakeSuccess: () => void;
 }) {
   const [stakeAmount, setStakeAmount] = useState("0.001");
   const [stakeState, setStakeState] = useState<StepState>(INIT);
@@ -696,13 +703,14 @@ function JitoStakeStep({
         message: `Jito stake successful! jitoSOL received at ${derivedSolAddress.slice(0, 12)}…`,
         txHash: hashStr,
       });
+      onStakeSuccess();
     } catch (err) {
       setStakeState({
         status: "error",
         message: err instanceof Error ? err.message : String(err),
       });
     }
-  }, [accountId, derivedSolAddress, callMethods, stakeAmount]);
+  }, [accountId, derivedSolAddress, callMethods, stakeAmount, onStakeSuccess]);
 
   if (!derivedSolAddress) {
     return <p className="text-gray-500 text-sm">Complete steps 1–3 first to activate staking.</p>;
@@ -779,10 +787,12 @@ function JitoUnstakeSection({
   accountId,
   derivedSolAddress,
   callMethods,
+  jitoRefresh,
 }: {
   accountId: string | null;
   derivedSolAddress: string | null;
   callMethods: (params: any[]) => Promise<unknown>;
+  jitoRefresh: number;
 }) {
   const [jitoSolBalance, setJitoSolBalance] = useState<string | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
@@ -821,7 +831,7 @@ function JitoUnstakeSection({
     })();
 
     return () => { cancelled = true; };
-  }, [derivedSolAddress, unstakeState.status]); // re-fetch after unstake completes
+  }, [derivedSolAddress, unstakeState.status, jitoRefresh]); // re-fetch after unstake or stake completes
 
   const handleUnstake = useCallback(async () => {
     if (!accountId || !derivedSolAddress) return;

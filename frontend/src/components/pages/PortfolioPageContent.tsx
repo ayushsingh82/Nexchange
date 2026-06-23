@@ -192,16 +192,16 @@ export default function PortfolioPageContent() {
       .finally(() => setNearLoading(false))
   }, [accountId])
 
-  // jitoSOL balance
+  // jitoSOL balance — fetched on mount and polled every 30 s so it stays fresh after staking
   const [jitoSolBalance, setJitoSolBalance] = useState<string | null>(null)
   const [jitoLoading, setJitoLoading] = useState(false)
   useEffect(() => {
     if (!solAddress) return
-    setJitoLoading(true)
-    ;(async () => {
+
+    async function fetchJitoBalance() {
       try {
         const connection = new Connection(SOLANA_RPC, 'confirmed')
-        const derivedPubkey = new PublicKey(solAddress)
+        const derivedPubkey = new PublicKey(solAddress!)
         const [ata] = PublicKey.findProgramAddressSync(
           [
             derivedPubkey.toBuffer(),
@@ -217,7 +217,12 @@ export default function PortfolioPageContent() {
       } finally {
         setJitoLoading(false)
       }
-    })()
+    }
+
+    setJitoLoading(true)
+    fetchJitoBalance()
+    const interval = setInterval(fetchJitoBalance, 30_000)
+    return () => clearInterval(interval)
   }, [solAddress])
 
   // Intents balances
