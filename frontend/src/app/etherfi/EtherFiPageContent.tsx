@@ -77,43 +77,41 @@ function StepCard({
   index: number; title: string; description: string;
   state: StepState; active: boolean; children?: React.ReactNode;
 }) {
-  const border =
-    state.status === "done" ? "border-[#97FBE4]" :
-    state.status === "error" ? "border-red-500" :
-    state.status === "loading" ? "border-yellow-400" : "border-gray-700";
+  const iconBg =
+    state.status === "done"    ? "bg-[#97FBE4] text-black" :
+    state.status === "error"   ? "bg-red-500 text-white" :
+    state.status === "loading" ? "bg-yellow-500 text-black" :
+                                 "bg-gray-800 text-gray-400";
+
+  const icon =
+    state.status === "done"    ? "✓" :
+    state.status === "error"   ? "✗" :
+    state.status === "loading" ? "⟳" :
+                                 String(index);
 
   return (
-    <div className={`p-5 border-b last:border-b-0 ${border}`}>
-      <div className="flex items-center gap-3 mb-1">
-        <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border ${
-          state.status === "done" ? "border-[#97FBE4] text-[#97FBE4]" :
-          state.status === "error" ? "border-red-500 text-red-400" :
-          state.status === "loading" ? "border-yellow-400 text-yellow-300" :
-          "border-gray-600 text-gray-400"
-        }`}>{index}</span>
-        <div>
-          <div className="font-semibold text-sm text-white">{title}</div>
-          <div className="text-xs text-gray-500">{description}</div>
+    <div className="border-0 p-5 transition-all">
+      <div className="flex items-start gap-4 mb-3">
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0 ${iconBg} ${state.status === "loading" ? "animate-spin" : ""}`}>
+          {icon}
         </div>
-        {state.status === "done" && <span className="ml-auto text-[#97FBE4] text-xs">✓ Done</span>}
+        <div>
+          <h3 className="font-bold text-white text-lg">{title}</h3>
+          <p className="text-gray-400 text-sm">{description}</p>
+        </div>
       </div>
 
       {state.message && (
-        <div className={`mt-2 text-xs px-3 py-2 font-mono break-all ${
-          state.status === "error" ? "bg-red-900/20 text-red-300 border border-red-800" :
-          state.status === "done" ? "bg-[#97FBE4]/10 text-[#97FBE4] border border-[#97FBE4]/30" :
-          "bg-yellow-900/20 text-yellow-300 border border-yellow-800"
+        <div className={`text-sm px-3 py-2 mb-3 font-mono break-all ${
+          state.status === "error" ? "bg-red-900/20 text-red-300" : "bg-[#97FBE4]/5 text-[#97FBE4]"
         }`}>
           {state.message}
           {state.txHash && (
-            <a
-              href={`https://etherscan.io/tx/${state.txHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block mt-1 underline text-blue-400"
-            >
-              View on Etherscan ↗
-            </a>
+            <div className="mt-1 text-xs text-gray-400">
+              <a href={`https://etherscan.io/tx/${state.txHash}`} target="_blank" rel="noopener noreferrer" className="underline">
+                View on Etherscan ↗
+              </a>
+            </div>
           )}
         </div>
       )}
@@ -281,17 +279,24 @@ export default function EtherFiPageContent() {
           </div>
         )}
 
-        {/* Steps 1–3 */}
+        {/* ── All 4 steps in one box ── */}
         <div className="border border-gray-700">
           {/* Step 1 */}
-          <StepCard index={1} title="Deposit NEAR" description="Wrap NEAR and deposit to intents.near" state={step1} active={!!isAuthenticated}>
+          <StepCard
+            index={1}
+            title="Deposit NEAR"
+            description="Wrap NEAR and deposit to intents.near"
+            state={step1}
+            active={!!isAuthenticated}
+          >
             {nearBalance !== null && (
-              <div className="text-xs text-gray-400 mt-3 mb-2">
+              <div className="text-xs text-gray-400 mb-2">
                 Wallet balance: <span className="text-[#97FBE4] font-mono">{nearBalance} NEAR</span>
               </div>
             )}
-            <div className="flex gap-3 items-center mt-3">
-              <input type="number" value={depositAmount} onChange={e => setDepositAmount(e.target.value)}
+            <div className="flex gap-3 items-center">
+              <input
+                type="number" value={depositAmount} onChange={e => setDepositAmount(e.target.value)}
                 step="0.1" min="0.1" placeholder="0.5"
                 className="flex-1 px-3 py-2 bg-black border border-gray-700 text-white text-sm focus:outline-none focus:border-[#97FBE4]"
               />
@@ -306,14 +311,21 @@ export default function EtherFiPageContent() {
           <div className="border-t border-gray-800" />
 
           {/* Step 2 */}
-          <StepCard index={2} title="Swap NEAR → ETH" description="Swap wrapped NEAR to ETH via 1Click API" state={step2} active={!!isAuthenticated}>
+          <StepCard
+            index={2}
+            title="Swap NEAR → ETH"
+            description="Swap wrapped NEAR to ETH via 1Click API"
+            state={step2}
+            active={!!isAuthenticated}
+          >
             {intentsNEARBalance !== null && (
-              <div className="text-xs text-gray-400 mt-3 mb-2">
+              <div className="text-xs text-gray-400 mb-2">
                 In intents: <span className="text-[#97FBE4] font-mono">{intentsNEARBalance} NEAR</span>
               </div>
             )}
-            <div className="flex gap-3 items-center mt-3">
-              <input type="number" value={swapAmount} onChange={e => setSwapAmount(e.target.value)}
+            <div className="flex gap-3 items-center">
+              <input
+                type="number" value={swapAmount} onChange={e => setSwapAmount(e.target.value)}
                 step="0.01" min="0.01" placeholder="0.1"
                 className="flex-1 px-3 py-2 bg-black border border-gray-700 text-white text-sm focus:outline-none focus:border-[#97FBE4]"
               />
@@ -328,11 +340,17 @@ export default function EtherFiPageContent() {
           <div className="border-t border-gray-800" />
 
           {/* Step 3 */}
-          <StepCard index={3} title="Withdraw ETH to Derived Address" description="Send ETH from intents to your chain-sig Ethereum address via 1Click" state={step3} active={!!isAuthenticated}>
+          <StepCard
+            index={3}
+            title="Withdraw ETH to Derived Address"
+            description="Send ETH from intents to your chain-sig Ethereum address via 1Click"
+            state={step3}
+            active={!!isAuthenticated}
+          >
             {!derivedEthAddress ? (
-              <p className="text-yellow-400 text-sm mt-3">Waiting for derived address…</p>
+              <p className="text-yellow-400 text-sm">Waiting for derived address…</p>
             ) : (
-              <div className="space-y-3 mt-3">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-gray-400 font-mono break-all">To: {derivedEthAddress}</span>
                   {intentsETHBalance !== null && (
@@ -342,7 +360,8 @@ export default function EtherFiPageContent() {
                   )}
                 </div>
                 <div className="flex gap-3 items-center">
-                  <input type="number" value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)}
+                  <input
+                    type="number" value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)}
                     step="0.001" min="0.001" placeholder="0.001"
                     className="flex-1 px-3 py-2 bg-black border border-gray-700 text-white text-sm focus:outline-none focus:border-[#97FBE4]"
                   />
@@ -358,9 +377,15 @@ export default function EtherFiPageContent() {
 
           <div className="border-t border-gray-800" />
 
-          {/* Step 4: Stake on EtherFi */}
-          <StepCard index={4} title="Stake ETH on EtherFi" description="Sign a deposit() transaction from your derived address via NEAR chain signatures" state={INIT} active={!!isAuthenticated}>
-            <div className="mb-4 p-3 border border-yellow-600/40 bg-yellow-900/10 text-yellow-300 text-xs space-y-1 mt-3">
+          {/* Step 4: EtherFi Stake */}
+          <StepCard
+            index={4}
+            title="Stake ETH on EtherFi"
+            description="Sign a deposit() transaction from your derived address via NEAR chain signatures"
+            state={INIT}
+            active={!!isAuthenticated}
+          >
+            <div className="mb-4 p-3 border border-yellow-600/40 bg-yellow-900/10 text-yellow-300 text-xs space-y-1">
               <div className="font-semibold">Requirements before staking</div>
               <ul className="list-disc list-inside space-y-0.5 text-yellow-400/90">
                 <li>Derived Ethereum address needs <span className="font-mono font-bold">≥ 0.001 ETH</span> on-chain</li>
@@ -380,7 +405,7 @@ export default function EtherFiPageContent() {
           </StepCard>
         </div>
 
-        {/* Unstake section */}
+        {/* ── Unstake section ── */}
         <div className="border border-gray-700 p-5">
           <h2 className="text-lg font-bold text-white mb-1">Unstake eETH → ETH</h2>
           <p className="text-gray-400 text-sm mb-4">
@@ -484,17 +509,16 @@ function EtherFiStakeStep({
       </div>
 
       {stakeState.message && (
-        <div className={`text-xs px-3 py-2 font-mono break-all border ${
-          stakeState.status === "error" ? "bg-red-900/20 text-red-300 border-red-800" :
-          stakeState.status === "done" ? "bg-[#97FBE4]/10 text-[#97FBE4] border-[#97FBE4]/30" :
-          "bg-yellow-900/20 text-yellow-300 border-yellow-800"
+        <div className={`text-sm rounded-lg px-3 py-2 font-mono break-all ${
+          stakeState.status === "error" ? "bg-red-900/20 text-red-300" : "bg-[#97FBE4]/5 text-[#97FBE4]"
         }`}>
           {stakeState.message}
           {stakeState.txHash && (
-            <a href={`https://etherscan.io/tx/${stakeState.txHash}`} target="_blank" rel="noopener noreferrer"
-              className="block mt-1 underline text-blue-400">
-              View on Etherscan ↗
-            </a>
+            <div className="mt-1 text-xs text-gray-400">
+              <a href={`https://etherscan.io/tx/${stakeState.txHash}`} target="_blank" rel="noopener noreferrer" className="underline">
+                View on Etherscan ↗
+              </a>
+            </div>
           )}
         </div>
       )}
@@ -694,17 +718,16 @@ function EtherFiUnstakeSection({
       </div>
 
       {unstakeState.message && (
-        <div className={`text-xs px-3 py-2 font-mono break-all border ${
-          unstakeState.status === "error" ? "bg-red-900/20 text-red-300 border-red-800" :
-          unstakeState.status === "done" ? "bg-[#97FBE4]/10 text-[#97FBE4] border-[#97FBE4]/30" :
-          "bg-yellow-900/20 text-yellow-300 border-yellow-800"
+        <div className={`text-sm rounded-lg px-3 py-2 font-mono break-all ${
+          unstakeState.status === "error" ? "bg-red-900/20 text-red-300" : "bg-orange-900/10 text-orange-300"
         }`}>
           {unstakeState.message}
           {unstakeState.txHash && (
-            <a href={`https://etherscan.io/tx/${unstakeState.txHash}`} target="_blank" rel="noopener noreferrer"
-              className="block mt-1 underline text-blue-400">
-              View on Etherscan ↗
-            </a>
+            <div className="mt-1 text-xs text-gray-400">
+              <a href={`https://etherscan.io/tx/${unstakeState.txHash}`} target="_blank" rel="noopener noreferrer" className="underline">
+                View on Etherscan ↗
+              </a>
+            </div>
           )}
         </div>
       )}
@@ -713,12 +736,12 @@ function EtherFiUnstakeSection({
         <input type="number" value={unstakeAmount} onChange={e => setUnstakeAmount(e.target.value)}
           step="0.001" min="0.001"
           disabled={unstakeState.status === "loading" || !hasBalance}
-          className="flex-1 px-3 py-2 bg-black border border-gray-700 text-white text-sm focus:outline-none focus:border-orange-400 disabled:opacity-50"
+          className="flex-1 px-3 py-2 bg-black border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-orange-400 disabled:opacity-50"
           placeholder="ETH amount to receive"
         />
         <span className="text-gray-400 text-sm whitespace-nowrap">eETH → ETH</span>
         <button onClick={handleUnstake} disabled={unstakeState.status === "loading" || !hasBalance}
-          className="px-4 py-2 bg-orange-600 text-white font-bold text-sm hover:bg-orange-500 transition-colors disabled:opacity-50">
+          className="px-4 py-2 bg-orange-600 text-white font-bold rounded-lg text-sm hover:bg-orange-500 transition-colors disabled:opacity-50">
           {unstakeState.status === "loading" ? "Unstaking…" : "Unstake"}
         </button>
       </div>
