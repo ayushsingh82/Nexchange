@@ -3,16 +3,20 @@
 import { useState, useEffect } from 'react'
 import { useNearWallet } from '@/provider/wallet'
 import { useChainSigSolanaAddress } from '@/hooks/useChainSigSolanaAddress'
+import { useChainSigEthAddress } from '@/hooks/useChainSigEthAddress'
 import { providers } from 'near-api-js'
 import { PublicKey } from '@solana/web3.js'
 import Link from 'next/link'
 
 const SOLANA_RPC = 'https://solana.publicnode.com'
+const ETH_RPC = 'https://ethereum.publicnode.com'
 const DERIVATION_PATH = 'solana-1'
+const ETH_DERIVATION_PATH = 'ethereum-1'
 const INTENTS_CONTRACT = 'intents.near'
 const JITO_SOL_MINT = 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn'
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
 const ASSOC_TOKEN_PROG = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
+const EETH_TOKEN = '0x35fA164735182de50811E8e2E824cFb9B6118ac2'
 
 // Token icon components
 function NearIcon({ size = 32 }: { size?: number }) {
@@ -73,6 +77,38 @@ function IntentsIcon({ size = 32 }: { size?: number }) {
         <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
         <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
       </svg>
+    </div>
+  )
+}
+
+function EthIcon({ size = 32 }: { size?: number }) {
+  return (
+    <div
+      style={{ width: size, height: size }}
+      className="rounded-full bg-black border border-[#97FBE4]/40 flex items-center justify-center overflow-hidden flex-shrink-0"
+    >
+      <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJsxR0KYJtHgBOV1xHFe_HhZCX15J9tEWGLw&s"
+        alt="ETH"
+        style={{ width: size, height: size }}
+        className="object-cover"
+      />
+    </div>
+  )
+}
+
+function EtherFiIcon({ size = 32 }: { size?: number }) {
+  return (
+    <div
+      style={{ width: size, height: size }}
+      className="rounded-full bg-black border border-[#97FBE4]/40 flex items-center justify-center overflow-hidden flex-shrink-0"
+    >
+      <img
+        src="https://s3.coinmarketcap.com/static-gravity/image/d841a331a19e4c86a67aa7996197bea8.jpg"
+        alt="EtherFi"
+        style={{ width: size, height: size }}
+        className="object-cover"
+      />
     </div>
   )
 }
@@ -176,9 +212,15 @@ export default function PortfolioPageContent() {
 
   const [showPath, setShowPath] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showEthPath, setShowEthPath] = useState(false)
+  const [copiedEth, setCopiedEth] = useState(false)
 
   const { address: solAddress, balance: solBalance, loading: addrLoading, addrError } =
     useChainSigSolanaAddress(accountId, DERIVATION_PATH)
+
+  const [refreshEth, setRefreshEth] = useState(0)
+  const { address: ethAddress, balance: ethBalance, loading: ethAddrLoading, addrError: ethAddrError } =
+    useChainSigEthAddress(accountId, ETH_DERIVATION_PATH, refreshEth)
 
   // NEAR wallet balance
   const [nearBalance, setNearBalance] = useState<string | null>(null)
@@ -240,9 +282,33 @@ export default function PortfolioPageContent() {
     return () => clearInterval(interval)
   }, [solAddress, refreshJito])
 
+  // eETH balance via raw eth_call
+  const [eEthBalance, setEEthBalance] = useState<string | null>(null)
+  const [eEthLoading, setEEthLoading] = useState(false)
+  useEffect(() => {
+    if (!ethAddress) return
+    let cancelled = false
+    setEEthLoading(true)
+    const data = '0x70a08231' + ethAddress.replace('0x', '').padStart(64, '0')
+    fetch(ETH_RPC, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_call', params: [{ to: EETH_TOKEN, data }, 'latest'] }),
+    })
+      .then(r => r.json())
+      .then(json => {
+        const raw = json.result as string
+        if (!cancelled) setEEthBalance(raw && raw !== '0x' ? (Number(BigInt(raw)) / 1e18).toFixed(6) : '0')
+      })
+      .catch(() => { if (!cancelled) setEEthBalance('0') })
+      .finally(() => { if (!cancelled) setEEthLoading(false) })
+    return () => { cancelled = true }
+  }, [ethAddress, refreshEth])
+
   // Intents balances
   const [intentsNEAR, setIntentsNEAR] = useState<string | null>(null)
   const [intentsSOL, setIntentsSOL] = useState<string | null>(null)
+  const [intentsETH, setIntentsETH] = useState<string | null>(null)
   const [intentsLoading, setIntentsLoading] = useState(false)
   useEffect(() => {
     if (!accountId || !viewMethod) return
@@ -254,6 +320,9 @@ export default function PortfolioPageContent() {
       viewMethod({ contractId: INTENTS_CONTRACT, method: 'mt_balance_of', args: { account_id: accountId, token_id: 'nep141:sol.omft.near' } })
         .then((b: any) => setIntentsSOL((Number(BigInt(b ?? '0')) / 1e9).toFixed(6)))
         .catch(() => setIntentsSOL('0')),
+      viewMethod({ contractId: INTENTS_CONTRACT, method: 'mt_balance_of', args: { account_id: accountId, token_id: 'nep141:eth.omft.near' } })
+        .then((b: any) => setIntentsETH((Number(BigInt(b ?? '0')) / 1e18).toFixed(6)))
+        .catch(() => setIntentsETH('0')),
     ]).finally(() => setIntentsLoading(false))
   }, [accountId, viewMethod])
 
@@ -261,6 +330,13 @@ export default function PortfolioPageContent() {
     navigator.clipboard.writeText(addr).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
+    })
+  }
+
+  function copyEthAddress(addr: string) {
+    navigator.clipboard.writeText(addr).then(() => {
+      setCopiedEth(true)
+      setTimeout(() => setCopiedEth(false), 1500)
     })
   }
 
@@ -290,8 +366,10 @@ export default function PortfolioPageContent() {
   }
 
   const hasJitoStake = jitoSolBalance !== null && parseFloat(jitoSolBalance) > 0
+  const hasEEthStake = eEthBalance !== null && parseFloat(eEthBalance) > 0
   const hasIntentsNEAR = intentsNEAR !== null && parseFloat(intentsNEAR) > 0
   const hasIntentsSOL = intentsSOL !== null && parseFloat(intentsSOL) > 0
+  const hasIntentsETH = intentsETH !== null && parseFloat(intentsETH) > 0
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -421,6 +499,69 @@ export default function PortfolioPageContent() {
           )}
         </Section>
 
+        {/* Derived Ethereum Address */}
+        <Section title="Derived Ethereum Address" badge="MPC · v1.signer">
+          <div className="py-4 space-y-3">
+            {ethAddrLoading ? (
+              <div className="flex items-center gap-2 text-yellow-400 text-sm">
+                <Spinner />
+                <span>Deriving address…</span>
+              </div>
+            ) : ethAddrError ? (
+              <p className="text-red-400 text-sm">{ethAddrError}</p>
+            ) : (
+              <>
+                <div className="flex items-start gap-3">
+                  <EthIcon size={28} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[#97FBE4] font-mono text-xs sm:text-sm break-all leading-relaxed">
+                      {ethAddress}
+                    </p>
+                    {ethBalance && (
+                      <p className="text-gray-500 text-xs mt-1 font-mono">{ethBalance} ETH on-chain</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    onClick={() => ethAddress && copyEthAddress(ethAddress)}
+                    className="text-[10px] px-2 py-1 border border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 transition-colors"
+                  >
+                    {copiedEth ? '✓ Copied' : 'Copy address'}
+                  </button>
+                  <button
+                    onClick={() => setShowEthPath(p => !p)}
+                    className="text-[10px] px-2 py-1 border border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200 transition-colors"
+                  >
+                    {showEthPath ? 'Hide path' : 'Show path'}
+                  </button>
+                  {showEthPath && (
+                    <span className="text-[10px] font-mono text-gray-500">
+                      path: <span className="text-[#97FBE4]">{ETH_DERIVATION_PATH}</span>
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </Section>
+
+        {/* Ethereum (Derived) */}
+        {(hasIntentsETH || (eEthBalance !== null && eEthBalance !== '0')) && (
+          <Section title="Ethereum — Derived Address">
+            {hasIntentsETH && (
+              <AssetRow
+                icon={<IntentsIcon size={32} />}
+                symbol="ETH"
+                name="ETH (in intents)"
+                balance={`${intentsETH} ETH`}
+                tag="intents"
+                loading={intentsLoading}
+              />
+            )}
+          </Section>
+        )}
+
         {/* Staking Portfolio */}
         <Section title="Staking Portfolio" badge={
           <button
@@ -431,35 +572,58 @@ export default function PortfolioPageContent() {
             {jitoLoading ? 'refreshing…' : '↻ Refresh'}
           </button>
         }>
-          {jitoLoading ? (
+          {jitoLoading && eEthLoading ? (
             <div className="py-4 flex items-center gap-2">
               <Spinner />
               <span className="text-gray-500 text-xs">Loading staking positions…</span>
             </div>
-          ) : hasJitoStake ? (
-            <AssetRow
-              icon={<JitoIcon size={32} />}
-              symbol="jitoSOL"
-              name="Jito Liquid Staked SOL"
-              balance={`${jitoSolBalance} jitoSOL`}
-              tag="staked"
-              tagColor="#27c93f"
-              action={{ label: 'Manage', href: '/jito' }}
-            />
           ) : (
-            <div className="py-5 flex flex-col items-center gap-3 text-center">
-              <JitoIcon size={40} />
-              <div>
-                <p className="text-gray-500 text-sm">No staked positions yet</p>
-                <p className="text-gray-700 text-xs mt-1">Stake SOL via Jito to earn liquid staking rewards</p>
-              </div>
-              <Link
-                href="/jito"
-                className="text-xs px-4 py-2 border border-[#97FBE4]/40 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors"
-              >
-                Start Staking →
-              </Link>
-            </div>
+            <>
+              {hasJitoStake && (
+                <AssetRow
+                  icon={<JitoIcon size={32} />}
+                  symbol="jitoSOL"
+                  name="Jito Liquid Staked SOL"
+                  balance={`${jitoSolBalance} jitoSOL`}
+                  tag="staked"
+                  tagColor="#27c93f"
+                  loading={jitoLoading}
+                  action={{ label: 'Manage', href: '/jito' }}
+                />
+              )}
+              {hasEEthStake && (
+                <AssetRow
+                  icon={<EtherFiIcon size={32} />}
+                  symbol="eETH"
+                  name="EtherFi Liquid Staked ETH"
+                  balance={`${eEthBalance} eETH`}
+                  tag="staked"
+                  tagColor="#27c93f"
+                  loading={eEthLoading}
+                  action={{ label: 'Manage', href: '/etherfi' }}
+                />
+              )}
+              {!hasJitoStake && !hasEEthStake && (
+                <div className="py-5 flex flex-col items-center gap-3 text-center">
+                  <div className="flex gap-2">
+                    <JitoIcon size={36} />
+                    <EtherFiIcon size={36} />
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-sm">No staked positions yet</p>
+                    <p className="text-gray-700 text-xs mt-1">Stake SOL via Jito or ETH via EtherFi to earn rewards</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link href="/jito" className="text-xs px-3 py-2 border border-[#97FBE4]/40 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
+                      Stake on Jito →
+                    </Link>
+                    <Link href="/etherfi" className="text-xs px-3 py-2 border border-[#97FBE4]/40 text-[#97FBE4] hover:bg-[#97FBE4]/10 transition-colors">
+                      Stake on EtherFi →
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </Section>
 
@@ -468,6 +632,7 @@ export default function PortfolioPageContent() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 py-3">
             {[
               { label: 'Stake on Jito', sub: 'NEAR → jitoSOL', href: '/jito', icon: <JitoIcon size={24} /> },
+              { label: 'Stake on EtherFi', sub: 'NEAR → eETH', href: '/etherfi', icon: <EtherFiIcon size={24} /> },
               { label: 'Explore Pools', sub: 'all protocols', href: '/explore', icon: (
                 <div className="w-6 h-6 flex items-center justify-center">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#97FBE4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
