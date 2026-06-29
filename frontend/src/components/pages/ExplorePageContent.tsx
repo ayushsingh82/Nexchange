@@ -57,10 +57,10 @@ const CHAINS: Chain[] = [
     key: 'ethereum',
     name: 'Ethereum',
     logo: CHAIN_LOGOS.ethereum,
-    status: 'Coming Soon',
+    status: 'Available',
     protocols: [
+      { name: 'Ether.fi', token: 'eETH', logo: PROTOCOL_LOGOS.etherfi, available: true, href: '/etherfi', symbol: 'ETH', fallbackApy: 3.1 },
       { name: 'Lido', token: 'stETH', logo: PROTOCOL_LOGOS.lido, available: false, symbol: 'ETH', fallbackApy: 3.0 },
-      { name: 'Ether.fi', token: 'eETH', logo: PROTOCOL_LOGOS.etherfi, available: false, fallbackApy: 3.1 },
     ],
   },
   {
