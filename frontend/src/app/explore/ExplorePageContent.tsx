@@ -6,16 +6,18 @@ export default function ExplorePageContent() {
   const protocols = {
     ethereum: {
       name: "Ethereum",
-      status: "Coming Soon",
+      status: "Available",
+      href: "/etherfi",
       protocols: [
-        { name: "EtherFi", available: false },
-        { name: "Lido", available: false }, 
+        { name: "EtherFi", available: true },
+        { name: "Lido", available: false },
         { name: "Rocket Pool", available: false }
       ]
     },
     solana: {
-      name: "Solana", 
+      name: "Solana",
       status: "Available",
+      href: "/jito",
       protocols: [
         { name: "Jito", available: true },
         { name: "Marinade Finance", available: false },
@@ -100,10 +102,10 @@ export default function ExplorePageContent() {
               </div>
 
               {/* Action Button */}
-              {chainData.status === "Available" ? (
+              {chainData.status === "Available" && chainData.href ? (
                 <div className="mt-8">
-                  <Link 
-                    href="/jito"
+                  <Link
+                    href={chainData.href}
                     className="inline-block px-6 py-3 bg-[#97FBE4] text-black font-semibold hover:bg-[#5eead4] transition-colors"
                   >
                     Start Staking
