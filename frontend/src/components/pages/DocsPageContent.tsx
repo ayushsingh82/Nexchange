@@ -14,6 +14,7 @@ const SECTIONS = [
   { id: 'chains', label: 'Supported Chains' },
   { id: 'staking', label: 'Staking & Best Returns' },
   { id: 'jito', label: 'Jito Integration' },
+  { id: 'etherfi', label: 'EtherFi Integration' },
   { id: 'security', label: 'Security' },
   { id: 'roadmap', label: 'Roadmap' },
   { id: 'links', label: 'Links' },
@@ -557,6 +558,154 @@ const instructions = await withdrawSol(
 nep141:sol.omft.near  →  9 decimals  (lamports)
 nep141:eth.omft.near  → 18 decimals  (wei)
 nep141:usdc.omft.near →  6 decimals`}</Code>
+            </Section>
+
+            <Section id="etherfi" title="EtherFi Integration">
+              <p>
+                NeXchange stakes ETH on the EtherFi liquid staking pool using{' '}
+                <strong className="text-white">NEAR Chain Signatures</strong>. Your NEAR account
+                derives a deterministic Ethereum address (via{' '}
+                <code className="text-[#97FBE4]">v1.signer</code>, path{' '}
+                <code className="text-[#97FBE4]">ethereum-1</code>), ETH is delivered there via the
+                1Click solver network, then a <code className="text-[#97FBE4]">deposit()</code>{' '}
+                transaction is signed with ECDSA and broadcast directly to Ethereum.
+              </p>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-6">Verified Contract Addresses</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border border-green-800/40">
+                  <thead className="bg-[#0a0f0d] text-[#97FBE4]">
+                    <tr>
+                      <th className="text-left p-3">Name</th>
+                      <th className="text-left p-3">Address</th>
+                      <th className="text-left p-3">Network</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-300 font-mono text-xs">
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">EtherFi LiquidityPool</td>
+                      <td className="p-3 break-all">0x308861A430be4cce5502d0A12724771Fc6DaF216</td>
+                      <td className="p-3 font-sans">Ethereum Mainnet</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">eETH Token</td>
+                      <td className="p-3 break-all">0x35fA164735182de50811E8e2E824cFb9B6118ac2</td>
+                      <td className="p-3 font-sans">Ethereum Mainnet</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">NEAR MPC Signer</td>
+                      <td className="p-3">v1.signer</td>
+                      <td className="p-3 font-sans">NEAR Mainnet</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">Derivation Path</td>
+                      <td className="p-3">ethereum-1</td>
+                      <td className="p-3 font-sans">ECDSA / secp256k1</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-sans font-medium text-white">Intents Contract</td>
+                      <td className="p-3">intents.near</td>
+                      <td className="p-3 font-sans">NEAR Mainnet</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">Requirements Before Staking</h3>
+              <ul className="list-disc pl-6 space-y-2 text-gray-300 mt-2">
+                <li>Derived Ethereum address needs <strong className="text-white">≥ 0.001 ETH</strong> on-chain.</li>
+                <li>Gas fees: <strong className="text-white">~0.001–0.003 ETH</strong> depending on network congestion.</li>
+                <li>Minimum stake: <strong className="text-white">0.001 ETH</strong>.</li>
+                <li>If balance is too low, go back to Step 3 and withdraw more ETH first.</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">4-Step Flow</h3>
+              <Code>{`// Step 1: Deposit NEAR → intents.near
+depositNearAsMultiToken(accountId, amount, callMethodBatch)
+
+// Step 2: Swap wNEAR → nep141:eth.omft.near via 1Click solver
+getQuote({ originAsset: "nep141:wrap.near", destinationAsset: "nep141:eth.omft.near", ... })
+transferMultiTokenForQuote(accountId, quote, "nep141:wrap.near", callMethod)
+
+// Step 3: Withdraw ETH to chain-sig derived Ethereum address
+getQuote({
+  originAsset: "nep141:eth.omft.near",
+  destinationAsset: "eth:0x000...000",
+  recipient: derivedEthAddress,
+  recipientType: "DESTINATION_CHAIN"
+})
+
+// Step 4: Stake via NEAR Chain Signatures (ECDSA)
+const EVMAdapter = new chainAdapters.evm.EVM({ publicClient, contract: MPC })
+const { transaction, hashesToSign } = await EVMAdapter.prepareTransactionForSigning({
+  from: derivedEthAddress,
+  to: "0x308861A430be4cce5502d0A12724771Fc6DaF216", // LiquidityPool
+  value: parseEther(amount),
+  data: "0xd0e30db0", // deposit() selector
+})
+const rsvSignatures = await MPC.sign({ payloads: hashesToSign, path: "ethereum-1", keyType: "Ecdsa", ... })
+const serialized = EVMAdapter.finalizeTransactionSigning({ transaction, rsvSignatures })
+const { hash } = await EVMAdapter.broadcastTx(serialized)
+// → eETH arrives at derived Ethereum address`}</Code>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">Unstaking Flow</h3>
+              <p>
+                <strong className="text-white">2-step process (both signed via NEAR chain signatures):</strong>
+              </p>
+              <Code>{`// Step 1: approve(liquidityPool, amount) on eETH contract
+const approveTx = {
+  from: derivedEthAddress,
+  to: "0x35fA164735182de50811E8e2E824cFb9B6118ac2", // eETH
+  data: "0x095ea7b3" + spenderHex + amountHex,       // approve selector
+}
+
+// Step 2: requestWithdraw(recipient, amount) on LiquidityPool
+const withdrawTx = {
+  from: derivedEthAddress,
+  to: "0x308861A430be4cce5502d0A12724771Fc6DaF216", // LiquidityPool
+  data: "0x745400c9" + recipientHex + amountHex,     // requestWithdraw selector
+}
+// → Withdrawal NFT created, ETH claimable after ~1–2 days`}</Code>
+
+              <h3 className="text-xl font-semibold text-[#97FBE4] mt-8">Key Difference vs Jito</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border border-green-800/40">
+                  <thead className="bg-[#0a0f0d] text-[#97FBE4]">
+                    <tr>
+                      <th className="text-left p-3"></th>
+                      <th className="text-left p-3">Jito (Solana)</th>
+                      <th className="text-left p-3">EtherFi (Ethereum)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-300 text-xs">
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-medium text-white">Key type</td>
+                      <td className="p-3 font-mono">EdDSA (Ed25519)</td>
+                      <td className="p-3 font-mono">ECDSA (secp256k1)</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-medium text-white">Path</td>
+                      <td className="p-3 font-mono">solana-1</td>
+                      <td className="p-3 font-mono">ethereum-1</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-medium text-white">Stake fn</td>
+                      <td className="p-3 font-mono">depositSol (index 14)</td>
+                      <td className="p-3 font-mono">deposit() 0xd0e30db0</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-medium text-white">Unstake</td>
+                      <td className="p-3">Instant (1 tx)</td>
+                      <td className="p-3">~1–2 days (2 tx)</td>
+                    </tr>
+                    <tr className="border-t border-green-800/30">
+                      <td className="p-3 font-medium text-white">Output</td>
+                      <td className="p-3 font-mono">jitoSOL</td>
+                      <td className="p-3 font-mono">eETH</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </Section>
 
             <Section id="security" title="Security">
