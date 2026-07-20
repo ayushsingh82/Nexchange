@@ -9,6 +9,7 @@ import {
   transferMultiTokenForQuote,
   waitUntilQuoteExecutionCompletes,
 } from "@/app/intents-check/utils/intents";
+import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 import { providers } from "near-api-js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -199,12 +200,23 @@ export default function EtherFiPageContent() {
     if (!accountId) return;
     setStep2({ status: "loading", message: "Getting quote for NEAR → ETH swap…" });
     try {
+      const deadline = new Date();
+      deadline.setMinutes(deadline.getMinutes() + 5);
+
       const quote = await getQuote({
+        dry: false,
+        swapType: QuoteRequest.swapType.EXACT_INPUT,
+        slippageTolerance: 50, // 0.5%
+        depositType: QuoteRequest.depositType.INTENTS,
         originAsset: "nep141:wrap.near",
         destinationAsset: "nep141:eth.omft.near",
         amount: toSmallestUnit(swapAmount, 24),
-        accountId,
-      } as any);
+        refundTo: accountId,
+        refundType: QuoteRequest.refundType.INTENTS,
+        recipient: accountId,
+        recipientType: QuoteRequest.recipientType.INTENTS,
+        deadline: deadline.toISOString(),
+      });
       setStep2({ status: "loading", message: `Swapping ${quote.amountInFormatted ?? swapAmount} NEAR → ETH…` });
       await transferMultiTokenForQuote(accountId, quote, "nep141:wrap.near", callMethod);
       setStep2({ status: "loading", message: "Waiting for solver to settle…" });
@@ -220,14 +232,23 @@ export default function EtherFiPageContent() {
     if (!accountId || !derivedEthAddress) return;
     setStep3({ status: "loading", message: `Getting quote to withdraw ETH to ${derivedEthAddress.slice(0, 10)}…` });
     try {
+      const deadline = new Date();
+      deadline.setMinutes(deadline.getMinutes() + 5);
+
       const quote = await getQuote({
+        dry: false,
+        swapType: QuoteRequest.swapType.EXACT_INPUT,
+        slippageTolerance: 50, // 0.5%
+        depositType: QuoteRequest.depositType.INTENTS,
         originAsset: "nep141:eth.omft.near",
-        destinationAsset: "eth:0x0000000000000000000000000000000000000000",
+        destinationAsset: "nep141:eth.omft.near",
         amount: toSmallestUnit(withdrawAmount, 18),
-        accountId,
+        refundTo: accountId,
+        refundType: QuoteRequest.refundType.INTENTS,
         recipient: derivedEthAddress,
-        recipientType: "DESTINATION_CHAIN",
-      } as any);
+        recipientType: QuoteRequest.recipientType.DESTINATION_CHAIN,
+        deadline: deadline.toISOString(),
+      });
       setStep3({ status: "loading", message: `Sending ${quote.amountInFormatted ?? withdrawAmount} ETH to derived address…` });
       await transferMultiTokenForQuote(accountId, quote, "nep141:eth.omft.near", callMethod);
       setStep3({ status: "loading", message: "Waiting for solver to deliver ETH…" });
