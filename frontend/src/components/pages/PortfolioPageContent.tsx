@@ -230,7 +230,7 @@ export default function PortfolioPageContent() {
     setNearLoading(true)
     const provider = new providers.JsonRpcProvider({ url: 'https://rpc.mainnet.near.org' })
     provider.query({ request_type: 'view_account', account_id: accountId, finality: 'optimistic' })
-      .then((res: any) => setNearBalance((Number(BigInt(res.amount)) / 1e24).toFixed(4)))
+      .then((res: any) => setNearBalance((Number(BigInt(res.amount)) / 1e24).toFixed(6)))
       .catch(() => setNearBalance(null))
       .finally(() => setNearLoading(false))
   }, [accountId])
@@ -315,7 +315,7 @@ export default function PortfolioPageContent() {
     setIntentsLoading(true)
     Promise.all([
       viewMethod({ contractId: INTENTS_CONTRACT, method: 'mt_balance_of', args: { account_id: accountId, token_id: 'nep141:wrap.near' } })
-        .then((b: any) => setIntentsNEAR((Number(BigInt(b ?? '0')) / 1e24).toFixed(4)))
+        .then((b: any) => setIntentsNEAR((Number(BigInt(b ?? '0')) / 1e24).toFixed(6)))
         .catch(() => setIntentsNEAR('0')),
       viewMethod({ contractId: INTENTS_CONTRACT, method: 'mt_balance_of', args: { account_id: accountId, token_id: 'nep141:sol.omft.near' } })
         .then((b: any) => setIntentsSOL((Number(BigInt(b ?? '0')) / 1e9).toFixed(6)))
@@ -387,7 +387,7 @@ export default function PortfolioPageContent() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           <StatCard
             label="NEAR"
             value={nearBalance !== null ? `${nearBalance}` : '—'}
@@ -399,6 +399,12 @@ export default function PortfolioPageContent() {
             value={solBalance !== null ? `${solBalance}` : '—'}
             sub="derived address"
             loading={addrLoading}
+          />
+          <StatCard
+            label="ETH"
+            value={ethBalance !== null ? `${ethBalance}` : '—'}
+            sub="derived address"
+            loading={ethAddrLoading}
           />
           <StatCard
             label="jitoSOL"
