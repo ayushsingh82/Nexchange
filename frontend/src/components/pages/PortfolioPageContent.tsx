@@ -119,10 +119,13 @@ function Spinner() {
   )
 }
 
-function StatCard({ label, value, sub, loading }: { label: string; value: string; sub?: string; loading?: boolean }) {
+function StatCard({ icon, label, value, sub, loading }: { icon?: React.ReactNode; label: string; value: string; sub?: string; loading?: boolean }) {
   return (
     <div className="border border-gray-800 bg-[#00150E]/40 p-4">
-      <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">{label}</p>
+      <div className="flex items-center gap-1.5 mb-1">
+        {icon}
+        <p className="text-[10px] text-gray-500 uppercase tracking-widest">{label}</p>
+      </div>
       {loading ? (
         <div className="flex items-center h-7"><Spinner /></div>
       ) : (
@@ -387,30 +390,41 @@ export default function PortfolioPageContent() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           <StatCard
+            icon={<NearIcon size={16} />}
             label="NEAR"
             value={nearBalance !== null ? `${nearBalance}` : '—'}
             sub="wallet balance"
             loading={nearLoading}
           />
           <StatCard
+            icon={<SolIcon size={16} />}
             label="SOL"
             value={solBalance !== null ? `${solBalance}` : '—'}
             sub="derived address"
             loading={addrLoading}
           />
           <StatCard
+            icon={<EthIcon size={16} />}
             label="ETH"
             value={ethBalance !== null ? `${ethBalance}` : '—'}
             sub="derived address"
             loading={ethAddrLoading}
           />
           <StatCard
+            icon={<JitoIcon size={16} />}
             label="jitoSOL"
             value={jitoSolBalance !== null && jitoSolBalance !== '0' ? jitoSolBalance : '—'}
             sub="staked"
             loading={jitoLoading}
+          />
+          <StatCard
+            icon={<EtherFiIcon size={16} />}
+            label="eETH"
+            value={eEthBalance !== null && eEthBalance !== '0' ? eEthBalance : '—'}
+            sub="staked"
+            loading={eEthLoading}
           />
         </div>
 

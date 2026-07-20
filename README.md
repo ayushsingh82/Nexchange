@@ -73,6 +73,17 @@ The protocol is organized into four modules:
 
 ---
 
+## Example Transactions
+
+Live, on-chain proof of NeXchange's NEAR-to-staking flow:
+
+| Protocol | Chain | Transaction |
+|----------|-------|-------------|
+| Ether.fi | Ethereum | [0x048d34e6...abf2006](https://etherscan.io/tx/0x048d34e62612485a6cbd74c517ce2bf2fde8d3633fb0793354766dfd3abf2006) |
+| Jito | Solana | [4cM874RB...L4vuV4](https://explorer.solana.com/tx/4cM874RBuoyJwmr8t28KKDgNtRAntNZCAN7NYMQfTudkyA5aemSaFUhPTpP4LfDNxwh4LXGC4oxmtgNx79L4vuV4) |
+
+---
+
 ## Use Cases
 
 - **Stake** on Solana or Ethereum directly from NEAR.
